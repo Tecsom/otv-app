@@ -3,7 +3,8 @@ import path from 'path';
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 import expressLayouts from 'express-ejs-layouts';
-import routes from './routes/index.js';
+import middleware from './middleware.js';
+import { apiRoutes, viewsRoutes } from './routes/index.js';
 import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 
@@ -22,7 +23,9 @@ appExpress.use(express.static(__dirname));
 appExpress.use(bodyParser.json({ limit: '50mb' }));
 appExpress.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 
-appExpress.use('/', routes);
+appExpress.use(middleware);
+appExpress.use('/', viewsRoutes);
+// appExpress.use('/api', apiRoutes);
 
 const PORT = 3000;
 const server = appExpress.listen(PORT, async () => {

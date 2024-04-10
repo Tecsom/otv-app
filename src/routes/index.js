@@ -1,5 +1,4 @@
-import HomeRoutes from './home.js';
-import Page2Routes from './page2.js';
+import ViewsRoutes from './views.js';
 
-const routes = [HomeRoutes, Page2Routes];
-export default routes;
+export const viewsRoutes = [ViewsRoutes];
+export const apiRoutes = [];
