@@ -3,12 +3,8 @@ import path from 'path';
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 import expressLayouts from 'express-ejs-layouts';
-import middleware from './middleware.js';
-import { apiRoutes, viewsRoutes } from './routes/index.js';
-import { fileURLToPath } from 'url';
-const __filename = fileURLToPath(import.meta.url);
-
-const __dirname = path.dirname(__filename);
+import middleware from './middleware';
+import { viewsRoutes } from './routes/index';
 
 const appExpress = express();
 
@@ -28,6 +24,6 @@ appExpress.use('/', viewsRoutes);
 // appExpress.use('/api', apiRoutes);
 
 const PORT = 3000;
-const server = appExpress.listen(PORT, async () => {
+appExpress.listen(PORT, async () => {
   console.log('Server up running in:', PORT);
 });

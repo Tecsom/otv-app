@@ -1,5 +1,5 @@
 import express from 'express';
-import { renderHomePage, renderLoginPage } from '../controllers/views.js';
+import { renderHomePage, renderLoginPage } from '../controllers/views';
 
 const router = express.Router();
 

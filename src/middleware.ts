@@ -1,10 +1,9 @@
-import createClient from './config/supabase.js';
+import type { NextFunction, Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 
-export default async function (req, res, next) {
+export default async function (req: Request, res: Response, next: NextFunction) {
   const cookies = req.cookies;
   const authToken = cookies.accessToken;
-  const supabase = createClient();
 
   if (req.url.includes('/api')) {
     return apiMiddleware(req, res, next);
@@ -17,10 +16,7 @@ export default async function (req, res, next) {
     return next();
   }
   try {
-    const user = jwt.verify(
-      authToken,
-      'vc502qBBuj7Mp3O03gsb/DI6WI/pvosD8QtS8TkhMxwoa0PyhQ2DRTTnoAbfkUnXWdW+PoU4pEynkkxhZOC2YA=='
-    );
+    jwt.verify(authToken, 'vc502qBBuj7Mp3O03gsb/DI6WI/pvosD8QtS8TkhMxwoa0PyhQ2DRTTnoAbfkUnXWdW+PoU4pEynkkxhZOC2YA==');
 
     if (req.url.includes('/login')) return res.redirect('/');
     next();
@@ -31,7 +27,7 @@ export default async function (req, res, next) {
   }
 }
 
-const apiMiddleware = async (req, res, next) => {
+const apiMiddleware = async (req: Request, res: Response, next: NextFunction) => {
   const cookies = req.cookies;
   const authToken = cookies.accessToken;
 
@@ -40,11 +36,4 @@ const apiMiddleware = async (req, res, next) => {
   if (!authToken) {
     return res.status(401).json({ message: 'Unauthorized' });
   }
-
-  // try {
-  //   await admin.auth().verifySessionCookie(authToken);
-  //   next();
-  // } catch (error) {
-  //   res.status(401).json({ message: 'Unauthorized' });
-  // }
 };
