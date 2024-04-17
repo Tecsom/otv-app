@@ -15,6 +15,7 @@ $('#formLogin').on('submit', async function (event) {
       password
     });
 
+    if (error) throw error;
     const { access_token } = data?.session ?? {};
     if (!access_token) return;
     setCookie('accessToken', access_token, 1);
