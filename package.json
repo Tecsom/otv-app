@@ -5,7 +5,7 @@
   "type": "commonjs",
   "license": "Commercial",
   "scripts": {
-    "dev": "ts-node-dev src/app.ts"
+    "dev": "rm -rf dist && tsc && rm -rf dist/public && cp -r public dist/public && cp -r src/views dist/src/views && cp -r src/layouts dist/src/layouts && electron dist/src/app.js"
   },
   "dependencies": {
     "@form-validation/bundle": "^2.4.0",
@@ -115,6 +115,8 @@
     "css-loader": "~6.9.0",
     "deepmerge": "~4.3.1",
     "del": "~6.1.1",
+    "electron": "^30.0.1",
+    "electron-builder": "^24.13.3",
     "eslint": "^8.56.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-config-prettier": "^9.1.0",

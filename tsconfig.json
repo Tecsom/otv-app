@@ -1,24 +1,45 @@
 {
     "compilerOptions": {
-        "target": "es2016",
-        "module": "CommonJS",
+        "target": "es2016" /* Set the JavaScript language version for emitted JavaScript and include compatible library declarations. */,
+        "module": "commonjs" /* Specify what module code is generated. */,
         "moduleResolution": "node",
-        "outDir": "./build",
+        "forceConsistentCasingInFileNames": true /* Ensure that casing is correct in imports. */,
+        "skipLibCheck": true /* Skip type checking all .d.ts files. */,
+        "emitDecoratorMetadata": true,
+        "experimentalDecorators": true,
         "esModuleInterop": true,
-        "forceConsistentCasingInFileNames": true,
+        "noImplicitAny": true,
+        "outDir": "dist",
         "strict": true,
-        "noUnusedLocals": true,
-        "noUnusedParameters": true,
-        "noImplicitReturns": true,
-        "noFallthroughCasesInSwitch": true,
         "resolveJsonModule": true,
-        "skipLibCheck": true,
+        "allowJs": true,
+        "sourceMap": true,
+        "baseUrl": ".",
+        "paths": {
+            "@/*": [
+                "src/*"
+            ],
+            "@/server/*": [
+                "src/server/*"
+            ],
+            "@/types/*": [
+                "src/server/types/*"
+            ],
+            "@/utils/*": [
+                "src/utils/*"
+            ],
+            "@/routes/*": [
+                "src/server/routes/*"
+            ],
+            "@/controllers/*": [
+                "src/server/controllers/*"
+            ],
+            "@/server/utils/*": [
+                "src/server/utils/*"
+            ],
+            "@/config/*": [
+                "src/server/config/*"
+            ],
+        },
     },
-    "include": [
-        "src/**/*.ts"
-    ],
-    "exclude": [
-        "node_modules",
-        "public"
-    ]
 }
