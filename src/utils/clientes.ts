@@ -33,3 +33,30 @@ export const getClientById = async (id_string: string): Promise<Cliente> => {
 
   return data as Cliente;
 };
+
+export const deleteCliente = async (id_string: string): Promise<Cliente> => {
+  if (!id_string) {
+    throw new Error('El id es requerido');
+  }
+  const id = parseInt(id_string);
+  const { data, error } = await supabase().from('clientes').delete().eq('id', id).single();
+  if (error) {
+    console.error('Error deleting cliente:', error.message);
+    throw error;
+  }
+
+  return data as Cliente;
+};
+
+export const updateCliente = async (cliente: Cliente): Promise<Cliente> => {
+  if (!cliente.id) {
+    throw new Error('El id es requerido');
+  }
+  const { data, error } = await supabase().from('clientes').update(cliente).eq('id', cliente.id).single();
+  if (error) {
+    console.error('Error updating cliente:', error.message);
+    throw error;
+  }
+
+  return data as Cliente;
+};
