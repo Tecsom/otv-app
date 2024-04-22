@@ -1,7 +1,5 @@
 import { AddressInfo } from 'net';
 import { BrowserWindow, app } from 'electron';
-import electronReload from 'electron-reload';
-electronReload(__dirname, {});
 import express from 'express';
 import path from 'path';
 import bodyParser from 'body-parser';
