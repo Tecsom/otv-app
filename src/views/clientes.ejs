@@ -1,0 +1,121 @@
+<style>
+  #clientes_table .btn {
+    box-shadow: none !important;
+  }
+
+  #clientes_table td {
+    cursor: pointer !important;
+  }
+
+  .pac-container {
+    background-color: #fff;
+    z-index: 20;
+    position: fixed;
+    display: inline-block;
+    float: left;
+  }
+
+  .modal {
+    z-index: 20;
+  }
+
+  .modal-backdrop {
+    z-index: 10;
+  }
+</style>
+<div class="container-xxl flex-grow-1 container-p-y">
+  <div class="d-flex justify-content-between align-items-center pb-2">
+    <h4 class="mb-0">Clientes</h4>
+    <button
+      id="newClientButton"
+      type="button"
+      class="btn btn-primary"
+      data-bs-toggle="modal"
+      data-bs-target="#newClient">
+      <span class="tf-icons ti-xs ti ti-plus me-1"> </span>Nuevo
+    </button>
+  </div>
+
+  <!-- Clientes List Table -->
+  <div class="card">
+    <div class="card-header">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="d-flex justify-content-between align-items-center row gap-3 gap-md-0">
+            <div class="col-md-4">
+              <input class="form-control" type="search" placeholder="Buscar cliente ..." id="search-client" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-datatable table-responsive border-top">
+      <!--TABLE HERE-->
+      <table id="clientes_table" class="table table-striped w-100 card-table table-hover"></table>
+    </div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade modal_cliente" id="newClient" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel1">Nuevo cliente</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row g-3">
+          <div class="col-md-7">
+            <label for="nombre_cliente" class="form-label required">Nombre</label>
+            <input type="text" id="nombre_cliente" class="form-control" />
+          </div>
+          <div class="col-md-5">
+            <label for="rfc_cliente" class="form-label required">RFC</label>
+            <input type="text" id="rfc_cliente" class="form-control" />
+          </div>
+          <div class="col-md-12">
+            <label for="domicilio_cliente" class="form-label">Domicilio</label>
+            <input type="text" id="domicilio_cliente" class="form-control" />
+          </div>
+          <div class="col-md-12">
+            <div id="map" class="w-100 h-px-250 d-none"></div>
+          </div>
+          <div class="col-md-6">
+            <label for="estado_cliente" class="form-label">Estado</label>
+            <select name="estado_cliente" id="estado_cliente" class="form-select">
+              <option value="">Selecciona estado</option>
+            </select>
+          </div>
+          <div class="col-md-6">
+            <label for="ciudad_cliente" class="form-label">Ciudad</label>
+            <select name="ciudad_cliente" id="ciudad_cliente" class="form-select" disabled>
+              <option value="">Selecciona ciudad</option>
+            </select>
+          </div>
+          <div class="col-md-12">
+            <label for="email_cliente" class="form-label">Correo electrónico</label>
+            <input class="form-control" type="email" id="email_cliente" />
+          </div>
+          <div class="col-md-6">
+            <label for="telefono_cliente" class="form-label">Teléfono</label>
+            <input class="form-control" type="tel" id="telefono_cliente" />
+          </div>
+          <div class="col-md-6">
+            <label for="celular_cliente" class="form-label">Celular</label>
+            <input class="form-control" type="tel" id="celular_cliente" />
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="confirm_new_client" type="button" class="btn btn-success">Crear cliente</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const clientes = JSON.parse('<%- JSON.stringify(clientes) %>');
+  console.log(clientes);
+</script>
+<script src="/scripts/clientes/clientes.js" type="module"></script>

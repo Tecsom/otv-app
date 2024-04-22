@@ -9,5 +9,5 @@ export const renderLoginPage = (_: Request, res: Response) =>
 export const renderClientsPage = async (_: Request, res: Response) => {
   const clientes = await getClientes();
 
-  res.render('Clients.ejs', { clientes });
+  res.render('clientes.ejs', { clientes });
 };
