@@ -8,7 +8,8 @@ export class Scanner {
     if (this.port) throw new Error('Port already connected');
     this.port = new SerialPort({
       baudRate: 9600,
-      path
+      path,
+      autoOpen: false
     });
 
     return this.port;
@@ -33,6 +34,15 @@ export class Scanner {
     await this.port.write(data);
 
     return this.port;
+  }
+
+  async read(): Promise<string> {
+    if (!this.port) throw new Error('Port not connected');
+    return new Promise((resolve, reject) => {
+      this.port?.once('data', data => {
+        resolve(data.toString());
+      });
+    });
   }
 
   scan(callback: (data: string) => void): void {

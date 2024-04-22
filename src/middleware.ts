@@ -32,8 +32,8 @@ const apiMiddleware = async (req: Request, res: Response, next: NextFunction) =>
   const authToken = cookies.accessToken;
 
   if (req.url.includes('auth')) return next();
-
-  if (!authToken) {
-    return res.status(401).json({ message: 'Unauthorized' });
-  }
+  next();
+  // if (!authToken) {
+  //   return res.status(401).json({ message: 'Unauthorized' });
+  // }
 };

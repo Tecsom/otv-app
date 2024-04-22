@@ -1,15 +1,14 @@
 import { AddressInfo } from 'net';
 import { BrowserWindow, app } from 'electron';
-import electronReload from 'electron-reload'
-electronReload(__dirname, {})
+import electronReload from 'electron-reload';
+electronReload(__dirname, {});
 import express from 'express';
 import path from 'path';
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 import expressLayouts from 'express-ejs-layouts';
 import middleware from './middleware';
-import { viewsRoutes } from './routes/index';
-
+import { viewsRoutes, apiRoutes } from './routes/index';
 
 const appExpress = express();
 
@@ -26,7 +25,7 @@ appExpress.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 
 appExpress.use(middleware);
 appExpress.use('/', viewsRoutes);
-// appExpress.use('/api', apiRoutes);
+appExpress.use('/api', apiRoutes);
 
 const PORT = 3000;
 const server = appExpress.listen(PORT, async () => {
