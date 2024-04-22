@@ -45,7 +45,7 @@ export class Scanner {
     });
   }
 
-  scan(callback: (data: string) => void): void {
+  scan(callback: (data: Buffer) => void): void {
     if (!this.port) throw new Error('Port not connected');
 
     this.port.on('data', data => {

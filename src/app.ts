@@ -6,9 +6,12 @@ import express from 'express';
 import path from 'path';
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
+import serverHttp from 'http';
+import { Server } from 'socket.io';
 import expressLayouts from 'express-ejs-layouts';
 import middleware from './middleware';
 import { viewsRoutes, apiRoutes } from './routes/index';
+import { initScanner } from './controllers/scanner';
 
 const appExpress = express();
 
@@ -31,6 +34,10 @@ const PORT = 3000;
 const server = appExpress.listen(PORT, async () => {
   console.log('Server up running in p:', PORT);
 });
+
+const io = new Server(server);
+
+globalThis.socket_io = io;
 
 declare global {
   var globalWindow: any;
@@ -61,6 +68,7 @@ function createWindow() {
   mainWindow.show();
 
   globalThis.globalWindow = mainWindow;
+  initScanner();
 }
 
 app.whenReady().then(() => {

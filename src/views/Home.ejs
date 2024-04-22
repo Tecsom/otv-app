@@ -37,4 +37,12 @@
         console.error(error);
       });
   });
+
+  const socket = io.connect();
+
+  socket.on('scanner', data => {
+    $('#container-scanning').addClass('d-none');
+    $('#container-result').removeClass('d-none');
+    $('#result-scan').text(data);
+  });
 </script>
