@@ -38,6 +38,7 @@ export const deleteCliente = async (id_string: string): Promise<Cliente> => {
   if (!id_string) {
     throw new Error('El id es requerido');
   }
+  console.log(id_string);
   const id = parseInt(id_string);
   const { data, error } = await supabase().from('clientes').delete().eq('id', id).single();
   if (error) {
@@ -48,15 +49,17 @@ export const deleteCliente = async (id_string: string): Promise<Cliente> => {
   return data as Cliente;
 };
 
-export const updateCliente = async (cliente: Cliente): Promise<Cliente> => {
-  if (!cliente.id) {
+export const updateCliente = async (cliente: Cliente, id_string: string): Promise<Cliente> => {
+  if (!id_string) {
     throw new Error('El id es requerido');
   }
-  const { data, error } = await supabase().from('clientes').update(cliente).eq('id', cliente.id).single();
+  const id = parseInt(id_string);
+  const { data, error } = await supabase().from('clientes').update(cliente).eq('id', id).select('*').single();
   if (error) {
     console.error('Error updating cliente:', error.message);
     throw error;
   }
+  console.log({ data });
 
   return data as Cliente;
 };

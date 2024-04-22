@@ -42,11 +42,13 @@ export const deleteClienteC = async (req: Request, res: Response) => {
 };
 
 export const updateClienteC = async (req: Request, res: Response) => {
+  const id = req.params.id;
   const clienteData = req.body as Cliente;
   try {
-    const cliente = await updateCliente(clienteData);
-    res.status(200).json({ message: 'Cliente actualizado', status: true, data: cliente });
+    const cliente = await updateCliente(clienteData, id);
+    res.status(200).json(cliente);
   } catch (error: any) {
+    console.log({ error });
     res.status(500).json(error);
   }
 };
