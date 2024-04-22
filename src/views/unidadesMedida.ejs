@@ -29,8 +29,8 @@
 		<h4 class="mb-0">
 			  Unidades de medida
 		</h4>
-		<button id="newClientButton" type="button" class="btn btn-primary" data-bs-toggle="modal"
-			data-bs-target="#newClient">
+		<button id="newMedidaButton" type="button" class="btn btn-primary" data-bs-toggle="modal"
+			data-bs-target="#newMedida">
 			<span class="tf-icons ti-xs ti ti-plus me-1">
 			</span>Nueva
 		</button>
@@ -86,34 +86,31 @@
 </div>
 
 <!-- Modal Nuevo cliente -->
-<div class="modal fade modal_cliente" id="newClient" tabindex="-1" aria-hidden="true">
+<div class="modal fade modal_cliente" id="newMedida" tabindex="-1" aria-hidden="true">
 	<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
 		<div class="modal-content">
 			<div class="modal-header">
-				<h5 class="modal-title" id="exampleModalLabel1">Nuevo cliente</h5>
+				<h5 class="modal-title" id="exampleModalLabel1">Agregar unidad de medida</h5>
 				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 			</div>
 			<div class="modal-body">
 				<div class="row g-3">
-					<div class="col-md-7">
-						<label for="nombre_cliente" class="form-label required">Nombre</label>
-						<input type="text" id="nombre_cliente" class="form-control">
+					<div class="col-md-6">
+						<label for="name_unidad_medida" class="form-label required">Nombre</label>
+						<input type="text" id="name_unidad_medida" placeholder="Metros cuadrados" class="form-control">
 					</div>
-					<div class="col-md-5">
-						<label for="rfc_cliente" class="form-label required">RFC</label>
-						<input type="text" id="rfc_cliente" class="form-control">
+					<div class="col-md-6">
+						<label for="short_name_unidad_medida" class="form-label required">Abreviación</label>
+						<input type="text" id="short_name_unidad_medida" class="form-control" placeholder="M2">
 					</div>
-					<div class="col-md-12">
-						<label for="domicilio_cliente" class="form-label">Domicilio</label>
-						<input type="text" id="domicilio_cliente" class="form-control">
-					</div>
+					
 				</div>
 			</div>
 			<div class="modal-footer">
-				<button id="confirm_new_client" type="button" class="btn btn-success">Crear cliente</button>
+				<button id="confirm_new_medida" type="button" class="btn btn-success">Crear</button>
 			</div>
 		</div>
 	</div>
 </div>
 
-<script src="/public/scripts/unidades.js"></script>
+<script src="/public/scripts/unidades.js" type="module"></script>

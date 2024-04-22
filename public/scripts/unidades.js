@@ -1,3 +1,5 @@
+import { fetchData , loadingButton} from '/public/scripts/helpers.js';
+
 const badge_dot = `<div class="d-flex align-items-center lh-1 me-3">
                         <span class="badge badge-dot bg-primary me-1"></span> App
                     </div>`;
@@ -27,12 +29,8 @@ $('#unidades_medida_table').DataTable({
     },
     columns: [
         { orderable: false, defaultContent: '', width: '50px' },
-        { data: 'Nombre', title: 'Cliente', orderable: true, className: 'non-selectable' },
-        { data: 'Direccion', title: 'Domicilio', orderable: true, className: 'non-selectable' },
-        { data: 'Ubicación', title: 'Ubicación', orderable: false, className: 'non-selectable' },
-        { data: 'Telefono', title: 'Teléfono', orderable: false, className: 'non-selectable' },
-        { data: 'Status', title: 'Estado', orderable: false, defaultContent: '<span class="badge bg-label-success">Activo</span>', className: 'non-selectable' },
-        { data: 'created_on', title: 'Método', orderable: false, defaultContent: badge_dot, className: 'non-selectable' },
+        { data: 'name', title: 'Nombre', orderable: true, className: 'non-selectable' },
+        { data: 'short_name', title: 'Abreviatura', orderable: true, className: 'non-selectable' },
         //{ title: '', orderable: false, defaultContent: options, className: 'non-selectable' },
     ],
     dom: 'rtp',
@@ -43,6 +41,67 @@ $('#unidades_medida_table').DataTable({
     order: [[0, "asc"]],
     searching: true
 });
+
+
+$('#confirm_new_medida').on('click',function(){
+    addMedida()
+})
+
+//fetchData  (endpoint, method = 'GET', body)
+
+async function getMedidas(){
+    const medidas_list = (await fetchData('/unidades/medida','GET')).data;
+   
+    $('#unidades_medida_table').DataTable().clear();
+    $('#unidades_medida_table').DataTable().rows.add(medidas_list).draw();
+    
+}
+
+async function addMedida(){
+    const $btn = new loadingButton('#confirm_new_medida')
+
+    $btn.start()
+
+    const $name = $('#name_unidad_medida')
+    const $shortName = $('#short_name_unidad_medida')
+
+    const newMedida = {
+        name: $name.val().trim(),
+        short_name:$shortName.val().trim()
+    } 
+
+    try{
+        const result = (await fetchData('/unidades/medida/new','POST',newMedida));
+        console.log({result})
+        if(!result.status){
+            toastr.error("Ocurrió un error")
+            $btn.stop()
+            return
+        }
+        toastr.success("Creado con éxito")
+            await getMedidas()
+            $name.val('')
+            $shortName.val('')
+            $('#newMedida').modal('hide')
+    }catch(e){
+        toastr.error("No se pudo crear")
+        console.log(e)
+    }
+    $btn.stop()
+    
+    
+
+}
+
+function deleteMedida(){
+
+}
+
+
+getMedidas()
+
+
+
 /*
 $('#unidades_medida_table').DataTable().on('select', function (e, dt, type, indexes) {
 
