@@ -20,7 +20,7 @@ const appExpress = express();
 appExpress.set('view engine', 'ejs');
 appExpress.set('layout', path.resolve(__dirname, 'layouts/main.ejs'));
 appExpress.set('views', path.resolve(__dirname, 'views'));
-appExpress.use('/', express.static('public'));
+appExpress.use(express.static(path.join(__dirname, '../')));
 
 appExpress.use(expressLayouts);
 appExpress.use(cookieParser());

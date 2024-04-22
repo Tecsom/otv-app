@@ -1,4 +1,4 @@
-import { fetchData, loadingButton } from '/scripts/helpers.js';
+import { fetchData, loadingButton } from '/public/scripts/helpers.js';
 
 const clientes_table = $('#clientes_table').DataTable({
   select: {
