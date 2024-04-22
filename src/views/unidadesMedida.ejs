@@ -1,9 +1,9 @@
 <style>
-	#clientes_table .btn {
+	#unidades_medida_table .btn {
 		box-shadow: none !important;
 	}
 
-	#clientes_table td {
+	#unidades_medida_table td {
 		cursor: pointer !important;
 	}
 
@@ -27,16 +27,16 @@
 
 	<div class="d-flex justify-content-between align-items-center pb-2">
 		<h4 class="mb-0">
-			Clientes
+			  Unidades de medida
 		</h4>
 		<button id="newClientButton" type="button" class="btn btn-primary" data-bs-toggle="modal"
 			data-bs-target="#newClient">
 			<span class="tf-icons ti-xs ti ti-plus me-1">
-			</span>Nuevo
+			</span>Nueva
 		</button>
 	</div>
 
-	<!-- Clientes List Table -->
+	<!-- unidades_medida List Table -->
 	<div class="card">
 		<div class="card-header">
 			<div class="row">
@@ -79,13 +79,13 @@
 		</div>
 		<div class="card-datatable table-responsive border-top">
 			<!--TABLE HERE-->
-			<table id="clientes_table" class="table table-striped w-100 card-table table-hover"></table>
+			<table id="unidades_medida_table" class="table table-striped w-100 card-table table-hover"></table>
 		</div>
 	</div>
 
 </div>
 
-<!-- Modal -->
+<!-- Modal Nuevo cliente -->
 <div class="modal fade modal_cliente" id="newClient" tabindex="-1" aria-hidden="true">
 	<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
 		<div class="modal-content">
@@ -144,103 +144,4 @@
 	</div>
 </div>
 
-<!-- Modal -->
-<div class="modal fade" id="combineClients" tabindex="-1" aria-hidden="true">
-	<div class="modal-dialog modal-dialog-scrollable modal-dialog-centered" role="document">
-		<div class="modal-content">
-			<div class="modal-header">
-				<h5 class="modal-title" id="exampleModalLabel1">Combinar clientes</h5>
-				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-			</div>
-			<div class="modal-body">
-				<div class="nav-align-top">
-					<ul class="nav nav-tabs" role="tablist">
-						<li class="nav-item flex-grow-1">
-							<button type="button" class="nav-link active" role="tab" data-bs-toggle="tab"
-								data-bs-target="#navs-top-home" aria-controls="navs-top-home" aria-selected="true">Información</button>
-						</li>
-						<li class="nav-item flex-grow-1">
-							<button type="button" class="nav-link" role="tab" data-bs-toggle="tab" data-bs-target="#navs-top-profile"
-								aria-controls="navs-top-profile" aria-selected="false">Revisión</button>
-						</li>
-					</ul>
-					<div class="tab-content p-0 pt-3">
-						<div class="tab-pane fade show active" id="navs-top-home" role="tabpanel">
-							<div class="row g-3">
-								<div class="col-md-12">
-									<p class="text-muted">Indica la información del nuevo cliente donde se combinarán
-										todos los seleccionados.</p>
-								</div>
-								<div class="col-md-7">
-									<label for="nombre_cliente_merge" class="form-label required">Nombre</label>
-									<input type="text" id="nombre_cliente_merge" class="form-control">
-								</div>
-								<div class="col-md-5">
-									<label for="rfc_cliente_merge" class="form-label required">RFC</label>
-									<input type="text" id="rfc_cliente_merge" class="form-control">
-								</div>
-								<div class="col-md-12">
-									<label for="domicilio_cliente_merge" class="form-label">Domicilio</label>
-									<input type="text" id="domicilio_cliente_merge" class="form-control">
-								</div>
-								<div class="col-md-6">
-									<label for="estado_cliente_merge" class="form-label">Estado</label>
-									<select name="estado_cliente_merge" id="estado_cliente_merge" class="form-select">
-										<option value="">Selecciona un estado</option>
-									</select>
-								</div>
-								<div class="col-md-6">
-									<label for="ciudad_cliente_merge" class="form-label">Ciudad</label>
-									<select name="ciudad_cliente_merge" id="ciudad_cliente_merge" class="form-select" disabled>
-										<option value="">Selecciona una ciudad</option>
-									</select>
-								</div>
-								<div class="col-md-6">
-									<label for="email_cliente_merge" class="form-label">Correo electrónico</label>
-									<input class="form-control" type="email" id="email_cliente_merge" />
-								</div>
-								<div class="col-md-6">
-									<label for="phone_cliente_merge" class="form-label">Teléfono</label>
-									<input class="form-control" type="tel" id="phone_cliente_merge" />
-								</div>
-								<div class="col-md-6">
-									<label for="celular_client_merge" class="form-label">Celular</label>
-									<input class="form-control" type="tel" id="celular_client_merge" />
-								</div>
-							</div>
-						</div>
-						<div class="tab-pane fade" id="navs-top-profile" role="tabpanel">
-							<p class="text-muted">Revisa en esta sección todos los clientes y equipos que serán
-								combinados, puedes visualizar los archivos dando clic en el PDF.</p>
-							<div id="clientes_tree"></div>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div class="modal-footer d-block">
-				<div class="form-check">
-					<input class="form-check-input" type="checkbox" value="" id="accept_merge1" />
-					<label class="form-check-label" for="acept_merge">
-						Acepto que esta acción es permanente y no se puede deshacer.
-					</label>
-				</div>
-				<div class="form-check mt-1">
-					<input class="form-check-input" type="checkbox" value="" id="accept_merge2" />
-					<label class="form-check-label" for="acept_merge">
-						Acepto que al seleccionar esta opción, todos los equipos y clientes se asignarán automáticamente
-						a un solo cliente.
-					</label>
-				</div>
-				<div class="form-check mt-1">
-					<input class="form-check-input" type="checkbox" value="" id="accept_merge3" />
-					<label class="form-check-label" for="acept_merge">
-						Confirmo que he revisado todos los equipos y clientes que serán combinados.
-					</label>
-				</div>
-				<div class="d-flex justify-content-end mt-3">
-					<button id="confirm_combine_clients" type="button" class="btn btn-success">Combinar</button>
-				</div>
-			</div>
-		</div>
-	</div>
-</div>
+<script src="/public/scripts/unidades.js"></script>
