@@ -1,5 +1,10 @@
 import { Request, Response } from 'express';
 import { Scanner } from '../utils/scanner';
+import io from 'socket.io';
+
+declare global {
+  var socket_io: io.Server;
+}
 
 export const listPorts = async (req: Request, res: Response) => {
   try {
