@@ -11,11 +11,11 @@ export const getUnidadesMedida = async (): Promise<UnidadMedida[]> => {
 };
 
 
-export const createMedida = async (medida: UnidadMedida) => {
+export const createMedida = async (medida: UnidadMedida): Promise<UnidadMedida> => {
 
     const { data, error } = await supabase().from('unidades_medida').insert(medida).single();
     if (error) {
-        console.error('Error creating cliente:', error.message);
+        console.error('Error creating medida:', error.message);
         throw error;
     }
 

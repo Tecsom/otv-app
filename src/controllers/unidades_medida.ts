@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { getUnidadesMedida, createMedida } from './../utils/unidades_medida';
 import { UnidadMedida } from '@/types/unidades_medida';
 
-export const getUMedida = async (req: Request, res: Response) => {
+export const getUMedida = async (_: Request, res: Response) => {
     try {
         const unidadesDeMedida = await getUnidadesMedida();
         res.status(200).json(unidadesDeMedida);

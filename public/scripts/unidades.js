@@ -65,16 +65,26 @@ async function addMedida(){
     const $name = $('#name_unidad_medida')
     const $shortName = $('#short_name_unidad_medida')
 
+    const name = $name.val().trim()
+    const short_name = $shortName.val().trim()
+   
+
+    if(!name || !short_name){
+        toastr.error("Es necesario llenar todos los campos", "Ocurrió un error")
+        $btn.stop()
+
+        return
+    }
+
     const newMedida = {
-        name: $name.val().trim(),
-        short_name:$shortName.val().trim()
+        name,
+        short_name
     } 
 
     try{
         const result = (await fetchData('/unidades/medida/new','POST',newMedida));
-        console.log({result})
         if(!result.status){
-            toastr.error("Ocurrió un error")
+            toastr.error("Uno o más campos duplicados","Ocurrió un error")
             $btn.stop()
             return
         }
@@ -85,10 +95,8 @@ async function addMedida(){
             $('#newMedida').modal('hide')
     }catch(e){
         toastr.error("No se pudo crear")
-        console.log(e)
     }
     $btn.stop()
-    
     
 
 }
