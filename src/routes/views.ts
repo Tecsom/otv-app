@@ -6,6 +6,6 @@ const router = express.Router();
 router.get('/', renderHomePage);
 router.get('/login', renderLoginPage);
 router.get('/clientes', renderClientsPage);
-router.get('/catalogo/interno', renderCatalogoInterno)
+router.get('/catalogo', renderCatalogoInterno)
 
 export default router;
