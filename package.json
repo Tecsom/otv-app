@@ -5,7 +5,8 @@
   "type": "commonjs",
   "license": "Commercial",
   "scripts": {
-    "dev": "rm -rf dist && tsc && rm -rf dist/public && cp -r public dist/public && cp -r src/views dist/src/views && cp -r src/layouts dist/src/layouts && electron dist/src/app.js"
+    "dev": "rm -rf dist && tsc && rm -rf dist/public && cp -r public dist/public && cp -r src/views dist/src/views && cp -r src/layouts dist/src/layouts && electron dist/src/app.js",
+    "dev2": "rm -rf dist && tsc && rm -rf dist/public && cp -r public dist/public && cp -r src/views dist/src/views && cp -r src/layouts dist/src/layouts && concurrently 'tsc -w' 'electron dist/src/app.js'"
   },
   "dependencies": {
     "@form-validation/bundle": "^2.4.0",
@@ -57,6 +58,7 @@
     "dotenv": "^16.4.5",
     "dropzone": "~5.9.3",
     "ejs": "^3.1.9",
+    "electron-reload": "^2.0.0-alpha.1",
     "express": "^4.19.2",
     "express-ejs-layouts": "^2.5.1",
     "flag-icons": "^7.1.0",
@@ -112,6 +114,7 @@
     "babel-loader": "~9.1.3",
     "browser-sync": "^3.0.2",
     "color-support": "~1.1.3",
+    "concurrently": "^8.2.2",
     "css-loader": "~6.9.0",
     "deepmerge": "~4.3.1",
     "del": "~6.1.1",
