@@ -1,0 +1,235 @@
+<style>
+	#clientes_table .btn {
+		box-shadow: none !important;
+	}
+
+	#clientes_table td {
+		cursor: pointer !important;
+	}
+
+	.chat-history-body {
+		height: 100% !important;
+	}
+
+	.not-map-available {
+		mix-blend-mode: multiply;
+		display: block;
+		object-fit: contain;
+		width: 100%;
+	}
+
+	.pac-container {
+		background-color: #FFF;
+		z-index: 20;
+		position: fixed;
+		display: inline-block;
+		float: left;
+	}
+
+	.modal {
+		z-index: 20;
+	}
+
+	.modal-backdrop {
+		z-index: 10;
+	}
+</style>
+<link rel="stylesheet" href="/public/assets/vendor/css/pages/app-chat.css">
+
+<div class="container-xxl flex-grow-1 container-p-y">
+
+	<div class="d-flex justify-content-between align-items-center pb-2 border-bottom">
+		<div class="d-flex align-items-center gap-2">
+			<h4 class="mb-0">
+				<span class="text-muted fw-light"><a class="text-muted" href="/clientes">Clientes</a> /</span>
+				<span id="client_name_title">
+					<%= clientData.nombre %>
+				</span>
+			</h4>
+			<!-- <span id="client-status"
+				class="badge <%= clientData.meta?.status === 'archived' ?  'bg-label-warning' : 'bg-label-success' %>">
+				<%= clientData.meta?.status=="archived" ? "Archivado" : "Activo" %>
+			</span> -->
+		</div>
+
+		<div>
+			<button class="btn btn-label-primary dropdown-toggle" type="button" id="dropdownMenuButton"
+				data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+				Opciones
+			</button>
+			<ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
+				<li><a id="edit_client" data-bs-toggle="modal" data-bs-target="#modal_edit_client"
+						class="dropdown-item d-flex align-items-center gap-2" href="javascript:void(0);"><i
+							class="ti ti-edit ti-xs me-1"></i>Editar</a></li>
+					<li>
+						<a id="deleteClient" class="dropdown-item d-flex align-items-center gap-2"
+							href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#delete_client_modal"><i
+								class="ti ti-trash-x ti-xs me-1"></i>Eliminar</a>
+					</li>
+			</ul>
+		</div>
+	</div>
+
+	<div class="row pt-3">
+		<!-- User Sidebar -->
+		<div class="col-xl-4 col-lg-5 col-md-5 order-1 order-md-0">
+			<!-- User Card -->
+			<div class="card mb-4">
+				<div class="card-body">
+					<p class="small text-uppercase text-muted mb-0">Detalles</p>
+					<div class="info-container pt-2">
+						<ul class="list-unstyled">
+							<li class="mb-2">
+								<span class="fw-medium me-1">Nombre:</span>
+								<span id="details_client_name">
+									<%= clientData.nombre %>
+								</span>
+							</li>
+							<li class="mb-2">
+								<span class="fw-medium me-1">Identificador:</span>
+								<span id="details_client_rfc">
+									<%= clientData.identificador ? clientData.identificador : "No asignado" %>
+
+								</span>
+							</li>
+							<li class="mb-2 pt-1">
+								<span class="fw-medium me-1">Domicilio:</span>
+								<span id="details_client_adress">
+									<%= clientData.domicilio %>
+								</span>
+							</li>
+							<li class="mb-2 pt-1">
+								<span class="fw-medium me-1">Estado:</span>
+								<span id="details_client_state">
+									<%= clientData.estado ? clientData.estado : "No asignado" %>
+								</span>
+							</li>
+							<li class="mb-2 pt-1">
+								<span class="fw-medium me-1">Ciudad:</span>
+								<span id="details_client_city">
+									<%= clientData.ciudad ? clientData.ciudad: "No asignado" %>
+								</span>
+							</li>
+							<li class="mb-2 pt-1">
+								<span class="fw-medium me-1">Teléfono:</span>
+								<span id="details_client_phone">
+									<%= clientData.telefono ? clientData.telefono : "No asignado" %>
+								</span>
+							</li>
+							<li class="mb-2 pt-1">
+								<span class="fw-medium me-1">Celular:</span>
+								<span id="details_client_cellphone">
+									<%= clientData.celular ? clientData.celular : "No asignado" %>
+								</span>
+							</li>
+							<li class="mb-2 pt-1">
+								<span class="fw-medium me-1">Correo:</span>
+								<span id="details_client_mail">
+									<%= clientData.correo ? clientData.correo : "No asignado" %>
+								</span>
+							</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!--/ User Content -->
+</div>
+
+
+</div>
+
+
+<!-- Modal editar cliente -->
+<div class="modal fade modal_cliente" id="modal_edit_client" tabindex="-1" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal_cliente" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title">Editar cliente</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+				<div class="row g-3">
+					<div class="col-md-7">
+						<label for="nombre_cliente" class="form-label required">Nombre</label>
+						<input type="text" id="nombre_cliente" class="form-control">
+					</div>
+					<div class="col-md-5">
+						<label for="rfc_cliente" class="form-label required">RFC</label>
+						<input type="text" id="rfc_cliente" class="form-control">
+					</div>
+					<div class="col-md-12">
+						<label for="domicilio_cliente" class="form-label">Domicilio</label>
+						<input type="text" id="domicilio_cliente" class="form-control">
+					</div>
+					<div class="col-md-12">
+						<div id="map" class="w-100 h-px-250 d-none"></div>
+					</div>
+					<div class="col-md-6">
+						<label for="estado_cliente" class="form-label">Estado</label>
+						<select name="estado_cliente" id="estado_cliente" class="form-select">
+							<option value="">Selecciona estado</option>
+						</select>
+					</div>
+					<div class="col-md-6">
+						<label for="ciudad_cliente" class="form-label">Ciudad</label>
+						<select name="ciudad_cliente" id="ciudad_cliente" class="form-select" disabled>
+							<option value="">Selecciona ciudad</option>
+						</select>
+					</div>
+					<div class="col-md-12">
+						<label for="email_cliente" class="form-label">Correo electrónico</label>
+						<input class="form-control" type="email" id="email_cliente" />
+					</div>
+					<div class="col-md-6">
+						<label for="telefono_cliente" class="form-label">Teléfono</label>
+						<input class="form-control" type="tel" id="telefono_cliente" />
+					</div>
+					<div class="col-md-6">
+						<label for="celular_cliente" class="form-label">Celular</label>
+						<input class="form-control" type="tel" id="celular_cliente" />
+					</div>
+
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button id="confirm_edit_client" type="button" class="btn btn-success">Guardar</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!--! MODAL DELETE CLIENTE -->
+<div class="modal fade" id="delete_client_modal" tabindex="-1" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-sm" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="exampleModalLabel1">Eliminar cliente</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+				<div class="row">
+					<div class="col-12">
+						<p>Esta acción es irreversible</p>
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer d-block">
+				<div class="d-flex justify-content-end">
+					<button id="delete_client_btn" class="btn btn-danger">Eliminar</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+
+<script>
+	var clientData = JSON.parse('<%- JSON.stringify(clientData) %>')
+
+
+</script>
+
+<script src="/public/scripts/clientes/cliente.js" type="module"></script>

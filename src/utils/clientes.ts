@@ -19,3 +19,17 @@ export const createCliente = async (cliente: Cliente): Promise<Cliente> => {
 
   return data as Cliente;
 };
+
+export const getClientById = async (id_string: string): Promise<Cliente> => {
+  if (!id_string) {
+    throw new Error('El id es requerido');
+  }
+  const id = parseInt(id_string);
+  const { data, error } = await supabase().from('clientes').select('*').eq('id', id).single();
+  if (error) {
+    console.error('Error fetching cliente:', error.message);
+    throw error;
+  }
+
+  return data as Cliente;
+};

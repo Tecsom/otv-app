@@ -44,6 +44,7 @@ $('#create-client-form').on('submit', async function (event) {
   if (res.status === true) {
     await searchClientes('');
     $('#create-client-modal').modal('hide');
+    $('#create-client-form').trigger('reset');
     toastr.success('Cliente creado exitosamente', 'Cliente creado');
     return;
   }
