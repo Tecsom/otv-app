@@ -21,6 +21,16 @@ export const addNewMedida = async (req: Request, res: Response) => {
     }
 };
 
+export const editMedida = async (req: Request, res: Response) => {
+    try {
+        const newMedida = req.body as UnidadMedida;
+        const result = await createMedida(newMedida);
+        res.status(200).json(result);
+    } catch (error) {
+        res.status(500).json(error);
+    }
+}
+
 // export const createClienteC = async (req: Request, res: Response) => {
 //   const clienteData = req.body as Cliente;
 //   try {
