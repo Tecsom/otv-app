@@ -22,27 +22,15 @@
             "@/*": [
                 "src/*"
             ],
-            "@/server/*": [
-                "src/server/*"
-            ],
-            "@/types/*": [
-                "src/server/types/*"
-            ],
-            "@/utils/*": [
-                "src/utils/*"
-            ],
-            "@/routes/*": [
-                "src/server/routes/*"
+            "@/config/*": [
+                "src/config/*"
             ],
             "@/controllers/*": [
-                "src/server/controllers/*"
+                "src/controllers/*"
             ],
-            "@/server/utils/*": [
-                "src/server/utils/*"
-            ],
-            "@/config/*": [
-                "src/server/config/*"
+            "@/types/*": [
+                "src/types/*"
             ],
         },
-    },
+    }
 }
