@@ -3,3 +3,9 @@ export type FileUpld = {
   data: string;
   type: string;
 };
+
+export type ApiResult = {
+  data: unknown,
+  message: string,
+  status: boolean
+}

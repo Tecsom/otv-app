@@ -14,6 +14,12 @@ export const getOrdenes = async (req: Request, res: Response) => {
 export const newOrder = async (req: Request, res: Response) => {
     const payload: CreateOrderDataModel = req.body
 
-    const createResult = await createNewOrder(payload)
+    try {
+        const createResult = await createNewOrder(payload);
+
+        res.status(200).json(createResult)
+    } catch (e) {
+        res.status(500).json(e)
+    }
 
 }

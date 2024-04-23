@@ -1,26 +1,6 @@
 //ordenes_table
 import { fetchData, loadingButton } from '/public/scripts/helpers.js';
 
-const clientes_table = $('#ordenes_table').DataTable({
-    select: {
-      style: 'multi',
-      selector: 'td:not(.non-selectable)'
-    },
-    columns: [
-      { data: 'folio_id', title: 'Folio identificador', orderable: true, className: 'non-selectable' },
-      { data: 'Folio', title: 'Folio (Automático)', orderable: true, className: 'non-selectable' },
-      { data: 'cliente', title: 'Cliente', orderable: false, className: 'non-selectable' }
-    ],
-    dom: 'rtp',
-    paging: false,
-    language: {
-      url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/es-ES.json'
-    },
-    order: [[0, 'asc']],
-    searching: true
-  });
-
-
  
 $(()=>{
 
@@ -77,41 +57,90 @@ async function init(){
   }
 
   $('#create_order').on('submit',async function(e){
+
     e.preventDefault()
     const $folio = $('#folio_id')
     const $date = $('#date_picker')
     const $client = $('#select_client')
 
     const folio = $folio.val().trim()
-    const date = dateToTimestamo($date.val())
+    const dateval = $date.val()
     const client_id = $client.val()
 
-    if(!client_id || !date || !folio){
+    if(!client_id || !dateval || !folio){
       toastr.error("Completa los campos para crear órden", "Formulario incompleto")
       return
     }
+    
+    const date = new Date(dateval)
+    date.setUTCHours(date.getUTCHours() - 6)
+    const isoStringDate = date.toISOString();
 
     const result = await fetchData('/ordenes/create','POST',{
       folio_id:folio, 
-      delivery_date: date, 
+      delivery_date: isoStringDate, 
       client_id: client_id
     })
-    
-    if(!result.status){
-      toastr.error("Ocurró un error")
+   
+    const apiResult = result.data
+  
+    if(!apiResult.status){
+      toastr.error(apiResult.data.details,"Ocurró un error")
       return
     }
     toastr.success("Creado con éxito")
-    console.log("enviar formulario")
-
-
-console.log({folio,date,client_id})
+    $folio.val('')
+    $date.val('')
+    $client.val('')
+    $('#create-client-modal').modal('hide')
   })
+
+
+  async function getOrdenes(){
+    const ordenes = await fetchData('/ordenes','GET') //api/ordenes
+    if(!ordenes.status){
+      toastr.error("Ocurrio un error al obtener órdenes")
+      return
+    }
+    return ordenes.data
+  }
+
+
+  async function loadOrdenes(){
+    const $container = $('#ordenes_compra_container')
+    $container.empty();
+    const ordenes = await getOrdenes()
+    ordenes.forEach(orden => {
+      var $newdiv1 = $( `
+        <div id="order_${orden.id}">
+          <label>Folio Asignado</label>
+          <p>${addLeadingZeros(orden.unique_folio, 6)}</p>
+          <label>Cliente</label>
+          <p>${orden.client_id}</p>
+          <label>Folio</label>
+          <p>${orden.folio_id}</p>
+          <label>Fecha de entrega</label>
+          <p>${orden.delivery_date}</p>          
+        </div>
+      `)
+      $newdiv1.data({data:orden})
+
+      $container.append($newdiv1)
+      $container.append('<hr>')
+    });
+
+  }
+
+  loadOrdenes()
+
   
-  function dateToTimestamo(fechaString) {
-    const fecha = new Date(fechaString);
+  function addLeadingZeros(number, length) {
+    // Convert number to string
+    let numStr = String(number);
 
-    const timestamp = fecha.getTime();
+    // Calculate how many zeros to add
+    let zerosToAdd = Math.max(length - numStr.length, 0);
 
-    return timestamp;
+    // Return the number padded with leading zeros
+    return '0'.repeat(zerosToAdd) + numStr;
 }
