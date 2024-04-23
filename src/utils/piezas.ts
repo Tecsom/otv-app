@@ -1,6 +1,7 @@
 import supabase from '@/config/supabase';
 import type { CreateRevision, Pieza, Revision } from '@/types/piezas';
 import { deleteFile, uploadFile } from './storage';
+import { FileUpld } from '@/types/types';
 
 export const getPiezas = async (): Promise<Pieza[]> => {
   const { data: piezas, error } = await supabase().from('piezas').select('*');
@@ -67,14 +68,14 @@ export const uploadRevisionFiles = async (
   cliente_id: number,
   pieza_id: number,
   revision_id: number,
-  files: any[]
+  files: FileUpld[]
 ): Promise<boolean> => {
   let uploaded = [];
   try {
     for (const file of files) {
-      const file_path = `${cliente_id}/${pieza_id}/${revision_id}/${'test.png'}`;
-      await uploadFile(file_path, 'clientes', file.dataURL?.split('base64,')[1], {
-        contentType: 'image/png'
+      const file_path = `${cliente_id}/${pieza_id}/${revision_id}/${file.name}`;
+      await uploadFile(file_path, 'clientes', file.data, {
+        contentType: file.type
       });
       uploaded.push(file_path);
     }

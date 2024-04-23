@@ -2,7 +2,6 @@ import supabase from '@/config/supabase';
 import { decode } from 'base64-arraybuffer';
 
 export const uploadFile = async (path: string, bucket: string, file: string, object: object): Promise<boolean> => {
-  console.log(file);
   const { data, error } = await supabase().storage.from(bucket).upload(path, decode(file), object);
   if (error) {
     console.error('Error uploading file:', error.message);

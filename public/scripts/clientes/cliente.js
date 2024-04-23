@@ -21,14 +21,16 @@ const dropzoneImages = new Dropzone('#dpz-imgs', {
   parallelUploads: 1,
   maxFilesize: 5,
   addRemoveLinks: true,
-  url: '/'
+  url: '/',
+  acceptedFiles: 'image/*'
 });
 const dropzoneFiles = new Dropzone('#dpz-files', {
   previewTemplate: previewTemplate,
   parallelUploads: 1,
   maxFilesize: 5,
   addRemoveLinks: true,
-  url: '/'
+  url: '/',
+  acceptedFiles: 'application/pdf'
 });
 
 $('#edit-client-form').on('submit', async function (e) {
@@ -135,24 +137,23 @@ $('#crear-pieza-form').on('submit', async function (e) {
   const accepted_images = dropzoneImages.getAcceptedFiles();
   const accepted_files = dropzoneFiles.getAcceptedFiles();
 
-  data.imagenes = accepted_images;
-  data.archivos = accepted_files;
+  data.imagenes = accepted_images.map(file => ({
+    data: file.dataURL?.split('base64,')[1] ?? file.dataURL,
+    name: file.name,
+    type: file.type
+  }));
 
-  // data.imagenes = accepted_images.map(file => ({
-  //   data: file.dataURL,
-  //   name: file.name
-  // }));
+  data.archivos = [];
 
-  // data.archivos = [];
+  for (const file of accepted_files) {
+    const b_64 = await processFile(file);
 
-  // for (const file of accepted_files) {
-  //   const b_64 = await processFile(file);
-
-  //   data.archivos.push({
-  //     data: b_64,
-  //     name: file.name
-  //   });
-  // }
+    data.archivos.push({
+      data: b_64?.split('base64,')[1] ?? b_64,
+      name: file.name,
+      type: file.type
+    });
+  }
 
   const res = await fetchData(`/clientes/${cliente_id}/piezas`, 'POST', data);
   button.stop();
