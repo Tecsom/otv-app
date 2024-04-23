@@ -107,8 +107,7 @@ $('#create_order').on('submit', async function (e) {
   $date.val('');
   $client.val('');
   $('#create_orden_compra').modal('hide');
-  await loadOrdenes()
-  
+  await loadOrdenes();
 });
 
 async function getOrdenes() {
@@ -126,22 +125,27 @@ async function loadOrdenes() {
   const ordenes = await getOrdenes();
   console.log({ ordenes });
   ordenes.forEach(orden => {
+    console.log({ orden });
     var $newdiv1 = $(`
-        <div class="order_container_child" id="order_${orden.id}">
-          <label>Folio Asignado</label>
-          <p>${addLeadingZeros(orden.unique_folio, 6)}</p>
-          <label>Cliente</label>
-          <p>${orden.clientes?.nombre ?? '<span style="color:Red">Sin Cliente</span>'}</p>
-          <label>Folio</label>
-          <p>${orden.folio_id}</p>
-          <label>Fecha de entrega</label>
-          <p>${isoDateToFormatted(orden.delivery_date)}</p>          
+        <div class="row">
+          <div class="col-md-12">
+            <div class="order_container_child" id="order_${orden.unique_folio}">
+              <label>Folio Asignado</label>
+              <p>${addLeadingZeros(orden.unique_folio, 6)}</p>
+              <label>Cliente</label>
+              <p>${orden.clientes?.nombre ?? '<span style="color:Red">Sin Cliente</span>'}</p>
+              <label>Folio</label>
+              <p>${orden.folio_id}</p>
+              <label>Fecha de entrega</label>
+              <p>${isoDateToFormatted(orden.delivery_date)}</p>          
+            </div>
+          </div>
         </div>
+        
       `);
     $newdiv1.data({ data: orden });
 
     $container.append($newdiv1);
-    $container.append('<hr>');
   });
 }
 
