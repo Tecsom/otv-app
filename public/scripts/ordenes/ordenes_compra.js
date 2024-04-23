@@ -127,20 +127,27 @@ async function loadOrdenes() {
   ordenes.forEach(orden => {
     console.log({ orden });
     var $newdiv1 = $(`
-        <div class="row">
-          <div class="col-md-12">
-            <div class="order_container_child" id="order_${orden.unique_folio}">
+        <div class="order_container_child card-body border-bottom" id="order_${orden.unique_folio}">
+          <div class="row g-2">
+            <div class="col-md-12">
               <label>Folio Asignado</label>
-              <p>${addLeadingZeros(orden.unique_folio, 6)}</p>
+              <p class="mb-0">${addLeadingZeros(orden.unique_folio, 6)}</p>
+            </div>
+            <div class="col-md-12">
               <label>Cliente</label>
-              <p>${orden.clientes?.nombre ?? '<span style="color:Red">Sin Cliente</span>'}</p>
+              <p class="mb-0">${orden.clientes?.nombre ?? '<span style="color:Red">Sin Cliente</span>'}</p>
+            </div>
+            <div class="col-md-12">
               <label>Folio</label>
-              <p>${orden.folio_id}</p>
+              <p class="mb-0">${orden.folio_id}</p>
+            </div>
+            <div class="col-md-12">
               <label>Fecha de entrega</label>
-              <p>${isoDateToFormatted(orden.delivery_date)}</p>          
+              <p class="mb-0">${isoDateToFormatted(orden.delivery_date)}</p>          
             </div>
           </div>
         </div>
+        
         
       `);
     $newdiv1.data({ data: orden });
