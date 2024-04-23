@@ -1,6 +1,3 @@
-import { Cliente } from "./clientes"
-
-
 export interface CreateOrderDataModel {
     folio_id: string
     client_id: string
@@ -8,5 +5,5 @@ export interface CreateOrderDataModel {
 }
 
 export interface OrdenCompra extends CreateOrderDataModel {
-    folio: string
+    unique_folio: string
 }
