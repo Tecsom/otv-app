@@ -23,24 +23,6 @@ const select_revision = $('#select_revision').select2({
   placeholder: 'Selecciona una revisión'
 });
 
-const piezas_table = $('#piezas_table').DataTable({
-  select: {
-    style: 'multi',
-    selector: 'td:not(.non-selectable)'
-  },
-  columns: [
-    { data: 'numero_parte', title: 'Número de parte', orderable: true, className: 'non-selectable' },
-    { data: 'descripcion', title: 'Descripción', orderable: true, className: 'non-selectable' }
-  ],
-  dom: 'rtp',
-  paging: false,
-  language: {
-    url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/es-ES.json'
-  },
-  order: [[0, 'asc']],
-  searching: true
-});
-
 const dropzoneImages = new Dropzone('#dpz-imgs', {
   previewTemplate: previewTemplate,
   parallelUploads: 1,
@@ -206,11 +188,6 @@ $('#crear-pieza-form').on('submit', async function (e) {
   toastr.error(res.message, 'Error creando la pieza');
 });
 
-$(document).ready(function () {
-  piezas_table.clear().draw();
-  piezas_table.rows.add(piezasData).draw();
-});
-
 piezas_table.on('click', 'tbody tr', async function () {
   const data = piezas_table.row(this).data();
   const { cliente_id, id } = data;
@@ -265,17 +242,6 @@ $('#editar-pieza-form').on('submit', async function (e) {
   }
   toastr.error(res.message, 'Error actualizando la pieza');
 });
-
-const updatePiezasTable = async () => {
-  const { id: cliente_id } = clientData;
-  const res = await fetchData(`/clientes/${cliente_id}/piezas`);
-  if (!res.status) {
-    toastr.error(res.message, 'Error obteniendo las piezas');
-    return;
-  }
-  piezas_table.clear().draw();
-  piezas_table.rows.add(res.data).draw();
-};
 
 $('#btn_edit_revision').on('click', async function () {
   const pieza_id = $('#offcanvas_pieza').attr('data-pieza-id');
