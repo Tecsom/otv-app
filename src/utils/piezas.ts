@@ -1,6 +1,6 @@
 import supabase from '@/config/supabase';
 import type { CreateRevision, Pieza, Revision } from '@/types/piezas';
-import { deleteFile, uploadFile } from './storage';
+import { deleteFile, deleteFolder, uploadFile } from './storage';
 import { FileUpld } from '@/types/types';
 import { generateSigRevision } from '@/helpers/misc';
 
@@ -132,4 +132,13 @@ export const getNextNombreRevision = async (piezaId: number): Promise<string> =>
   const lastRevisionName = lastRevision.nombre;
   const next = generateSigRevision(lastRevisionName);
   return next;
+};
+
+export const deleteRevision = async (id: number): Promise<number> => {
+  const { error } = await supabase().from('revisiones').delete().eq('id', id);
+  if (error) {
+    console.error('Error deleting revision:', error.message);
+    throw error;
+  }
+  return id;
 };

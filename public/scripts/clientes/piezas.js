@@ -152,7 +152,9 @@ const processFile = file => {
 
 $('#crear-pieza-form').on('submit', async function (e) {
   e.preventDefault();
-  const button = new loadingButton($('#confirm_create_pieza'));
+  const confirm_button = $('#confirm_new_pieza');
+  if (confirm_button.hasClass('disabled')) return;
+  const button = new loadingButton(confirm_button);
   button.start();
   const cliente_id = clientData.id;
   const formData = new FormData(this);
@@ -184,6 +186,11 @@ $('#crear-pieza-form').on('submit', async function (e) {
     await piezas_table.ajax.reload();
     toastr.success(res.message, 'Pieza creada');
     $('#modal_create_pieza').modal('hide');
+    $(this).trigger('reset');
+
+    dropzoneImages.removeAllFiles();
+    dropzoneFiles.removeAllFiles();
+
     return;
   }
   toastr.error(res.message, 'Error creando la pieza');
@@ -218,10 +225,11 @@ const addRevisionesToSelect = (revisiones = []) => {
 
 $('#btn_edit_pieza').on('click', async function () {
   const pieza_data = $('#offcanvas_pieza').data('pieza_data');
-  const { numero_parte, descripcion, estado } = pieza_data;
-
+  const { numero_parte, descripcion, estado, costo_venta, costo_produccion } = pieza_data;
   $('#numero_parte_editar').val(numero_parte);
   $('#descripcion_editar').val(descripcion);
+  $('#costo_venta_editar').val(costo_venta);
+  $('#costo_produccion_editar').val(costo_produccion);
 
   $('#modal_editar_pieza').modal('show');
   $('#offcanvas_pieza').offcanvas('hide');
@@ -372,4 +380,46 @@ $('#switch-input-estado').on('change', function (event) {
   const checked = $(this).prop('checked');
   if (checked) $('#edit-pieza-label-estado').text('Activo');
   else $('#edit-pieza-label-estado').text('No activo');
+});
+
+$('#btn-open-delete-pieza').on('click', function () {
+  $('#delete_pieza_modal').modal('show');
+  $('#offcanvas_pieza').offcanvas('hide');
+});
+
+$('#delete_pieza_btn').on('click', async function () {
+  const button = new loadingButton($('#delete_pieza_btn'));
+  button.start();
+  const pieza_id = $('#offcanvas_pieza').attr('data-pieza-id');
+  const res = await fetchData(`/clientes/${clientData.id}/piezas/${pieza_id}`, 'DELETE');
+  button.stop();
+  if (res.status === true) {
+    await piezas_table.ajax.reload();
+    toastr.success(res.message, 'Pieza eliminada');
+    $('#delete_pieza_modal').modal('hide');
+    return;
+  }
+  toastr.error(res.message, 'Error eliminando la pieza');
+});
+
+$('#btn-delete-revision').on('click', async function () {
+  $('#delete_revision_modal').modal('show');
+  $('#offcanvas_pieza').offcanvas('hide');
+});
+
+$('#delete_revision_btn').on('click', async function () {
+  const button = new loadingButton($('#delete_revision_btn'));
+  button.start();
+  const pieza_id = $('#offcanvas_pieza').attr('data-pieza-id');
+  const revision_id = select_revision.val();
+  console.log(`/clientes/${clientData.id}/piezas/${pieza_id}/revisiones/${revision_id}`);
+  const res = await fetchData(`/clientes/${clientData.id}/piezas/${pieza_id}/revisiones/${revision_id}`, 'DELETE');
+  button.stop();
+  if (res.status === true) {
+    await piezas_table.ajax.reload();
+    toastr.success(res.message, 'Revisión eliminada');
+    $('#delete_revision_modal').modal('hide');
+    return;
+  }
+  toastr.error(res.message, 'Error eliminando la revisión');
 });

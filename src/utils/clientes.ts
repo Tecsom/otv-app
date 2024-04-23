@@ -1,5 +1,6 @@
 import { Cliente } from '@/types/clientes';
 import supabase from '@/config/supabase';
+import { deleteFolder } from './storage';
 
 export const getClientes = async (): Promise<Cliente[]> => {
   const { data: clientes, error } = await supabase().from('clientes').select('*');
@@ -38,13 +39,15 @@ export const deleteCliente = async (id_string: string): Promise<Cliente> => {
   if (!id_string) {
     throw new Error('El id es requerido');
   }
-  console.log(id_string);
+
   const id = parseInt(id_string);
   const { data, error } = await supabase().from('clientes').delete().eq('id', id).single();
   if (error) {
     console.error('Error deleting cliente:', error.message);
     throw error;
   }
+
+  await deleteFolder('clientes', id_string);
 
   return data as Cliente;
 };

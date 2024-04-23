@@ -11,7 +11,9 @@ import {
   getFilesByRevisionC,
   updateRevisionC,
   createRevisionC,
-  getPiezasTableC
+  getPiezasTableC,
+  deletePiezaC,
+  deleteRevisionC
 } from '../controllers/clientes';
 
 const router = express.Router();
@@ -27,10 +29,12 @@ router.get('/clientes/:id/piezas/paging', getPiezasTableC);
 router.post('/clientes/:id/piezas', createPiezaC);
 router.put('/clientes/:cliente_id/piezas', editPiezaC);
 router.get('/clientes/:cliente_id/piezas/:pieza_id/revisiones', getRevisionesByPiezaC);
+router.delete('/clientes/:cliente_id/piezas/:pieza_id', deletePiezaC);
 
 //Revisiones
 router.get('/clientes/:cliente_id/piezas/:pieza_id/revisiones/:revision_id/files', getFilesByRevisionC);
 router.put('/clientes/:cliente_id/piezas/:pieza_id/revisiones/:revision_id', updateRevisionC);
 router.post('/clientes/:cliente_id/piezas/:pieza_id/revisiones', createRevisionC);
+router.delete('/clientes/:cliente_id/piezas/:pieza_id/revisiones/:revision_id', deleteRevisionC);
 
 export default router;

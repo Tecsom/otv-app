@@ -93,3 +93,21 @@ $('#delete_client_btn').on('click', async function () {
   toastr.error(res.message, 'Error eliminando el cliente');
   button.stop();
 });
+
+$('#form_qr_config').on('submit', async function (e) {
+  e.preventDefault();
+  const button = new loadingButton($('#save_qr_config'));
+  button.start();
+  const formData = new FormData(this);
+  let data = Object.fromEntries(formData);
+  console.log({ cs: data.code_string });
+  data.code_string = (JSON.parse(data?.code_string) ?? []).map(code => code.value).join(', ');
+
+  const res = await fetchData(`/clientes/${clientData.id}`, 'PUT', data);
+  button.stop();
+  if (res.status === true) {
+    toastr.success(res.message, 'Configuración guardada');
+    return;
+  }
+  toastr.error(res.message, 'Error guardando la configuración');
+});

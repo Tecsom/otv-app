@@ -4,13 +4,15 @@ import type { Cliente } from '@/types/clientes';
 import {
   createPieza,
   createRevision,
+  deletePieza,
+  deleteRevision,
   getNextNombreRevision,
   getPiezas,
   getRevisionesByPiezaId,
   updatePieza,
   uploadRevisionFiles
 } from '@/utils/piezas';
-import { deleteFile, deleteFolder, getFilePublicURL, getFilesByPath } from '@/utils/storage';
+import { deleteFolder, getFilePublicURL, getFilesByPath } from '@/utils/storage';
 import { QueryTable } from '@/types/types';
 import supabase from '@/config/supabase';
 
@@ -205,7 +207,6 @@ export const getPiezasTableC = async (req: Request, res: Response) => {
   const client_id = req.query.cliente_id;
 
   const { length, draw, search, start } = queries as QueryTable;
-  // console.log({ length, draw, search, start });
 
   const { error, data } = await supabase().rpc('searchpiezas', {
     search: search.value,
@@ -219,7 +220,6 @@ export const getPiezasTableC = async (req: Request, res: Response) => {
     limitperpage: parseInt(length ?? '10'),
     client: parseInt(client_id as string)
   });
-  console.log({ data_totals, error_totals });
 
   res.status(200).json({
     draw,
@@ -227,4 +227,25 @@ export const getPiezasTableC = async (req: Request, res: Response) => {
     recordsFiltered: data_totals[0].total_records,
     data
   });
+};
+
+export const deletePiezaC = async (req: Request, res: Response) => {
+  const { cliente_id, pieza_id } = req.params;
+  try {
+    await deleteFolder('clientes', `${cliente_id}/${pieza_id}`);
+    await deletePieza(parseInt(pieza_id));
+    res.status(200).json({});
+  } catch (error: any) {
+    res.status(500).json(error);
+  }
+};
+export const deleteRevisionC = async (req: Request, res: Response) => {
+  const { cliente_id, pieza_id, revision_id } = req.params;
+  try {
+    await deleteFolder('clientes', `${cliente_id}/${pieza_id}/${revision_id}`);
+    await deleteRevision(parseInt(revision_id));
+    await res.status(200).json({});
+  } catch (error: any) {
+    res.status(500).json(error);
+  }
 };

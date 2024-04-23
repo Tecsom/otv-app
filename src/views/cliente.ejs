@@ -254,24 +254,27 @@
             </div>
             <div class="tab-pane fade" id="navs_stats" role="tabpanel">Estadísticas</div>
             <div class="tab-pane fade" id="navs_settings" role="tabpanel">
-              <div class="row g-3">
+              <form id="form_qr_config" class="row g-3">
                 <div class="col-md-12">
                   <label for="TagifyCustomInlineSuggestion" class="form-label">Formato de código</label>
                   <input
                     id="TagifyCustomInlineSuggestion"
-                    name="TagifyCustomInlineSuggestion"
+                    name="code_string"
                     class="form-control"
                     placeholder="Selecciona una opción o escribe un valor"
-                    value="ID orden de compra, Número de parte, # Consecutivo de la pieza por OC" />
+                    value="<%= clientData.code_string %>" />
                 </div>
                 <div class="col-md-12">
                   <label for="select2Basic" class="form-label">Tipo de código</label>
-                  <select id="select2Basic" class="select2 form-select" data-allow-clear="true">
-                    <option value="QR">Código QR</option>
-                    <option value="DM">Código DataMatrix</option>
+                  <select name="code_type" id="select2Basic" class="select2 form-select" data-allow-clear="true">
+                    <option value="QR" <%= clientData.code_type === "QR" ? "selected":"" %>>Código QR</option>
+                    <option value="DM" <%= clientData.code_type === "DM" ? "selected":"" %>>Código DataMatrix</option>
                   </select>
                 </div>
-              </div>
+                <div class="col-md-12 d-flex justify-content-end">
+                  <button type="submit" class="btn btn-success">Guardar</button>
+                </div>
+              </form>
             </div>
           </div>
         </div>
@@ -359,6 +362,52 @@
     </div>
   </div>
 </div>
+<!--! MODAL DELETE pieza -->
+<div class="modal fade" id="delete_pieza_modal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-sm" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel1">Eliminar Pieza</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-12">
+            <p>Esta acción es irreversible</p>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer d-block">
+        <div class="d-flex justify-content-end">
+          <button id="delete_pieza_btn" class="btn btn-danger">Eliminar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!--! MODAL DELETE revisión -->
+<div class="modal fade" id="delete_revision_modal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-sm" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel1">Eliminar revisión</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-12">
+            <p>Esta acción es irreversible</p>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer d-block">
+        <div class="d-flex justify-content-end">
+          <button id="delete_revision_btn" class="btn btn-danger">Eliminar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- MODAL ADD PIEZA -->
 <div class="modal fade modal_cliente" id="modal_create_pieza" tabindex="-1" aria-hidden="true">
@@ -378,6 +427,14 @@
             <label for="descripcion" class="form-label required">Descripción de la pieza</label>
             <input type="text" id="descripcion" name="descripcion" class="form-control" />
           </div>
+          <div class="col-md-6">
+            <label for="costo_produccion" class="form-label required">Costo de producción</label>
+            <input type="text" id="costo_produccion" name="costo_produccion" class="form-control" />
+          </div>
+          <div class="col-md-6">
+            <label for="costo_venta" class="form-label required">Costo de venta</label>
+            <input type="number" min="0" id="costo_venta" name="costo_venta" class="form-control" />
+          </div>
           <div class="col-md-12">
             <label for="input-imgs" class="form-label required">Imágenes</label>
             <div id="dpz-imgs" class="fallback dropzone">
@@ -393,7 +450,7 @@
         </form>
       </div>
       <div class="modal-footer">
-        <button id="confirm_edit_client" type="submit" form="crear-pieza-form" class="btn btn-success">Guardar</button>
+        <button id="confirm_new_pieza" type="submit" form="crear-pieza-form" class="btn btn-success">Guardar</button>
       </div>
     </div>
   </div>
@@ -416,6 +473,14 @@
           <div class="col-md-12">
             <label for="descripcion_editar" class="form-label required">Descripción de la pieza</label>
             <input type="text" id="descripcion_editar" name="descripcion" class="form-control" />
+          </div>
+          <div class="col-md-6">
+            <label for="costo_produccion_editar" class="form-label required">Costo de producción</label>
+            <input type="text" id="costo_produccion_editar" name="costo_produccion" class="form-control" />
+          </div>
+          <div class="col-md-6">
+            <label for="costo_venta_editar" class="form-label required">Costo de venta</label>
+            <input type="number" min="0" id="costo_venta_editar" name="costo_venta" class="form-control" />
           </div>
           <div class="col-md-12">
             <div>
@@ -530,7 +595,7 @@
           <button id="btn_edit_pieza" type="button" class="btn btn-label-secondary flex-grow-1">
             <span class="tf-icons ti-xs ti ti-edit me-1"></span>Editar pieza
           </button>
-          <button type="button" class="btn btn-icon btn-label-danger">
+          <button type="button" class="btn btn-icon btn-label-danger" id="btn-open-delete-pieza">
             <span class="ti ti-trash-x"></span>
           </button>
         </div>
@@ -559,7 +624,7 @@
               <button id="btn_edit_revision" type="button" class="btn btn-label-secondary flex-grow-1">
                 <span class="tf-icons ti-xs ti ti-edit me-1"></span>Editar revisión
               </button>
-              <button type="button" class="btn btn-icon btn-label-danger">
+              <button id="btn-delete-revision" type="button" class="btn btn-icon btn-label-danger">
                 <span class="ti ti-trash-x"></span>
               </button>
             </div>
