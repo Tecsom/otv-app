@@ -217,7 +217,7 @@
                       type="button"
                       class="btn btn-primary waves-effect waves-light"
                       data-bs-toggle="modal"
-                      data-bs-target="#newClient">
+                      data-bs-target="#modal_crear_pieza">
                       <span class="tf-icons ti-xs ti ti-plus me-1"></span>Nuevo
                     </button>
                   </div>
@@ -315,6 +315,44 @@
         <div class="d-flex justify-content-end">
           <button id="delete_client_btn" class="btn btn-danger">Eliminar</button>
         </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!--! MODAL ADD PIEZA -->
+<div class="modal fade modal_cliente" id="modal_crear_pieza" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal_cliente" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Crear pieza</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="crear-pieza-form" class="row g-3">
+          <div class="col-md-12">
+            <label for="numero_parte" class="form-label required">Número de parte</label>
+            <input type="text" id="numero_parte" name="numero_parte" class="form-control" />
+          </div>
+          <div class="col-md-12">
+            <label for="descripcion" class="form-label required">Descripción</label>
+            <input type="text" id="descripcion" name="descripcion" class="form-control" />
+          </div>
+          <div class="col-md-12">
+            <label for="input-imgs" class="form-label required">Imágenes</label>
+            <div id="dpz-imgs" class="fallback dropzone">
+              <input id="input-imgs" type="file" multiple />
+            </div>
+          </div>
+          <div class="col-md-12">
+            <label for="input-files" class="form-label required">Archivos</label>
+            <div id="dpz-files" class="fallback dropzone">
+              <input id="input-files" type="file" multiple />
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button id="confirm_edit_client" type="submit" form="crear-pieza-form" class="btn btn-success">Guardar</button>
       </div>
     </div>
   </div>

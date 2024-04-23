@@ -15,12 +15,18 @@
 .dropzone.dz-drag-hover .dz-message {
   opacity: 0.5;
 }
-
+.dz-button {
+  background-color: transparent;
+  border: none;
+}
+.dropzone input[type='file'] {
+  display: none;
+}
 .dz-message {
   font-size: 1.625rem;
 }
 .dz-message:before {
-  content: "";
+  content: '';
   border-radius: 8px;
   position: absolute;
   top: 5rem;
@@ -147,7 +153,8 @@
   padding: 0.375rem 0;
   font-size: 0.75rem;
 }
-.dz-remove:hover, .dz-remove:focus {
+.dz-remove:hover,
+.dz-remove:focus {
   text-decoration: none;
   border-top-color: transparent;
 }
@@ -191,7 +198,7 @@
   overflow: auto;
   font-weight: 500;
 }
-[dir=rtl] .dz-error-message {
+[dir='rtl'] .dz-error-message {
   text-align: right;
 }
 
@@ -212,7 +219,7 @@
   display: block;
 }
 
-[dir=rtl] .dz-hidden-input {
+[dir='rtl'] .dz-hidden-input {
   left: auto !important;
   right: 0 !important;
 }
@@ -250,7 +257,8 @@
   border-bottom-right-radius: calc(0.375rem - 1px);
   border-bottom-left-radius: calc(0.375rem - 1px);
 }
-.light-style .dz-remove:hover, .light-style .dz-remove:focus {
+.light-style .dz-remove:hover,
+.light-style .dz-remove:focus {
   color: #6f6b7d;
   background: rgba(75, 70, 92, 0.05);
 }
@@ -319,7 +327,8 @@
   border-bottom-right-radius: calc(0.375rem - 1px);
   border-bottom-left-radius: calc(0.375rem - 1px);
 }
-.dark-style .dz-remove:hover, .dark-style .dz-remove:focus {
+.dark-style .dz-remove:hover,
+.dark-style .dz-remove:focus {
   color: #b6bee3;
   background: rgba(255, 255, 255, 0.8);
 }

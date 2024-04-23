@@ -7,8 +7,13 @@ export type Pieza = {
 };
 
 export type Revision = {
-  id: number;
-  created_at: string;
+  id: number | undefined;
+  created_at: string | undefined;
   pieza_id: number;
   nombre: string;
+};
+
+export type CreateRevision = {
+  nombre: string;
+  pieza_id: number;
 };

@@ -1,4 +1,35 @@
 import { fetchData, loadingButton } from '/public/scripts/helpers.js';
+const previewTemplate = `<div class="dz-preview dz-file-preview">
+<div class="dz-details">
+  <div class="dz-thumbnail">
+    <img data-dz-thumbnail>
+    <span class="dz-nopreview">No preview</span>
+    <div class="dz-success-mark"></div>
+    <div class="dz-error-mark"></div>
+    <div class="dz-error-message"><span data-dz-errormessage></span></div>
+    <div class="progress">
+      <div class="progress-bar progress-bar-primary" role="progressbar" aria-valuemin="0" aria-valuemax="100" data-dz-uploadprogress></div>
+    </div>
+  </div>
+  <div class="dz-filename" data-dz-name></div>
+  <div class="dz-size" data-dz-size></div>
+</div>
+</div>`;
+
+const dropzoneImages = new Dropzone('#dpz-imgs', {
+  previewTemplate: previewTemplate,
+  parallelUploads: 1,
+  maxFilesize: 5,
+  addRemoveLinks: true,
+  url: '/'
+});
+const dropzoneFiles = new Dropzone('#dpz-files', {
+  previewTemplate: previewTemplate,
+  parallelUploads: 1,
+  maxFilesize: 5,
+  addRemoveLinks: true,
+  url: '/'
+});
 
 $('#edit-client-form').on('submit', async function (e) {
   e.preventDefault();
@@ -57,3 +88,52 @@ $('#delete_client_btn').on('click', async function () {
   toastr.error(res.message, 'Error eliminando el cliente');
   button.stop();
 });
+
+$('#crear-pieza-form').on('submit', async function (e) {
+  e.preventDefault();
+  const button = new loadingButton($('#confirm_create_pieza'));
+  button.start();
+  const cliente_id = clientData.id;
+  const formData = new FormData(this);
+  let data = Object.fromEntries(formData);
+  const accepted_images = dropzoneImages.getAcceptedFiles();
+  const accepted_files = dropzoneFiles.getAcceptedFiles();
+
+  data.imagenes = accepted_images;
+  data.archivos = accepted_files;
+
+  // data.imagenes = accepted_images.map(file => ({
+  //   data: file.dataURL,
+  //   name: file.name
+  // }));
+
+  // data.archivos = [];
+
+  // for (const file of accepted_files) {
+  //   const b_64 = await processFile(file);
+
+  //   data.archivos.push({
+  //     data: b_64,
+  //     name: file.name
+  //   });
+  // }
+
+  const res = await fetchData(`/clientes/${cliente_id}/piezas`, 'POST', data);
+  button.stop();
+  if (res.status === true) {
+    toastr.success(res.message, 'Pieza creada');
+    $('#modal_create_pieza').modal('hide');
+    return;
+  }
+  toastr.error(res.message, 'Error creando la pieza');
+});
+
+const processFile = file => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = function (event) {
+      resolve(event.target.result);
+    };
+    reader.readAsDataURL(file);
+  });
+};

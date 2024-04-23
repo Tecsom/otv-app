@@ -1,6 +1,6 @@
 import supabase from '@/config/supabase';
-import type { Pieza, Revision } from '@/types/piezas';
-import { deleteFile } from './storage';
+import type { CreateRevision, Pieza, Revision } from '@/types/piezas';
+import { deleteFile, uploadFile } from './storage';
 
 export const getPiezas = async (): Promise<Pieza[]> => {
   const { data: piezas, error } = await supabase().from('piezas').select('*');
@@ -21,7 +21,7 @@ export const getPiezaById = async (id: number): Promise<Pieza | null> => {
 };
 
 export const createPieza = async (pieza: Pieza): Promise<Pieza | null> => {
-  const { data, error } = await supabase().from('piezas').insert(pieza).single();
+  const { data, error } = await supabase().from('piezas').insert(pieza).select('*').single();
   if (error) {
     console.error('Error creating pieza:', error.message);
     throw error;
@@ -30,7 +30,7 @@ export const createPieza = async (pieza: Pieza): Promise<Pieza | null> => {
 };
 
 export const updatePieza = async (id: number, pieza: Pieza): Promise<Pieza | null> => {
-  const { data, error } = await supabase().from('piezas').update(pieza).eq('id', id).single();
+  const { data, error } = await supabase().from('piezas').update(pieza).eq('id', id).select('*').single();
   if (error) {
     console.error('Error updating pieza:', error.message);
     throw error;
@@ -47,10 +47,14 @@ export const deletePieza = async (id: number): Promise<number> => {
   return id;
 };
 
-export const createRevision = async (piezaId: number, revision: Revision): Promise<Revision | null> => {
+export const createRevision = async (
+  piezaId: number | undefined,
+  revision: CreateRevision
+): Promise<Revision | null> => {
   const { data, error } = await supabase()
     .from('revisiones')
     .insert({ ...revision, pieza_id: piezaId })
+    .select('*')
     .single();
   if (error) {
     console.error('Error creating revision:', error.message);
@@ -63,19 +67,16 @@ export const uploadRevisionFiles = async (
   cliente_id: number,
   pieza_id: number,
   revision_id: number,
-  files: File[]
+  files: any[]
 ): Promise<boolean> => {
   let uploaded = [];
   try {
     for (const file of files) {
-      const { error } = await supabase()
-        .storage.from('clientes')
-        .upload(`${cliente_id}/${pieza_id}/${revision_id}/${file.name}`, file);
-      if (error) {
-        console.error('Error uploading file:', error.message);
-        throw error;
-      }
-      uploaded.push(file.name);
+      const file_path = `${cliente_id}/${pieza_id}/${revision_id}/${'test.png'}`;
+      await uploadFile(file_path, 'clientes', file.dataURL?.split('base64,')[1], {
+        contentType: 'image/png'
+      });
+      uploaded.push(file_path);
     }
     return true;
   } catch (error: any) {
