@@ -2,6 +2,7 @@ import supabase from '@/config/supabase';
 import type { CreateRevision, Pieza, Revision } from '@/types/piezas';
 import { deleteFile, uploadFile } from './storage';
 import { FileUpld } from '@/types/types';
+import { generateSigRevision } from '@/helpers/misc';
 
 export const getPiezas = async (cliente_id: number): Promise<Pieza[]> => {
   const { data: piezas, error } = await supabase().from('piezas').select('*').eq('cliente_id', cliente_id);
@@ -111,4 +112,24 @@ export const getRevisionesByPiezaId = async (piezaId: number): Promise<Revision[
     throw error;
   }
   return (revisiones ?? []) as Revision[];
+};
+
+export const getNextNombreRevision = async (piezaId: number): Promise<string> => {
+  //get the last revision by the column created_at
+  const { data: revisiones, error } = await supabase()
+    .from('revisiones')
+    .select('*')
+    .eq('pieza_id', piezaId)
+    .order('created_at', { ascending: false })
+    .limit(1);
+  if (error) {
+    console.error('Error fetching revisiones:', error.message);
+    throw error;
+  }
+  if (!revisiones || revisiones.length === 0) return '-';
+
+  const lastRevision = revisiones[0];
+  const lastRevisionName = lastRevision.nombre;
+  const next = generateSigRevision(lastRevisionName);
+  return next;
 };

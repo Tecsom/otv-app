@@ -4,6 +4,7 @@ import type { Cliente } from '@/types/clientes';
 import {
   createPieza,
   createRevision,
+  getNextNombreRevision,
   getPiezas,
   getRevisionesByPiezaId,
   updatePieza,
@@ -174,6 +175,24 @@ export const updateRevisionC = async (req: Request, res: Response) => {
     await uploadRevisionFiles(parseInt(cliente_id), parseInt(pieza_id), parseInt(revision_id), archivos);
     await uploadRevisionFiles(parseInt(cliente_id), parseInt(pieza_id), parseInt(revision_id), imagenes);
     res.status(200).json({});
+  } catch (error: any) {
+    res.status(500).json(error);
+  }
+};
+
+export const createRevisionC = async (req: Request, res: Response) => {
+  const { cliente_id, pieza_id } = req.params;
+  const body_data = req.body;
+  let { archivos, imagenes, ...revisionData } = body_data;
+  try {
+    const nombre = await getNextNombreRevision(parseInt(pieza_id));
+    revisionData.nombre = nombre;
+    const revision = await createRevision(parseInt(pieza_id), revisionData);
+    if (!revision?.id) throw new Error('Error al crear la revisión');
+    await uploadRevisionFiles(parseInt(cliente_id), parseInt(pieza_id), revision.id, archivos);
+    await uploadRevisionFiles(parseInt(cliente_id), parseInt(pieza_id), revision.id, imagenes);
+
+    res.status(200).json(revision);
   } catch (error: any) {
     res.status(500).json(error);
   }

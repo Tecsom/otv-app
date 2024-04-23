@@ -119,6 +119,44 @@ const dropzoneFilesEdit = new Dropzone('#dpz-files-edit', {
   dictRemoveFile: 'Eliminar archivo',
   dictMaxFilesExceeded: 'No puedes subir más archivos.'
 });
+const dropzoneImagesNew = new Dropzone('#dpz-imgs-new', {
+  previewTemplate: previewTemplate,
+  parallelUploads: 1,
+  maxFilesize: 5,
+  addRemoveLinks: true,
+  url: '/',
+  acceptedFiles: 'image/*',
+  dictDefaultMessage: 'Arrastra aquí los archivos de la pieza (planos)',
+  dictFallbackMessage: 'Tu navegador no soporta la carga de archivos por arrastrar y soltar.',
+  dictFallbackText:
+    'Por favor, utiliza el formulario alternativo a continuación para cargar tus archivos como en los viejos tiempos.',
+  dictFileTooBig: 'El archivo es demasiado grande ({{filesize}}MiB). Tamaño máximo de archivo: {{maxFilesize}}MiB.',
+  dictInvalidFileType: 'No puedes subir archivos de este tipo.',
+  dictResponseError: 'El servidor respondió con código {{statusCode}}.',
+  dictCancelUpload: 'Cancelar carga',
+  dictCancelUploadConfirmation: '¿Estás seguro de que quieres cancelar esta carga?',
+  dictRemoveFile: 'Eliminar archivo',
+  dictMaxFilesExceeded: 'No puedes subir más archivos.'
+});
+const dropzoneFilesNew = new Dropzone('#dpz-files-new', {
+  previewTemplate: previewTemplate,
+  parallelUploads: 1,
+  maxFilesize: 2,
+  addRemoveLinks: true,
+  url: '/',
+  acceptedFiles: 'application/pdf',
+  dictDefaultMessage: 'Arrastra aquí los archivos de la pieza (planos)',
+  dictFallbackMessage: 'Tu navegador no soporta la carga de archivos por arrastrar y soltar.',
+  dictFallbackText:
+    'Por favor, utiliza el formulario alternativo a continuación para cargar tus archivos como en los viejos tiempos.',
+  dictFileTooBig: 'El archivo es demasiado grande ({{filesize}}MiB). Tamaño máximo de archivo: {{maxFilesize}}MiB.',
+  dictInvalidFileType: 'No puedes subir archivos de este tipo.',
+  dictResponseError: 'El servidor respondió con código {{statusCode}}.',
+  dictCancelUpload: 'Cancelar carga',
+  dictCancelUploadConfirmation: '¿Estás seguro de que quieres cancelar esta carga?',
+  dictRemoveFile: 'Eliminar archivo',
+  dictMaxFilesExceeded: 'No puedes subir más archivos.'
+});
 
 const processFile = file => {
   return new Promise((resolve, reject) => {
@@ -300,7 +338,6 @@ $('#editar-revision-form').on('submit', async function (e) {
       type: file.type
     });
   }
-  console.log({ accepted_files, accepted_images });
 
   const res = await fetchData(`/clientes/${clientData.id}/piezas/${pieza_id}/revisiones/${revision_id}`, 'PUT', data);
   button.stop();
@@ -310,4 +347,47 @@ $('#editar-revision-form').on('submit', async function (e) {
     return;
   }
   toastr.error(res.message, 'Error actualizando la revisión');
+});
+
+$('#btn_new_revision').on('click', async function () {
+  $('#modal_nueva_revision').modal('show');
+  $('#offcanvas_pieza').offcanvas('hide');
+});
+
+$('#nueva-revision-form').on('submit', async function (e) {
+  e.preventDefault();
+  const button = new loadingButton($('#confirm_new_revision'));
+  button.start();
+  const pieza_id = $('#offcanvas_pieza').attr('data-pieza-id');
+  const formData = new FormData(this);
+  const data = Object.fromEntries(formData);
+  const accepted_images = dropzoneImagesNew.getAcceptedFiles();
+  const accepted_files = dropzoneFilesNew.getAcceptedFiles();
+
+  data.imagenes = accepted_images.map(file => ({
+    data: file.dataURL?.split('base64,')[1] ?? file.dataURL,
+    name: file.name,
+    type: file.type
+  }));
+
+  data.archivos = [];
+
+  for (const file of accepted_files) {
+    const b_64 = await processFile(file);
+
+    data.archivos.push({
+      data: b_64?.split('base64,')[1] ?? b_64,
+      name: file.name,
+      type: file.type
+    });
+  }
+  console.log(data);
+  const res = await fetchData(`/clientes/${clientData.id}/piezas/${pieza_id}/revisiones`, 'POST', data);
+  button.stop();
+  if (res.status === true) {
+    toastr.success(res.message, 'Revisión creada');
+    $('#modal_nueva_revision').modal('hide');
+    return;
+  }
+  toastr.error(res.message, 'Error creando la revisión');
 });

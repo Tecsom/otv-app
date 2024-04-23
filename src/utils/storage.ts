@@ -39,7 +39,9 @@ export const getFilePublicURL = async (bucket: string, path: string) => {
 
 export const deleteFolder = async (bucket: string, path: string) => {
   const files = await getFilesByPath(bucket, path);
-  console.log(files);
+  if (!files || files.length === 0) {
+    return true;
+  }
   const { error } = await supabase()
     .storage.from(bucket)
     .remove(files.map(file => path + '/' + file.name));
