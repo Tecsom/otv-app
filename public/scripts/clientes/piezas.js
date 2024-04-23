@@ -17,11 +17,6 @@ const previewTemplate = `<div class="dz-preview dz-file-preview">
 </div>
 </div>`;
 
-const options = `<div class="d-inline-block text-nowrap">
-  <button class="btn btn-sm btn-icon edit-icon open-edit-modal" title="Editar" data-bs-toggle="tooltip" data-bs-placement="top"><i class="ti ti-edit"></i></button>
-  <button class="btn btn-sm btn-icon delete-icon open-delete-modal" title="Eliminar" data-bs-toggle="tooltip" data-bs-placement="top"><i class="ti ti-trash-x"></i></button>
-</div>`;
-
 const piezas_table = $('#piezas_table').DataTable({
   select: {
     style: 'multi',
@@ -29,14 +24,7 @@ const piezas_table = $('#piezas_table').DataTable({
   },
   columns: [
     { data: 'numero_parte', title: 'Número de parte', orderable: true, className: 'non-selectable' },
-    { data: 'descripcion', title: 'Descripción', orderable: true, className: 'non-selectable' },
-    {
-      title: '',
-      orderable: false,
-      className: 'non-selectable',
-      width: '30px',
-      defaultContent: options
-    }
+    { data: 'descripcion', title: 'Descripción', orderable: true, className: 'non-selectable' }
   ],
   dom: 'rtp',
   paging: false,
@@ -115,4 +103,10 @@ $('#crear-pieza-form').on('submit', async function (e) {
 $(document).ready(function () {
   piezas_table.clear().draw();
   piezas_table.rows.add(piezasData).draw();
+});
+
+piezas_table.on('click', 'tbody tr', function () {
+  const data = piezas_table.row(this).data();
+  console.log({ data });
+  $('#offcanvas_pieza').offcanvas('show');
 });

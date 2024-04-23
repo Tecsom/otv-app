@@ -411,6 +411,33 @@
     </div>
   </div>
 </div>
+<!--!OFFCANVAS PIEZA-->
+<div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvas_pieza" aria-labelledby="offcanvasEndLabel">
+  <div class="offcanvas-header">
+    <h5 id="offcanvas_pieza_title" class="offcanvas-title"></h5>
+    <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+  </div>
+  <div class="offcanvas-body mx-0 flex-grow-0">
+    <button id="btn_edit_pieza" type="button" class="btn btn-primary mb-2 d-grid w-100">Editar general</button>
+    <button
+      id="btn_edit_revision"
+      type="button"
+      class="btn btn-label-secondary d-grid w-100"
+      data-bs-dismiss="offcanvas">
+      Editar revisión
+    </button>
+    <select id="select_revision" class="form-select mt-2">
+      <option value="0">Revisión actual</option>
+    </select>
+    <button
+      id="btn_new_revision"
+      type="button"
+      class="btn btn-label-secondary d-grid w-100"
+      data-bs-dismiss="offcanvas">
+      Nueva revisión
+    </button>
+  </div>
+</div>
 
 <script>
   var clientData = JSON.parse('<%- JSON.stringify(clientData) %>') ?? {};
