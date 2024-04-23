@@ -17,6 +17,8 @@ const previewTemplate = `<div class="dz-preview dz-file-preview">
 </div>
 </div>`;
 
+const per_page = 10;
+
 piezas_table = $('#piezas_table').DataTable({
   select: {
     style: 'multi',
@@ -27,26 +29,18 @@ piezas_table = $('#piezas_table').DataTable({
     { data: 'descripcion', title: 'Descripción', orderable: true, className: 'non-selectable' }
   ],
   dom: 'rtp',
-  paging: false,
   language: {
     url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/es-ES.json'
   },
   order: [[0, 'asc']],
-  searching: true
+  paging: true,
+  searching: true,
+  pageLength: per_page,
+  processing: true,
+  serverSide: true,
+  ajax: '/api/clientes/:id/piezas/paging?cliente_id=' + clientData.id
 });
 
-$(document).ready(function () {
-  piezas_table.clear().draw();
-  piezas_table.rows.add(piezasData).draw();
+$('#search_equipment').on('keyup', function () {
+  piezas_table.search($('#search_equipment').val()).draw();
 });
-
-const updatePiezasTable = async () => {
-  const { id: cliente_id } = clientData;
-  const res = await fetchData(`/clientes/${cliente_id}/piezas`);
-  if (!res.status) {
-    toastr.error(res.message, 'Error obteniendo las piezas');
-    return;
-  }
-  piezas_table.clear().draw();
-  piezas_table.rows.add(res.data).draw();
-};

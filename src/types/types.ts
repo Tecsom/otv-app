@@ -5,7 +5,13 @@ export type FileUpld = {
 };
 
 export type ApiResult = {
-  data: unknown,
-  message: string,
-  status: boolean
-}
+  data: unknown;
+  message: string;
+  status: boolean;
+};
+export type QueryTable = {
+  length: string;
+  draw: string;
+  search: { value: string };
+  start: string;
+};

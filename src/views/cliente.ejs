@@ -203,7 +203,7 @@
                       type="button"
                       class="btn btn-primary waves-effect waves-light"
                       data-bs-toggle="modal"
-                      data-bs-target="#modal_crear_pieza">
+                      data-bs-target="#modal_create_pieza">
                       <span class="tf-icons ti-xs ti ti-plus me-1"></span>Nuevo
                     </button>
                   </div>
@@ -361,7 +361,7 @@
 </div>
 
 <!-- MODAL ADD PIEZA -->
-<div class="modal fade modal_cliente" id="modal_crear_pieza" tabindex="-1" aria-hidden="true">
+<div class="modal fade modal_cliente" id="modal_create_pieza" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal_cliente" role="document">
     <div class="modal-content">
       <div class="modal-header">
@@ -416,6 +416,21 @@
           <div class="col-md-12">
             <label for="descripcion_editar" class="form-label required">Descripción de la pieza</label>
             <input type="text" id="descripcion_editar" name="descripcion" class="form-control" />
+          </div>
+          <div class="col-md-12">
+            <div class="text-light small fw-medium mb-3">Estado</div>
+            <label class="switch switch-outline switch-success">
+              <input type="checkbox" class="switch-input" id="switch-input-estado" name="estado" />
+              <span class="switch-toggle-slider">
+                <span class="switch-on">
+                  <i class="ti ti-check"></i>
+                </span>
+                <span class="switch-off">
+                  <i class="ti ti-x"></i>
+                </span>
+              </span>
+              <span class="switch-label" id="edit-pieza-label-estado">No Activo</span>
+            </label>
           </div>
         </form>
       </div>
@@ -498,7 +513,7 @@
   <div class="offcanvas-header">
     <div class="d-flex align-items-center gap-2">
       <h5 id="offcanvas_pieza_title" class="offcanvas-title mb-0">[Número de parte]</h5>
-      <span class="badge bg-label-success">Activo</span>
+      <span id="badge-status-pieza" class="badge bg-label-success">Activo</span>
     </div>
     <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
   </div>

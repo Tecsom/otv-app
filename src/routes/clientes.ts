@@ -10,7 +10,8 @@ import {
   getPiezasByClienteC,
   getFilesByRevisionC,
   updateRevisionC,
-  createRevisionC
+  createRevisionC,
+  getPiezasTableC
 } from '../controllers/clientes';
 
 const router = express.Router();
@@ -22,6 +23,7 @@ router.put('/clientes/:id', updateClienteC);
 
 // Piezas
 router.get('/clientes/:id/piezas', getPiezasByClienteC);
+router.get('/clientes/:id/piezas/paging', getPiezasTableC);
 router.post('/clientes/:id/piezas', createPiezaC);
 router.put('/clientes/:cliente_id/piezas', editPiezaC);
 router.get('/clientes/:cliente_id/piezas/:pieza_id/revisiones', getRevisionesByPiezaC);

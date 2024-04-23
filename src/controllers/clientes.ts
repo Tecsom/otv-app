@@ -11,6 +11,8 @@ import {
   uploadRevisionFiles
 } from '@/utils/piezas';
 import { deleteFile, deleteFolder, getFilePublicURL, getFilesByPath } from '@/utils/storage';
+import { QueryTable } from '@/types/types';
+import supabase from '@/config/supabase';
 
 export const getClientesC = async (req: Request, res: Response) => {
   try {
@@ -196,4 +198,33 @@ export const createRevisionC = async (req: Request, res: Response) => {
   } catch (error: any) {
     res.status(500).json(error);
   }
+};
+
+export const getPiezasTableC = async (req: Request, res: Response) => {
+  const queries = req.query as any;
+  const client_id = req.query.cliente_id;
+
+  const { length, draw, search, start } = queries as QueryTable;
+  // console.log({ length, draw, search, start });
+
+  const { error, data } = await supabase().rpc('searchpiezas', {
+    search: search.value,
+    page: parseInt(start ?? '0') / parseInt(length ?? '10') + 1,
+    limitperpage: parseInt(length ?? '10'),
+    client: parseInt(client_id as string)
+  });
+  const { error: error_totals, data: data_totals } = await supabase().rpc('searchpiezas_totals', {
+    search: search.value,
+    page: parseInt(start ?? '0') / parseInt(length ?? '10') + 1,
+    limitperpage: parseInt(length ?? '10'),
+    client: parseInt(client_id as string)
+  });
+  console.log({ data_totals, error_totals });
+
+  res.status(200).json({
+    draw,
+    recordsTotal: data_totals[0].total_records,
+    recordsFiltered: data_totals[0].total_records,
+    data
+  });
 };

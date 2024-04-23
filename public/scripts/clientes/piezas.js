@@ -181,6 +181,7 @@ $('#crear-pieza-form').on('submit', async function (e) {
   const res = await fetchData(`/clientes/${cliente_id}/piezas`, 'POST', data);
   button.stop();
   if (res.status === true) {
+    await piezas_table.ajax.reload();
     toastr.success(res.message, 'Pieza creada');
     $('#modal_create_pieza').modal('hide');
     return;
@@ -190,7 +191,7 @@ $('#crear-pieza-form').on('submit', async function (e) {
 
 piezas_table.on('click', 'tbody tr', async function () {
   const data = piezas_table.row(this).data();
-  const { cliente_id, id } = data;
+  const { cliente_id, id, estado } = data;
   const res_revisiones = await fetchData(`/clientes/${cliente_id}/piezas/${id}/revisiones`);
   if (!res_revisiones.status) {
     toastr.error(res_revisiones.message, 'Error obteniendo las revisiones');
@@ -199,6 +200,9 @@ piezas_table.on('click', 'tbody tr', async function () {
 
   addRevisionesToSelect(res_revisiones.data);
 
+  $('#badge-status-pieza').text(estado ? 'Activo' : 'No activo');
+  if (estado) $('#badge-status-pieza').removeClass('bg-label-danger').addClass('bg-label-success');
+  else $('#badge-status-pieza').removeClass('bg-label-success').addClass('bg-label-danger');
   $('#offcanvas_pieza').offcanvas('show');
   $('#offcanvas_pieza').attr('data-pieza-id', id);
   $('#offcanvas_pieza').data('pieza_data', data);
@@ -214,13 +218,17 @@ const addRevisionesToSelect = (revisiones = []) => {
 
 $('#btn_edit_pieza').on('click', async function () {
   const pieza_data = $('#offcanvas_pieza').data('pieza_data');
-  const { numero_parte, descripcion } = pieza_data;
+  const { numero_parte, descripcion, estado } = pieza_data;
 
   $('#numero_parte_editar').val(numero_parte);
   $('#descripcion_editar').val(descripcion);
 
   $('#modal_editar_pieza').modal('show');
   $('#offcanvas_pieza').offcanvas('hide');
+
+  $('#switch-input-estado')
+    .prop('checked', estado === true)
+    .trigger('change');
 });
 
 $('#editar-pieza-form').on('submit', async function (e) {
@@ -232,10 +240,12 @@ $('#editar-pieza-form').on('submit', async function (e) {
   const formData = new FormData(this);
   let data = Object.fromEntries(formData);
   data.id = pieza_id;
+  data.estado = $('#switch-input-estado').prop('checked');
+
   const res = await fetchData(`/clientes/${cliente_id}/piezas`, 'PUT', data);
   button.stop();
   if (res.status === true) {
-    await updatePiezasTable();
+    await piezas_table.ajax.reload();
     toastr.success(res.message, 'Pieza actualizada');
     $('#modal_editar_pieza').modal('hide');
     return;
@@ -356,4 +366,10 @@ $('#nueva-revision-form').on('submit', async function (e) {
     return;
   }
   toastr.error(res.message, 'Error creando la revisión');
+});
+
+$('#switch-input-estado').on('change', function (event) {
+  const checked = $(this).prop('checked');
+  if (checked) $('#edit-pieza-label-estado').text('Activo');
+  else $('#edit-pieza-label-estado').text('No activo');
 });
