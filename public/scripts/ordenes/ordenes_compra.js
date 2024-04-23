@@ -122,17 +122,18 @@ async function loadOrdenes() {
   const $container = $('#ordenes_compra_container');
   $container.empty();
   const ordenes = await getOrdenes();
+  console.log({ordenes})
   ordenes.forEach(orden => {
     var $newdiv1 = $(`
         <div id="order_${orden.id}">
           <label>Folio Asignado</label>
           <p>${addLeadingZeros(orden.unique_folio, 6)}</p>
           <label>Cliente</label>
-          <p>${orden.client_id}</p>
+          <p>${orden.clientes?.nombre ?? '<span style="color:Red">Sin Cliente</span>'}</p>
           <label>Folio</label>
           <p>${orden.folio_id}</p>
           <label>Fecha de entrega</label>
-          <p>${orden.delivery_date}</p>          
+          <p>${isoDateToFormatted(orden.delivery_date)}</p>          
         </div>
       `);
     $newdiv1.data({ data: orden });
@@ -153,4 +154,20 @@ function addLeadingZeros(number, length) {
 
   // Return the number padded with leading zeros
   return '0'.repeat(zerosToAdd) + numStr;
+}
+
+
+function isoDateToFormatted(fechaISO) {
+  // Crear un objeto Date usando la cadena de fecha ISO 8601
+  const fecha = new Date(fechaISO);
+
+  // Extraer día, mes y año
+  const dia = fecha.getUTCDate();         // Obtener día (en formato de 1 a 31)
+  const mes = fecha.getUTCMonth() + 1;     // Obtener mes (en formato de 0 a 11, por eso se suma 1)
+  const anio = fecha.getUTCFullYear();     // Obtener año
+
+  // Formatear la fecha como dd/mm/yyyy
+  const fechaFormateada = `${dia.toString().padStart(2, '0')}/${mes.toString().padStart(2, '0')}/${anio}`;
+
+  return fechaFormateada;
 }

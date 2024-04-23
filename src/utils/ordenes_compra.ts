@@ -3,13 +3,27 @@ import supabase from '@/config/supabase';
 import { CreateOrderDataModel } from '@/types/ordenes_compra';
 import { ApiResult } from '@/types/types';
 
-export const getOrdenesCompra = async (): Promise<OrdenCompra[]> => {
-    const { data: Ordenes, error } = await supabase().from('ordenes').select('*');
+
+/**
+ * 
+folio_id: string
+    client: Cliente
+    delivery_date: string
+    unique_folio: number
+ */
+
+export const getOrdenesCompra = async () => {
+    const { data: Ordenes, error } = await supabase().from('ordenes').select(`
+    folio_id,
+    clientes (id, nombre),
+    delivery_date,
+    unique_folio
+    `);
     if (error) {
         console.error('Error fetching Ordenes:', error.message);
         throw error;
     }
-    return Ordenes as OrdenCompra[];
+    return Ordenes
 };
 
 
