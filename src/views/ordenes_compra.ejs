@@ -1,69 +1,204 @@
+<link rel="stylesheet" href="/public/assets/vendor/css/pages/app-chat.css" />
 
-  <div class="container-xxl flex-grow-1 container-p-y">
-    <div class="d-flex justify-content-between align-items-center pb-2">
-      <h4 class="mb-0">Ordenes de compra</h4>
-      <button
-        id="newClientButton"
-        type="button"
-        class="btn btn-primary"
-        data-bs-toggle="modal"
-        data-bs-target="#create-client-modal">
-        <span class="tf-icons ti-xs ti ti-plus me-1"> </span>Nueva orden
-      </button>
-    </div>
-  
-    <!-- Clientes List Table -->
-    <div class="card">
-      <div class="card-header">
-        <div class="row">
-          <div class="col-md-12">
-            <div class="d-flex justify-content-between align-items-center row gap-3 gap-md-0">
-              <div class="col-md-4">
-                <input class="form-control" type="search" placeholder="Buscar cliente ..." id="search-client" />
+<div class="container-xxl flex-grow-1 container-p-y">
+  <div class="d-flex justify-content-between align-items-center pb-2 border-bottom">
+    <h4 class="mb-0">Órdenes de compra</h4>
+    <button
+      id="newClientButton"
+      type="button"
+      class="btn btn-primary"
+      data-bs-toggle="modal"
+      data-bs-target="#create-client-modal">
+      <span class="tf-icons ti-xs ti ti-plus me-1"> </span>Nueva orden
+    </button>
+  </div>
+
+  <div class="app-chat card overflow-hidden mt-2">
+    <div class="row g-0">
+      <div class="col app-chat-contacts app-sidebar flex-grow-0 border-end" id="app-chat-contacts">
+        <div class="sidebar-header">
+          <div class="d-flex align-items-center me-3 me-lg-0 gap-2">
+            <div class="flex-grow-1 input-group input-group-merge">
+              <span class="input-group-text" id="basic-addon-search31"><i class="ti ti-search"></i></span>
+              <input
+                type="text"
+                id="search-report-filter"
+                class="form-control chat-search-input"
+                placeholder="Buscar orden de compra"
+                aria-label="Buscar orden de compra"
+                aria-describedby="basic-addon-search31" />
+            </div>
+            <button
+              type="button"
+              class="btn btn-icon btn-label-primary"
+              data-bs-toggle="collapse"
+              data-bs-target="#collapse-filters"
+              aria-expanded="false"
+              aria-controls="collapse-filters">
+              <span class="ti ti-filter"></span>
+            </button>
+          </div>
+          <div class="border-1 border-top mt-2 pt-2 collapse" id="collapse-filters">
+            <!--<div class="form-check mt-2">
+              <input class="form-check-input" type="checkbox" value="" id="exact-match-cb" />
+              <label class="form-check-label" for="exact-match-cb"> Coincidencia exacta de texto </label>
+            </div>
+            <div class="mt-2">
+              <label for="range_filter" class="form-label">Fecha</label>
+              <input
+                class="form-control datetimepicker flatpickr-input"
+                id="range_filter"
+                type="text"
+                placeholder="Selecciona un rango de fecha"
+                readonly="readonly" />
+            </div>
+            <div class="mt-2">
+              <label for="proveedor_filter" class="form-label">Proveedor</label>
+              <select aria-placeholder="Selecciona un proveedor" class="form-select" id="proveedor_filter">
+                <option></option>
+                <option value="Sel">SEL</option>
+                <option value="Teysa">TEYSA</option>
+              </select>
+            </div>
+            <div class="mt-2">
+              <label for="ingeniero_filter" class="form-label">Ingeniero</label>
+              <select aria-placeholder="Selecciona un ingeniero" class="form-select" id="ingeniero_filter">
+                <option></option>
+              </select>
+            </div>
+            <div class="mt-3 text-right cursor-pointer">
+              <span class="text-muted" id="remove-filters-btn"><small>Eliminar filtros</small></span>
+            </div>-->
+          </div>
+          <i
+            class="ti ti-x cursor-pointer d-lg-none d-block position-absolute mt-2 me-1 top-0 end-0"
+            data-overlay=""
+            data-bs-toggle="sidebar"
+            data-target="#app-chat-contacts"></i>
+        </div>
+        <hr class="container-m-nx m-0" />
+        <div id="ordenes_compra_container" class="sidebar-body"></div>
+      </div>
+      <div class="col email-content d-flex align-items-center justify-content-center d-none" id="placeholder_viewer">
+        <div class="text-center">
+          <dotlottie-player
+            src="/public/animations/please_select.lottie"
+            background="transparent"
+            speed="0.8"
+            style="width: 180px; height: 180px"
+            loop
+            autoplay
+            direction="1"
+            mode="normal"></dotlottie-player>
+          <p class="mb-0"><small>Selecciona una orden de compra</small></p>
+        </div>
+      </div>
+      <div class="col app-chat-history bg-body" id="container-reporte">
+        <div class="chat-history-wrapper d-flex flex-column h-100">
+          <div class="chat-history-header border-bottom">
+            <div class="d-flex justify-content-between align-items-center">
+              <div class="d-flex overflow-hidden align-items-center">
+                <i
+                  class="ti ti-menu-2 ti-sm cursor-pointer d-lg-none d-block me-2"
+                  data-bs-toggle="sidebar"
+                  data-overlay=""
+                  data-target="#app-chat-contacts"></i>
+                <div class="chat-contact-info flex-grow-1 ms-2">
+                  <h6 class="m-0">Detalles de órden de compra</h6>
+                  <small class="user-status text-muted" id="reporte_folio">[Folio]</small>
+                </div>
+              </div>
+              <div class="d-flex align-items-center gap-2">
+                <button id="ver-imagenes-btn" type="button" class="btn text-nowrap d-inline-block">
+                  <span class="tf-icons ti ti-photo"></span>
+                  <span id="report_image_num" class="badge rounded-pill bg-primary badge-notifications">-</span>
+                </button>
+                <i class="ti ti-clock" data-bs-toggle="tooltip" data-bs-placement="top" title="Eliminar"></i>
+                <span class="text-muted small" id="reporte_datetime"></span>
+              </div>
+            </div>
+          </div>
+          <div class="chat-history-body bg-body flex-grow-1">
+            <div class="row invoice-preview h-100">
+              <div class="col-12 h-100">
+                <div class="card invoice-preview-card h-100">
+                  <div class="card-body">
+                    <iframe id="viewer" style="width: 100%; height: 100%; margin: 0 auto"></iframe>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-      <div class="card-datatable table-responsive border-top">
-        <!--TABLE HERE-->
-        <table id="ordenes_table" class="table table-striped w-100 card-table table-hover"></table>
+
+      <div class="app-overlay"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade modal_cliente" id="create-client-modal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel1">Nueva orden</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="create_order" class="row g-3">
+          <div class="col-md-6">
+            <label for="folio_id" class="form-label required">Folio identificador</label>
+            <input type="text" id="folio_id" name="nombre" class="form-control" />
+          </div>
+          <div class="col-md-6 col-12 mb-4">
+            <label for="date_picker" class="form-label">Fecha de entrega</label>
+            <input type="hidden" class="form-control flatpickr-input" placeholder="Month DD, YYYY" id="date_picker" />
+          </div>
+          <div class="col-md-12">
+            <label for="select_client" class="form-label">Cliente</label>
+            <select name="client" id="select_client" class="form-select"></select>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button id="create_order_button" type="submit" form="create_order" class="btn btn-success">Generar</button>
       </div>
     </div>
   </div>
-  
-  <!-- Modal -->
-  <div class="modal fade modal_cliente" id="create-client-modal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel1">Nueva orden</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <form id="create_order" class="row g-3">
-            <div class="col-md-6">
-              <label for="folio_id" class="form-label required">Folio identificador</label>
-              <input type="text" id="folio_id" name="nombre" class="form-control" />
+</div>
+
+<!---->
+
+<!--<div class="container-xxl flex-grow-1 container-p-y">
+  <div class="d-flex justify-content-between align-items-center pb-2">
+    <h4 class="mb-0">Ordenes de compra</h4>
+    <button
+      id="newClientButton"
+      type="button"
+      class="btn btn-primary"
+      data-bs-toggle="modal"
+      data-bs-target="#create-client-modal">
+      <span class="tf-icons ti-xs ti ti-plus me-1"> </span>Nueva orden
+    </button>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="d-flex justify-content-between align-items-center row gap-3 gap-md-0">
+            <div class="col-md-4">
+              <input class="form-control" type="search" placeholder="Buscar cliente ..." id="search-client" />
             </div>
-            <div class="col-md-6 col-12 mb-4">
-              <label for="date_picker" class="form-label">Fecha de entrega</label>
-              <input type="hidden" class="form-control flatpickr-input" placeholder="Month DD, YYYY" id="date_picker">
-            </div>
-            <div class="col-md-12">
-              <label for="select_client" class="form-label">Cliente</label>
-              <select name="client" id="select_client" class="form-select"></select>
-            </div>
-          </form>
-        </div>
-        <div class="modal-footer">
-          <button id="create_order_button" type="submit" form="create_order" class="btn btn-success">
-            Generar
-          </button>
+          </div>
         </div>
       </div>
     </div>
+    <div class="card-datatable table-responsive border-top">
+      <table id="ordenes_table" class="table table-striped w-100 card-table table-hover"></table>
+    </div>
   </div>
-  <script src="/public/scripts/ordenes/ordenes_compra.js" type="module"></script>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+</div>-->
+
+<script src="/public/scripts/ordenes/ordenes_compra.js" type="module"></script>
