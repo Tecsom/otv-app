@@ -10,10 +10,12 @@ async function init() {
     wheelPropagation: false
   });
 
-  $('#date_picker').flatpickr({
+  const $date_picker = $('#date_picker')
+  $date_picker.flatpickr({
     // EN ESTA PARTE ES DONDE SE REGISTRA EL EVENTO
     onChange: function (selectedDates, dateStr, instance) {
-      console.log(selectedDates + '/' + dateStr);
+      //console.log(selectedDates + '/' + dateStr);
+      $date_picker.data({value:selectedDates[0]})
     },
     // FIN EVENTO
     minDate: 'today',
@@ -75,7 +77,7 @@ $('#create_order').on('submit', async function (e) {
   const $client = $('#select_client');
 
   const folio = $folio.val().trim();
-  const dateval = $date.val();
+  const dateval = $date.data().value;
   const client_id = $client.val();
 
   if (!client_id || !dateval || !folio) {
@@ -87,6 +89,7 @@ $('#create_order').on('submit', async function (e) {
   date.setUTCHours(date.getUTCHours() - 6);
   const isoStringDate = date.toISOString();
 
+  console.log({isoStringDate})
   const result = await fetchData('/ordenes/create', 'POST', {
     folio_id: folio,
     delivery_date: isoStringDate,

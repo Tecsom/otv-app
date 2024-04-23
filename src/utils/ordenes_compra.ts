@@ -23,7 +23,8 @@ export const createNewOrder = async (payload: CreateOrderDataModel): Promise<Api
     var nextUniqueFolio: number;
     nextUniqueFolio = (lastOrder?.unique_folio ?? 0) + 1
 
-    const newOrden: CreateOrderDataModel = {
+    const newOrden = {
+        unique_folio: nextUniqueFolio,
         folio_id: payload.folio_id,
         client_id: payload.client_id,
         delivery_date: payload.delivery_date
