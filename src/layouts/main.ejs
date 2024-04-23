@@ -68,6 +68,31 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="/public/assets/js/config.js"></script>
     <script src="/public/assets/vendor/libs/dropzone/dropzone.js"></script>
+
+    <style>
+       <style>
+    .modal-footer button:last-child {
+      margin-right: 0 !important;
+    }
+
+    .required:after {
+      content: " *";
+      color: red;
+    }
+
+    .modal-footer>* {
+      margin-left: 0 !important;
+      margin-right: 0 !important;
+    }
+
+    .dataTables_paginate {
+      display: flex;
+      justify-content: end;
+      padding-top: 15px;
+      padding-right: 15px;
+    }
+  </style>
+    </style>
   </head>
 
   <body>
@@ -105,7 +130,7 @@
                     fill="#7367F0" />
                 </svg>
               </span>
-              <span class="app-brand-text demo menu-text fw-bold">otv</span>
+              <span class="app-brand-text demo menu-text fw-bold">OTV</span>
             </a>
 
             <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto">
@@ -141,6 +166,12 @@
               <a href="/ordenes" class="menu-link">
                 <i class="menu-icon tf-icons ti ti-file-dollar"></i>
                 <div data-i18n="Órdenes de compra">Órdenes de compra</div>
+              </a>
+            </li>
+            <li class="menu-item">
+              <a href="/embarques" class="menu-link">
+                <i class="menu-icon tf-icons ti ti-truck-delivery"></i>
+                <div data-i18n="Embarques">Embarques</div>
               </a>
             </li>
             <li class="menu-item">
