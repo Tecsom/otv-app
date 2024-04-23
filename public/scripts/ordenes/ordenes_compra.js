@@ -10,12 +10,12 @@ async function init() {
     wheelPropagation: false
   });
 
-  const $date_picker = $('#date_picker')
+  const $date_picker = $('#date_picker');
   $date_picker.flatpickr({
     // EN ESTA PARTE ES DONDE SE REGISTRA EL EVENTO
     onChange: function (selectedDates, dateStr, instance) {
       //console.log(selectedDates + '/' + dateStr);
-      $date_picker.data({value:selectedDates[0]})
+      $date_picker.data({ value: selectedDates[0] });
     },
     // FIN EVENTO
     minDate: 'today',
@@ -89,7 +89,7 @@ $('#create_order').on('submit', async function (e) {
   date.setUTCHours(date.getUTCHours() - 6);
   const isoStringDate = date.toISOString();
 
-  console.log({isoStringDate})
+  console.log({ isoStringDate });
   const result = await fetchData('/ordenes/create', 'POST', {
     folio_id: folio,
     delivery_date: isoStringDate,
@@ -122,7 +122,7 @@ async function loadOrdenes() {
   const $container = $('#ordenes_compra_container');
   $container.empty();
   const ordenes = await getOrdenes();
-  console.log({ordenes})
+  console.log({ ordenes });
   ordenes.forEach(orden => {
     var $newdiv1 = $(`
         <div id="order_${orden.id}">
@@ -156,15 +156,14 @@ function addLeadingZeros(number, length) {
   return '0'.repeat(zerosToAdd) + numStr;
 }
 
-
 function isoDateToFormatted(fechaISO) {
   // Crear un objeto Date usando la cadena de fecha ISO 8601
   const fecha = new Date(fechaISO);
 
   // Extraer día, mes y año
-  const dia = fecha.getUTCDate();         // Obtener día (en formato de 1 a 31)
-  const mes = fecha.getUTCMonth() + 1;     // Obtener mes (en formato de 0 a 11, por eso se suma 1)
-  const anio = fecha.getUTCFullYear();     // Obtener año
+  const dia = fecha.getUTCDate(); // Obtener día (en formato de 1 a 31)
+  const mes = fecha.getUTCMonth() + 1; // Obtener mes (en formato de 0 a 11, por eso se suma 1)
+  const anio = fecha.getUTCFullYear(); // Obtener año
 
   // Formatear la fecha como dd/mm/yyyy
   const fechaFormateada = `${dia.toString().padStart(2, '0')}/${mes.toString().padStart(2, '0')}/${anio}`;
