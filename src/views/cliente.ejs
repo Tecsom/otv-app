@@ -181,6 +181,20 @@
                 Estadísticas
               </button>
             </li>
+            <li class="nav-item" role="presentation">
+              <button
+                type="button"
+                class="nav-link"
+                role="tab"
+                data-bs-toggle="tab"
+                data-bs-target="#navs_settings"
+                aria-controls="navs_settings"
+                aria-selected="false"
+                tabindex="-1">
+                <i class="ti ti-settings ti-xs me-1"></i>
+                Configuración
+              </button>
+            </li>
           </ul>
         </div>
         <div class="card-body">
@@ -209,15 +223,16 @@
                   </div>
                 </div>
               </div>
-              <div class="able-responsive">
+              <div class="table-responsive">
                 <!--TABLE HERE-->
                 <div id="clientes_table_wrapper" class="dataTables_wrapper dt-bootstrap5 no-footer">
                   <table id="clientes_table" class="table table-striped w-100 table-hover"></table>
                 </div>
               </div>
             </div>
-            <div class="tab-pane fade" id="navs_historial" role="tabpanel"></div>
-            <div class="tab-pane fade" id="navs_stats" role="tabpanel"></div>
+            <div class="tab-pane fade" id="navs_historial" role="tabpanel">Historial</div>
+            <div class="tab-pane fade" id="navs_stats" role="tabpanel">Estadísticas</div>
+            <div class="tab-pane fade" id="navs_settings" role="tabpanel">Configuración</div>
           </div>
         </div>
       </div>
