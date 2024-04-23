@@ -17,6 +17,12 @@ const previewTemplate = `<div class="dz-preview dz-file-preview">
 </div>
 </div>`;
 
+const select_revision = $('#select_revision').select2({
+  dropdownParent: $('#offcanvas_pieza'),
+  minimumResultsForSearch: -1,
+  placeholder: 'Selecciona una revisión'
+});
+
 const piezas_table = $('#piezas_table').DataTable({
   select: {
     style: 'multi',
@@ -105,8 +111,68 @@ $(document).ready(function () {
   piezas_table.rows.add(piezasData).draw();
 });
 
-piezas_table.on('click', 'tbody tr', function () {
+piezas_table.on('click', 'tbody tr', async function () {
   const data = piezas_table.row(this).data();
-  console.log({ data });
+  const { cliente_id, id } = data;
+  const res_revisiones = await fetchData(`/clientes/${cliente_id}/piezas/${id}/revisiones`);
+  if (!res_revisiones.status) {
+    toastr.error(res_revisiones.message, 'Error obteniendo las revisiones');
+    return;
+  }
+
+  addRevisionesToSelect(res_revisiones.data);
+
   $('#offcanvas_pieza').offcanvas('show');
+  $('#offcanvas_pieza').attr('data-pieza-id', id);
+  $('#offcanvas_pieza').data('pieza_data', data);
 });
+
+const addRevisionesToSelect = (revisiones = []) => {
+  select_revision.empty();
+  for (const revision of revisiones) {
+    const { id, nombre } = revision;
+    select_revision.append(new Option(nombre, id)).trigger('change');
+  }
+};
+
+$('#btn_edit_pieza').on('click', async function () {
+  const pieza_data = $('#offcanvas_pieza').data('pieza_data');
+  const { numero_parte, descripcion } = pieza_data;
+
+  $('#numero_parte_editar').val(numero_parte);
+  $('#descripcion_editar').val(descripcion);
+
+  $('#modal_editar_pieza').modal('show');
+  $('#offcanvas_pieza').offcanvas('hide');
+});
+
+$('#editar-pieza-form').on('submit', async function (e) {
+  e.preventDefault();
+  const button = new loadingButton($('#confirm_edit_pieza'));
+  button.start();
+  const pieza_id = $('#offcanvas_pieza').attr('data-pieza-id');
+  const { id: cliente_id } = clientData;
+  const formData = new FormData(this);
+  let data = Object.fromEntries(formData);
+  data.id = pieza_id;
+  const res = await fetchData(`/clientes/${cliente_id}/piezas`, 'PUT', data);
+  button.stop();
+  if (res.status === true) {
+    await updatePiezasTable();
+    toastr.success(res.message, 'Pieza actualizada');
+    $('#modal_editar_pieza').modal('hide');
+    return;
+  }
+  toastr.error(res.message, 'Error actualizando la pieza');
+});
+
+const updatePiezasTable = async () => {
+  const { id: cliente_id } = clientData;
+  const res = await fetchData(`/clientes/${cliente_id}/piezas`);
+  if (!res.status) {
+    toastr.error(res.message, 'Error obteniendo las piezas');
+    return;
+  }
+  piezas_table.clear().draw();
+  piezas_table.rows.add(res.data).draw();
+};

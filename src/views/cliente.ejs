@@ -392,6 +392,32 @@
     </div>
   </div>
 </div>
+<!--! MODAL EDIT PIEZA -->
+<div class="modal fade modal_cliente" id="modal_editar_pieza" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal_cliente" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Editar pieza</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="editar-pieza-form" class="row g-3">
+          <div class="col-md-12">
+            <label for="numero_parte_editar" class="form-label required">Número de parte</label>
+            <input type="text" id="numero_parte_editar" name="numero_parte" class="form-control" />
+          </div>
+          <div class="col-md-12">
+            <label for="descripcion_editar" class="form-label required">Descripción</label>
+            <input type="text" id="descripcion_editar" name="descripcion" class="form-control" />
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button id="confirm_edit_pieza" type="submit" form="editar-pieza-form" class="btn btn-success">Guardar</button>
+      </div>
+    </div>
+  </div>
+</div>
 <!--!OFFCANVAS PIEZA-->
 <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvas_pieza" aria-labelledby="offcanvasEndLabel">
   <div class="offcanvas-header">

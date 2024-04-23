@@ -1,7 +1,14 @@
 import { Request, Response } from 'express';
 import { getClientes, createCliente, getClientById, deleteCliente, updateCliente } from './../utils/clientes';
 import type { Cliente } from '@/types/clientes';
-import { createPieza, createRevision, uploadRevisionFiles } from '@/utils/piezas';
+import {
+  createPieza,
+  createRevision,
+  getPiezas,
+  getRevisionesByPiezaId,
+  updatePieza,
+  uploadRevisionFiles
+} from '@/utils/piezas';
 
 export const getClientesC = async (req: Request, res: Response) => {
   try {
@@ -80,6 +87,39 @@ export const createPiezaC = async (req: Request, res: Response) => {
     await uploadRevisionFiles(cliente_id, pieza.id, revision.id, imagenes);
 
     res.status(200).json({});
+  } catch (error: any) {
+    res.status(500).json(error);
+  }
+};
+
+export const editPiezaC = async (req: Request, res: Response) => {
+  const { cliente_id } = req.params;
+  const piezaData = req.body;
+
+  try {
+    const pieza = await updatePieza(piezaData.id, piezaData);
+
+    res.status(200).json({});
+  } catch (error: any) {
+    res.status(500).json(error);
+  }
+};
+
+export const getRevisionesByPiezaC = async (req: Request, res: Response) => {
+  const { id, pieza_id } = req.params;
+  try {
+    const revisiones = await getRevisionesByPiezaId(parseInt(pieza_id));
+    res.status(200).json(revisiones);
+  } catch (error: any) {
+    res.status(500).json(error);
+  }
+};
+
+export const getPiezasByClienteC = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  try {
+    const piezas = await getPiezas(parseInt(id));
+    res.status(200).json(piezas);
   } catch (error: any) {
     res.status(500).json(error);
   }
