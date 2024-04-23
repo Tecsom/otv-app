@@ -226,7 +226,7 @@
               <div class="table-responsive">
                 <!--TABLE HERE-->
                 <div id="clientes_table_wrapper" class="dataTables_wrapper dt-bootstrap5 no-footer">
-                  <table id="clientes_table" class="table table-striped w-100 table-hover"></table>
+                  <table id="piezas_table" class="table table-striped w-100 table-hover"></table>
                 </div>
               </div>
             </div>
@@ -413,7 +413,9 @@
 </div>
 
 <script>
-  var clientData = JSON.parse('<%- JSON.stringify(clientData) %>');
+  var clientData = JSON.parse('<%- JSON.stringify(clientData) %>') ?? {};
+  var piezasData = JSON.parse('<%- JSON.stringify(piezasData) %>') ?? [];
 </script>
 
 <script src="/public/scripts/clientes/cliente.js" type="module"></script>
+<script src="/public/scripts/clientes/piezas.js" type="module"></script>

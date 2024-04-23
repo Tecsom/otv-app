@@ -1,3 +1,4 @@
+import { getPiezas } from '@/utils/piezas';
 import { getClientById, getClientes } from './../utils/clientes';
 import { Request, Response } from 'express';
 import path from 'path';
@@ -15,10 +16,12 @@ export const renderClientsPage = async (_: Request, res: Response) => {
 
 export const renderClientPage = async (req: Request, res: Response) => {
   const { id } = req.params;
+  const cliente_id = parseInt(id);
   try {
     const clientData = await getClientById(id);
+    const piezasData = await getPiezas(cliente_id);
 
-    res.render('cliente.ejs', { clientData });
+    res.render('cliente.ejs', { clientData, piezasData });
   } catch (error) {
     res.status(404).render('404.ejs');
   }
@@ -26,9 +29,8 @@ export const renderClientPage = async (req: Request, res: Response) => {
 
 export const renderOrdenesCompra = async (req: Request, res: Response) => {
   try {
-
     res.render('ordenes_compra.ejs');
   } catch (error) {
     res.status(404).render('404.ejs');
   }
-}
+};

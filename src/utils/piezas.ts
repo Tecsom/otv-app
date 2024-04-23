@@ -3,8 +3,8 @@ import type { CreateRevision, Pieza, Revision } from '@/types/piezas';
 import { deleteFile, uploadFile } from './storage';
 import { FileUpld } from '@/types/types';
 
-export const getPiezas = async (): Promise<Pieza[]> => {
-  const { data: piezas, error } = await supabase().from('piezas').select('*');
+export const getPiezas = async (cliente_id: number): Promise<Pieza[]> => {
+  const { data: piezas, error } = await supabase().from('piezas').select('*').eq('cliente_id', cliente_id);
   if (error) {
     console.error('Error fetching piezas:', error.message);
     throw error;
