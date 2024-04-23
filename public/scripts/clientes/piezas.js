@@ -242,9 +242,12 @@ const updatePiezasTable = async () => {
 $('#btn_edit_revision').on('click', async function () {
   const pieza_id = $('#offcanvas_pieza').attr('data-pieza-id');
   const revision_id = select_revision.val();
+  const button = new loadingButton($('#btn_edit_revision'));
+  button.start();
   const res = await fetchData(`/clientes/${clientData.id}/piezas/${pieza_id}/revisiones/${revision_id}/files`);
   if (!res.status) {
     toastr.error(res.message, 'Error obteniendo la revisión');
+    button.stop();
     return;
   }
   const {
@@ -254,7 +257,7 @@ $('#btn_edit_revision').on('click', async function () {
   dropzoneImagesEdit.removeAllFiles();
   for (const imagen of images) {
     const blob = await fetch(imagen.data).then(res => res.blob());
-    const file = new File([blob], imagen.name, { type: imagen.type });
+    const file = new File([blob], imagen.name, { type: imagen.type, isUploaded: true });
     dropzoneImagesEdit.addFile(file);
   }
 
@@ -267,4 +270,44 @@ $('#btn_edit_revision').on('click', async function () {
 
   $('#modal_editar_revision').modal('show');
   $('#offcanvas_pieza').offcanvas('hide');
+  button.stop();
+});
+
+$('#editar-revision-form').on('submit', async function (e) {
+  e.preventDefault();
+  const button = new loadingButton($('#confirm_edit_revision'));
+  button.start();
+  const pieza_id = $('#offcanvas_pieza').attr('data-pieza-id');
+  const revision_id = select_revision.val();
+  let data = {};
+  const accepted_images = dropzoneImagesEdit.getAcceptedFiles();
+  const accepted_files = dropzoneFilesEdit.getAcceptedFiles();
+
+  data.imagenes = accepted_images.map(file => ({
+    data: file.dataURL?.split('base64,')[1] ?? file.dataURL,
+    name: file.name,
+    type: file.type
+  }));
+
+  data.archivos = [];
+
+  for (const file of accepted_files) {
+    const b_64 = await processFile(file);
+
+    data.archivos.push({
+      data: b_64?.split('base64,')[1] ?? b_64,
+      name: file.name,
+      type: file.type
+    });
+  }
+  console.log({ accepted_files, accepted_images });
+
+  const res = await fetchData(`/clientes/${clientData.id}/piezas/${pieza_id}/revisiones/${revision_id}`, 'PUT', data);
+  button.stop();
+  if (res.status === true) {
+    toastr.success(res.message, 'Revisión actualizada');
+    $('#modal_editar_revision').modal('hide');
+    return;
+  }
+  toastr.error(res.message, 'Error actualizando la revisión');
 });

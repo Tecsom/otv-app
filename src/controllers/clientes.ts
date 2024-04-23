@@ -9,7 +9,7 @@ import {
   updatePieza,
   uploadRevisionFiles
 } from '@/utils/piezas';
-import { getFilePublicURL, getFilesByPath } from '@/utils/storage';
+import { deleteFile, deleteFolder, getFilePublicURL, getFilesByPath } from '@/utils/storage';
 
 export const getClientesC = async (req: Request, res: Response) => {
   try {
@@ -160,6 +160,20 @@ export const getFilesByRevisionC = async (req: Request, res: Response) => {
     }
 
     res.status(200).json({ files, images });
+  } catch (error: any) {
+    res.status(500).json(error);
+  }
+};
+
+export const updateRevisionC = async (req: Request, res: Response) => {
+  const { cliente_id, pieza_id, revision_id } = req.params;
+  const { archivos, imagenes } = req.body;
+  try {
+    console.log({ cliente_id, pieza_id, revision_id });
+    await deleteFolder('clientes', `${cliente_id}/${pieza_id}/${revision_id}`);
+    await uploadRevisionFiles(parseInt(cliente_id), parseInt(pieza_id), parseInt(revision_id), archivos);
+    await uploadRevisionFiles(parseInt(cliente_id), parseInt(pieza_id), parseInt(revision_id), imagenes);
+    res.status(200).json({});
   } catch (error: any) {
     res.status(500).json(error);
   }

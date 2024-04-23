@@ -36,3 +36,19 @@ export const getFilePublicURL = async (bucket: string, path: string) => {
   }
   return data;
 };
+
+export const deleteFolder = async (bucket: string, path: string) => {
+  const files = await getFilesByPath(bucket, path);
+  console.log(files);
+  const { error } = await supabase()
+    .storage.from(bucket)
+    .remove(files.map(file => path + '/' + file.name));
+  if (error) {
+    console.error('Error deleting folder:', error.message);
+    throw error;
+  }
+
+  await supabase().storage.from(bucket).remove([path]);
+
+  return true;
+};
