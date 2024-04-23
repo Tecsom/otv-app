@@ -73,6 +73,42 @@ const updateFieldsEdit = cliente => {
 
 $(document).ready(function () {
   updateFieldsEdit(clientData);
+
+  const TagifyCustomInlineSuggestionEl = document.querySelector('#TagifyCustomInlineSuggestion');
+
+  const whitelist = [
+    'Número de parte',
+    'Revisión de parte',
+    'ID de cliente',
+    'ID orden de compra',
+    'Semana del año (Fecha de entrega - WW)',
+    'Año (Fecha de entrega - YYYY)',
+    'Año (Fecha de entrega - YY)',
+    'Identificador de proveedor',
+    '# Consecutivo de la pieza por OC'
+  ];
+  // Inline
+  let TagifyCustomInlineSuggestion = new Tagify(TagifyCustomInlineSuggestionEl, {
+    whitelist: whitelist,
+    maxTags: 10, // allows to select max items
+    dropdown: {
+      maxItems: 20, // display max items
+      classname: 'tags-inline', // Custom inline class
+      enabled: 0,
+      closeOnSelect: false
+    },
+    templates: {
+      dropdownFooter(suggestions) {
+        var hasMore = suggestions.length - this.settings.dropdown.maxItems;
+
+        return hasMore > 0
+          ? `<footer data-selector='tagify-suggestions-footer' class="${this.settings.classNames.dropdownFooter}">
+              ${hasMore} elementos restantes, escribe la búsqueda.
+            </footer>`
+          : '';
+      }
+    }
+  });
 });
 
 $('#delete_client_btn').on('click', async function () {
