@@ -47,15 +47,38 @@ const dropzoneImages = new Dropzone('#dpz-imgs', {
   maxFilesize: 5,
   addRemoveLinks: true,
   url: '/',
-  acceptedFiles: 'image/*'
+  acceptedFiles: 'image/*',
+  dictDefaultMessage: 'Arrastra aquí las imágenes de la pieza',
+  dictFallbackMessage: 'Tu navegador no soporta la carga de archivos por arrastrar y soltar.',
+  dictFallbackText:
+    'Por favor, utiliza el formulario alternativo a continuación para cargar tus archivos como en los viejos tiempos.',
+  dictFileTooBig: 'El archivo es demasiado grande ({{filesize}}MiB). Tamaño máximo de archivo: {{maxFilesize}}MiB.',
+  dictInvalidFileType: 'No puedes subir archivos de este tipo.',
+  dictResponseError: 'El servidor respondió con código {{statusCode}}.',
+  dictCancelUpload: 'Cancelar carga',
+  dictCancelUploadConfirmation: '¿Estás seguro de que quieres cancelar esta carga?',
+  dictRemoveFile: 'Eliminar archivo',
+  dictMaxFilesExceeded: 'No puedes subir más archivos.'
 });
+
 const dropzoneFiles = new Dropzone('#dpz-files', {
   previewTemplate: previewTemplate,
   parallelUploads: 1,
   maxFilesize: 2,
   addRemoveLinks: true,
   url: '/',
-  acceptedFiles: 'application/pdf'
+  acceptedFiles: 'application/pdf',
+  dictDefaultMessage: 'Arrastra aquí las imágenes de la pieza',
+  dictFallbackMessage: 'Tu navegador no soporta la carga de archivos por arrastrar y soltar.',
+  dictFallbackText:
+    'Por favor, utiliza el formulario alternativo a continuación para cargar tus archivos como en los viejos tiempos.',
+  dictFileTooBig: 'El archivo es demasiado grande ({{filesize}}MiB). Tamaño máximo de archivo: {{maxFilesize}}MiB.',
+  dictInvalidFileType: 'No puedes subir archivos de este tipo.',
+  dictResponseError: 'El servidor respondió con código {{statusCode}}.',
+  dictCancelUpload: 'Cancelar carga',
+  dictCancelUploadConfirmation: '¿Estás seguro de que quieres cancelar esta carga?',
+  dictRemoveFile: 'Eliminar archivo',
+  dictMaxFilesExceeded: 'No puedes subir más archivos.'
 });
 
 const dropzoneImagesEdit = new Dropzone('#dpz-imgs-edit', {
@@ -64,7 +87,18 @@ const dropzoneImagesEdit = new Dropzone('#dpz-imgs-edit', {
   maxFilesize: 5,
   addRemoveLinks: true,
   url: '/',
-  acceptedFiles: 'image/*'
+  acceptedFiles: 'image/*',
+  dictDefaultMessage: 'Arrastra aquí los archivos de la pieza (planos)',
+  dictFallbackMessage: 'Tu navegador no soporta la carga de archivos por arrastrar y soltar.',
+  dictFallbackText:
+    'Por favor, utiliza el formulario alternativo a continuación para cargar tus archivos como en los viejos tiempos.',
+  dictFileTooBig: 'El archivo es demasiado grande ({{filesize}}MiB). Tamaño máximo de archivo: {{maxFilesize}}MiB.',
+  dictInvalidFileType: 'No puedes subir archivos de este tipo.',
+  dictResponseError: 'El servidor respondió con código {{statusCode}}.',
+  dictCancelUpload: 'Cancelar carga',
+  dictCancelUploadConfirmation: '¿Estás seguro de que quieres cancelar esta carga?',
+  dictRemoveFile: 'Eliminar archivo',
+  dictMaxFilesExceeded: 'No puedes subir más archivos.'
 });
 const dropzoneFilesEdit = new Dropzone('#dpz-files-edit', {
   previewTemplate: previewTemplate,
@@ -72,7 +106,18 @@ const dropzoneFilesEdit = new Dropzone('#dpz-files-edit', {
   maxFilesize: 2,
   addRemoveLinks: true,
   url: '/',
-  acceptedFiles: 'application/pdf'
+  acceptedFiles: 'application/pdf',
+  dictDefaultMessage: 'Arrastra aquí los archivos de la pieza (planos)',
+  dictFallbackMessage: 'Tu navegador no soporta la carga de archivos por arrastrar y soltar.',
+  dictFallbackText:
+    'Por favor, utiliza el formulario alternativo a continuación para cargar tus archivos como en los viejos tiempos.',
+  dictFileTooBig: 'El archivo es demasiado grande ({{filesize}}MiB). Tamaño máximo de archivo: {{maxFilesize}}MiB.',
+  dictInvalidFileType: 'No puedes subir archivos de este tipo.',
+  dictResponseError: 'El servidor respondió con código {{statusCode}}.',
+  dictCancelUpload: 'Cancelar carga',
+  dictCancelUploadConfirmation: '¿Estás seguro de que quieres cancelar esta carga?',
+  dictRemoveFile: 'Eliminar archivo',
+  dictMaxFilesExceeded: 'No puedes subir más archivos.'
 });
 
 const processFile = file => {
