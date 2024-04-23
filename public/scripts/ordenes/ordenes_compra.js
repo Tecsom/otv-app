@@ -76,25 +76,42 @@ async function init(){
     return clientes.data
   }
 
-  $('#create_order').on('submit',function(e){
+  $('#create_order').on('submit',async function(e){
     e.preventDefault()
     const $folio = $('#folio_id')
     const $date = $('#date_picker')
     const $client = $('#select_client')
 
     const folio = $folio.val().trim()
-    const date = $date.val()
-    const client = $client.val()
+    const date = dateToTimestamo($date.val())
+    const client_id = $client.val()
 
-    if(!client || !date || !folio){
+    if(!client_id || !date || !folio){
       toastr.error("Completa los campos para crear órden", "Formulario incompleto")
       return
     }
 
+    const result = await fetchData('/ordenes/create','POST',{
+      folio_id:folio, 
+      delivery_date: date, 
+      client_id: client_id
+    })
+    
+    if(!result.status){
+      toastr.error("Ocurró un error")
+      return
+    }
+    toastr.success("Creado con éxito")
     console.log("enviar formulario")
 
 
-console.log({folio,date,client})
+console.log({folio,date,client_id})
   })
   
-  
+  function dateToTimestamo(fechaString) {
+    const fecha = new Date(fechaString);
+
+    const timestamp = fecha.getTime();
+
+    return timestamp;
+}

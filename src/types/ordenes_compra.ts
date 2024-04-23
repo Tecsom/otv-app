@@ -1,8 +1,12 @@
 import { Cliente } from "./clientes"
 
-export interface ordenCompra {
-    folio: string
+
+export interface CreateOrderDataModel {
     folio_id: string
-    comprador: Cliente
+    client_id: string
     delivery_date: number
+}
+
+export interface OrdenCompra extends CreateOrderDataModel {
+    folio: string
 }
