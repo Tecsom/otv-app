@@ -1,0 +1,69 @@
+
+  <div class="container-xxl flex-grow-1 container-p-y">
+    <div class="d-flex justify-content-between align-items-center pb-2">
+      <h4 class="mb-0">Ordenes de compra</h4>
+      <button
+        id="newClientButton"
+        type="button"
+        class="btn btn-primary"
+        data-bs-toggle="modal"
+        data-bs-target="#create-client-modal">
+        <span class="tf-icons ti-xs ti ti-plus me-1"> </span>Nueva orden
+      </button>
+    </div>
+  
+    <!-- Clientes List Table -->
+    <div class="card">
+      <div class="card-header">
+        <div class="row">
+          <div class="col-md-12">
+            <div class="d-flex justify-content-between align-items-center row gap-3 gap-md-0">
+              <div class="col-md-4">
+                <input class="form-control" type="search" placeholder="Buscar cliente ..." id="search-client" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card-datatable table-responsive border-top">
+        <!--TABLE HERE-->
+        <table id="ordenes_table" class="table table-striped w-100 card-table table-hover"></table>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal -->
+  <div class="modal fade modal_cliente" id="create-client-modal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel1">Nueva orden</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="create_order" class="row g-3">
+            <div class="col-md-6">
+              <label for="folio_id" class="form-label required">Folio identificador</label>
+              <input type="text" id="folio_id" name="nombre" class="form-control" />
+            </div>
+            <div class="col-md-6 col-12 mb-4">
+              <label for="date_picker" class="form-label">Fecha de entrega</label>
+              <input type="hidden" class="form-control flatpickr-input" placeholder="Month DD, YYYY" id="date_picker">
+            </div>
+            <div class="col-md-12">
+              <label for="select_client" class="form-label">Cliente</label>
+              <select name="client" id="select_client" class="form-select"></select>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button id="create_order_button" type="submit" form="create_order" class="btn btn-success">
+            Generar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="/public/scripts/ordenes/ordenes_compra.js" type="module"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>

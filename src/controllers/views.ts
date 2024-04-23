@@ -23,3 +23,12 @@ export const renderClientPage = async (req: Request, res: Response) => {
     res.status(404).render('404.ejs');
   }
 };
+
+export const renderOrdenesCompra = async (req: Request, res: Response) => {
+  try {
+
+    res.render('ordenes_compra.ejs');
+  } catch (error) {
+    res.status(404).render('404.ejs');
+  }
+}
