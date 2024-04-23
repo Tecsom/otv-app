@@ -7,7 +7,8 @@ import {
   createPiezaC,
   editPiezaC,
   getRevisionesByPiezaC,
-  getPiezasByClienteC
+  getPiezasByClienteC,
+  getFilesByRevisionC
 } from '../controllers/clientes';
 
 const router = express.Router();
@@ -22,5 +23,8 @@ router.get('/clientes/:id/piezas', getPiezasByClienteC);
 router.post('/clientes/:id/piezas', createPiezaC);
 router.put('/clientes/:cliente_id/piezas', editPiezaC);
 router.get('/clientes/:cliente_id/piezas/:pieza_id/revisiones', getRevisionesByPiezaC);
+
+//Revisiones
+router.get('/clientes/:cliente_id/piezas/:pieza_id/revisiones/:revision_id/files', getFilesByRevisionC);
 
 export default router;

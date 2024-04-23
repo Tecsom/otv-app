@@ -9,6 +9,7 @@ import {
   updatePieza,
   uploadRevisionFiles
 } from '@/utils/piezas';
+import { getFilePublicURL, getFilesByPath } from '@/utils/storage';
 
 export const getClientesC = async (req: Request, res: Response) => {
   try {
@@ -120,6 +121,45 @@ export const getPiezasByClienteC = async (req: Request, res: Response) => {
   try {
     const piezas = await getPiezas(parseInt(id));
     res.status(200).json(piezas);
+  } catch (error: any) {
+    res.status(500).json(error);
+  }
+};
+
+export const getFilesByRevisionC = async (req: Request, res: Response) => {
+  const { cliente_id, pieza_id, revision_id } = req.params;
+  try {
+    const revisiones = await getFilesByPath('clientes', `${cliente_id}/${pieza_id}/${revision_id}`);
+
+    const images_data = revisiones?.filter((file: any) => file.metadata.mimetype.includes('image')) ?? [];
+    const files_data = revisiones?.filter((file: any) => file.metadata.mimetype.includes('pdf')) ?? [];
+
+    const images = [];
+
+    for (const image of images_data) {
+      const { signedUrl } = await getFilePublicURL(
+        'clientes',
+        `${cliente_id}/${pieza_id}/${revision_id}/${image.name}`
+      );
+      images.push({
+        name: image.name,
+        data: signedUrl,
+        type: image.metadata.mimetype
+      });
+    }
+
+    const files = [];
+
+    for (const file of files_data) {
+      const { signedUrl } = await getFilePublicURL('clientes', `${cliente_id}/${pieza_id}/${revision_id}/${file.name}`);
+      files.push({
+        name: file.name,
+        data: signedUrl,
+        type: file.metadata.mimetype
+      });
+    }
+
+    res.status(200).json({ files, images });
   } catch (error: any) {
     res.status(500).json(error);
   }

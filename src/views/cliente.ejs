@@ -418,6 +418,38 @@
     </div>
   </div>
 </div>
+<!--! MODAL EDIT REVISIÓN -->
+<div class="modal fade modal_cliente" id="modal_editar_revision" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal_cliente" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Editar revisión</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="editar-revision-form" class="row g-3">
+          <div class="col-md-12">
+            <label for="input-imgs-edit" class="form-label required">Imágenes</label>
+            <div id="dpz-imgs-edit" class="fallback dropzone">
+              <input id="input-imgs-edit" type="file" multiple />
+            </div>
+          </div>
+          <div class="col-md-12">
+            <label for="input-files-edit" class="form-label required">Archivos</label>
+            <div id="dpz-files-edit" class="fallback dropzone">
+              <input id="input-files-edit" type="file" multiple />
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button id="confirm_edit_revision" type="submit" form="editar-revision-form" class="btn btn-success">
+          Guardar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
 <!--!OFFCANVAS PIEZA-->
 <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvas_pieza" aria-labelledby="offcanvasEndLabel">
   <div class="offcanvas-header">

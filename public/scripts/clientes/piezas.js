@@ -52,7 +52,24 @@ const dropzoneImages = new Dropzone('#dpz-imgs', {
 const dropzoneFiles = new Dropzone('#dpz-files', {
   previewTemplate: previewTemplate,
   parallelUploads: 1,
+  maxFilesize: 2,
+  addRemoveLinks: true,
+  url: '/',
+  acceptedFiles: 'application/pdf'
+});
+
+const dropzoneImagesEdit = new Dropzone('#dpz-imgs-edit', {
+  previewTemplate: previewTemplate,
+  parallelUploads: 1,
   maxFilesize: 5,
+  addRemoveLinks: true,
+  url: '/',
+  acceptedFiles: 'image/*'
+});
+const dropzoneFilesEdit = new Dropzone('#dpz-files-edit', {
+  previewTemplate: previewTemplate,
+  parallelUploads: 1,
+  maxFilesize: 2,
   addRemoveLinks: true,
   url: '/',
   acceptedFiles: 'application/pdf'
@@ -176,3 +193,33 @@ const updatePiezasTable = async () => {
   piezas_table.clear().draw();
   piezas_table.rows.add(res.data).draw();
 };
+
+$('#btn_edit_revision').on('click', async function () {
+  const pieza_id = $('#offcanvas_pieza').attr('data-pieza-id');
+  const revision_id = select_revision.val();
+  const res = await fetchData(`/clientes/${clientData.id}/piezas/${pieza_id}/revisiones/${revision_id}/files`);
+  if (!res.status) {
+    toastr.error(res.message, 'Error obteniendo la revisión');
+    return;
+  }
+  const {
+    data: { images, files }
+  } = res;
+
+  dropzoneImagesEdit.removeAllFiles();
+  for (const imagen of images) {
+    const blob = await fetch(imagen.data).then(res => res.blob());
+    const file = new File([blob], imagen.name, { type: imagen.type });
+    dropzoneImagesEdit.addFile(file);
+  }
+
+  dropzoneFilesEdit.removeAllFiles();
+  for (const archivo of files) {
+    const blob = await fetch(archivo.data).then(res => res.blob());
+    const file = new File([blob], archivo.name, { type: archivo.type });
+    dropzoneFilesEdit.addFile(file);
+  }
+
+  $('#modal_editar_revision').modal('show');
+  $('#offcanvas_pieza').offcanvas('hide');
+});

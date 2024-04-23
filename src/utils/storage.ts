@@ -19,11 +19,20 @@ export const deleteFile = async (filename: string, bucket: string): Promise<bool
   return true;
 };
 
-export const getFiles = async (bucket: string): Promise<string[]> => {
-  const { data, error } = await supabase().storage.from(bucket).list();
+export const getFilesByPath = async (bucket: string, path: string) => {
+  const { data, error } = await supabase().storage.from(bucket).list(path);
   if (error) {
-    console.error('Error fetching files:', error.message);
+    console.error('Error getting files:', error.message);
     throw error;
   }
-  return data.map(file => file.name);
+  return data;
+};
+
+export const getFilePublicURL = async (bucket: string, path: string) => {
+  const { data, error } = await supabase().storage.from(bucket).createSignedUrl(path, 60);
+  if (error) {
+    console.error('Error getting file URL:', error.message);
+    throw error;
+  }
+  return data;
 };
