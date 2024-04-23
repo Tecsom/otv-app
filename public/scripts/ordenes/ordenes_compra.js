@@ -107,6 +107,8 @@ $('#create_order').on('submit', async function (e) {
   $date.val('');
   $client.val('');
   $('#create_orden_compra').modal('hide');
+  await loadOrdenes()
+  
 });
 
 async function getOrdenes() {
@@ -125,7 +127,7 @@ async function loadOrdenes() {
   console.log({ ordenes });
   ordenes.forEach(orden => {
     var $newdiv1 = $(`
-        <div id="order_${orden.id}">
+        <div class="order_container_child" id="order_${orden.id}">
           <label>Folio Asignado</label>
           <p>${addLeadingZeros(orden.unique_folio, 6)}</p>
           <label>Cliente</label>
@@ -170,3 +172,5 @@ function isoDateToFormatted(fechaISO) {
 
   return fechaFormateada;
 }
+
+//añadir, eliminar, editar productos en las ordenes de compras
