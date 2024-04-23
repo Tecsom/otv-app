@@ -496,28 +496,60 @@
 <!--!OFFCANVAS PIEZA-->
 <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvas_pieza" aria-labelledby="offcanvasEndLabel">
   <div class="offcanvas-header">
-    <h5 id="offcanvas_pieza_title" class="offcanvas-title">[Número de parte]</h5>
+    <div class="d-flex align-items-center gap-2">
+      <h5 id="offcanvas_pieza_title" class="offcanvas-title mb-0">[Número de parte]</h5>
+      <span class="badge bg-label-success">Activo</span>
+    </div>
     <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
   </div>
   <div class="offcanvas-body mx-0 flex-grow-0">
-    <div class="row g-2">
+    <div class="row g-3">
       <div class="col-md-12">
         <p class="mb-0"><strong>Número de parte: </strong>[Número de parte]</p>
         <p class="mb-0"><strong>Descripción de la pieza: </strong>[Descripción de la pieza]</p>
       </div>
       <div class="col-md-12">
-        <button id="btn_edit_pieza" type="button" class="btn btn-primary mb-2 d-grid w-100">Editar general</button>
+        <div class="d-flex gap-2">
+          <button id="btn_edit_pieza" type="button" class="btn btn-label-secondary flex-grow-1">
+            <span class="tf-icons ti-xs ti ti-edit me-1"></span>Editar pieza
+          </button>
+          <button type="button" class="btn btn-icon btn-label-danger">
+            <span class="ti ti-trash-x"></span>
+          </button>
+        </div>
       </div>
       <div class="col-md-12">
         <hr class="m-0" />
       </div>
+      <div class="col-md-12">
+        <div class="row g-3">
+          <div class="col-md-12">
+            <div class="d-flex align-items-center justify-content-between">
+              <h6 class="mb-0">Revisión</h6>
+              <button id="btn_new_revision" type="button" class="btn btn-label-success">
+                <span class="tf-icons ti-xs ti ti-plus me-1"></span>Revisión
+              </button>
+            </div>
+          </div>
+          <div class="col-md-12">
+            <select id="select_revision" class="form-select mt-2">
+              <option value="0">Revisión actual</option>
+            </select>
+          </div>
+          <div class="col-md-12">Información de la revisión</div>
+          <div class="col-md-12">
+            <div class="d-flex gap-2">
+              <button id="btn_edit_revision" type="button" class="btn btn-label-secondary flex-grow-1">
+                <span class="tf-icons ti-xs ti ti-edit me-1"></span>Editar revisión
+              </button>
+              <button type="button" class="btn btn-icon btn-label-danger">
+                <span class="ti ti-trash-x"></span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-
-    <button id="btn_edit_revision" type="button" class="btn btn-label-secondary d-grid w-100">Editar revisión</button>
-    <select id="select_revision" class="form-select mt-2">
-      <option value="0">Revisión actual</option>
-    </select>
-    <button id="btn_new_revision" type="button" class="btn btn-label-secondary d-grid w-100">Nueva revisión</button>
   </div>
 </div>
 
