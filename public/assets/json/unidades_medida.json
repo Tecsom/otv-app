@@ -1,0 +1,277 @@
+{
+    "unidades": [
+        {
+            "id": 1,
+            "nombre": "Nanómetro cuadrado",
+            "simbolo": "nm²",
+            "tipo": "superficie",
+            "sistema": "internacional"
+        },
+        {
+            "id": 2,
+            "nombre": "Micrómetro cuadrado",
+            "simbolo": "µm²",
+            "tipo": "superficie",
+            "sistema": "internacional"
+        },
+        {
+            "id": 3,
+            "nombre": "Milímetro cuadrado",
+            "simbolo": "mm²",
+            "tipo": "superficie",
+            "sistema": "internacional"
+        },
+        {
+            "id": 4,
+            "nombre": "Centímetro cuadrado",
+            "simbolo": "cm²",
+            "tipo": "superficie",
+            "sistema": "internacional"
+        },
+        {
+            "id": 5,
+            "nombre": "Metro cuadrado",
+            "simbolo": "m²",
+            "tipo": "superficie",
+            "sistema": "internacional"
+        },
+        {
+            "id": 6,
+            "nombre": "Kilómetro cuadrado",
+            "simbolo": "km²",
+            "tipo": "superficie",
+            "sistema": "internacional"
+        },
+        {
+            "id": 7,
+            "nombre": "Pulgada cuadrada",
+            "simbolo": "in²",
+            "tipo": "superficie",
+            "sistema": "inglés"
+        },
+        {
+            "id": 8,
+            "nombre": "Pie cuadrado",
+            "simbolo": "ft²",
+            "tipo": "superficie",
+            "sistema": "inglés"
+        },
+        {
+            "id": 9,
+            "nombre": "Yarda cuadrada",
+            "simbolo": "yd²",
+            "tipo": "superficie",
+            "sistema": "inglés"
+        },
+        {
+            "id": 10,
+            "nombre": "Milla cuadrada",
+            "simbolo": "mi²",
+            "tipo": "superficie",
+            "sistema": "inglés"
+        },
+        {
+            "id": 11,
+            "nombre": "Nanómetro cúbico",
+            "simbolo": "nm³",
+            "tipo": "volumen",
+            "sistema": "internacional"
+        },
+        {
+            "id": 12,
+            "nombre": "Micrómetro cúbico",
+            "simbolo": "µm³",
+            "tipo": "volumen",
+            "sistema": "internacional"
+        },
+        {
+            "id": 13,
+            "nombre": "Milímetro cúbico",
+            "simbolo": "mm³",
+            "tipo": "volumen",
+            "sistema": "internacional"
+        },
+        {
+            "id": 14,
+            "nombre": "Centímetro cúbico",
+            "simbolo": "cm³",
+            "tipo": "volumen",
+            "sistema": "internacional"
+        },
+        {
+            "id": 15,
+            "nombre": "Metro cúbico",
+            "simbolo": "m³",
+            "tipo": "volumen",
+            "sistema": "internacional"
+        },
+        {
+            "id": 16,
+            "nombre": "Kilómetro cúbico",
+            "simbolo": "km³",
+            "tipo": "volumen",
+            "sistema": "internacional"
+        },
+        {
+            "id": 17,
+            "nombre": "Pulgada cúbica",
+            "simbolo": "in³",
+            "tipo": "volumen",
+            "sistema": "inglés"
+        },
+        {
+            "id": 18,
+            "nombre": "Pie cúbico",
+            "simbolo": "ft³",
+            "tipo": "volumen",
+            "sistema": "inglés"
+        },
+        {
+            "id": 19,
+            "nombre": "Yarda cúbica",
+            "simbolo": "yd³",
+            "tipo": "volumen",
+            "sistema": "inglés"
+        },
+        {
+            "id": 20,
+            "nombre": "Milla cúbica",
+            "simbolo": "mi³",
+            "tipo": "volumen",
+            "sistema": "inglés"
+        },
+        {
+            "id": 21,
+            "nombre": "Nanogramo",
+            "simbolo": "ng",
+            "tipo": "masa",
+            "sistema": "internacional"
+        },
+        {
+            "id": 22,
+            "nombre": "Microgramo",
+            "simbolo": "µg",
+            "tipo": "masa",
+            "sistema": "internacional"
+        },
+        {
+            "id": 23,
+            "nombre": "Miligramo",
+            "simbolo": "mg",
+            "tipo": "masa",
+            "sistema": "internacional"
+        },
+        {
+            "id": 24,
+            "nombre": "Gramo",
+            "simbolo": "g",
+            "tipo": "masa",
+            "sistema": "internacional"
+        },
+        {
+            "id": 25,
+            "nombre": "Kilogramo",
+            "simbolo": "kg",
+            "tipo": "masa",
+            "sistema": "internacional"
+        },
+        {
+            "id": 26,
+            "nombre": "Tonelada métrica",
+            "simbolo": "t",
+            "tipo": "masa",
+            "sistema": "internacional"
+        },
+        {
+            "id": 27,
+            "nombre": "Onza",
+            "simbolo": "oz",
+            "tipo": "masa",
+            "sistema": "inglés"
+        },
+        {
+            "id": 28,
+            "nombre": "Libra",
+            "simbolo": "lb",
+            "tipo": "masa",
+            "sistema": "inglés"
+        },
+        {
+            "id": 29,
+            "nombre": "Tonelada (US)",
+            "simbolo": "ton",
+            "tipo": "masa",
+            "sistema": "inglés"
+        },
+        {
+            "id": 30,
+            "nombre": "Nanómetro",
+            "simbolo": "nm",
+            "tipo": "longitud",
+            "sistema": "internacional"
+        },
+        {
+            "id": 31,
+            "nombre": "Micrómetro",
+            "simbolo": "µm",
+            "tipo": "longitud",
+            "sistema": "internacional"
+        },
+        {
+            "id": 32,
+            "nombre": "Milímetro",
+            "simbolo": "mm",
+            "tipo": "longitud",
+            "sistema": "internacional"
+        },
+        {
+            "id": 33,
+            "nombre": "Centímetro",
+            "simbolo": "cm",
+            "tipo": "longitud",
+            "sistema": "internacional"
+        },
+        {
+            "id": 34,
+            "nombre": "Metro",
+            "simbolo": "m",
+            "tipo": "longitud",
+            "sistema": "internacional"
+        },
+        {
+            "id": 35,
+            "nombre": "Kilómetro",
+            "simbolo": "km",
+            "tipo": "longitud",
+            "sistema": "internacional"
+        },
+        {
+            "id": 36,
+            "nombre": "Pulgada",
+            "simbolo": "in",
+            "tipo": "longitud",
+            "sistema": "inglés"
+        },
+        {
+            "id": 37,
+            "nombre": "Pie",
+            "simbolo": "ft",
+            "tipo": "longitud",
+            "sistema": "inglés"
+        },
+        {
+            "id": 38,
+            "nombre": "Yarda",
+            "simbolo": "yd",
+            "tipo": "longitud",
+            "sistema": "inglés"
+        },
+        {
+            "id": 39,
+            "nombre": "Milla",
+            "simbolo": "mi",
+            "tipo": "longitud",
+            "sistema": "inglés"
+        }
+    ]
+}
