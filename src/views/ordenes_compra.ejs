@@ -121,7 +121,7 @@
               </div>
               <div class="d-flex align-items-center gap-2">
                 <button type="button" class="btn btn-label-success">
-                  <span class="tf-icons ti-xs ti ti-check me-1"> </span>Finalizar
+                  <span class="tf-icons ti-xs ti ti-lock me-1"> </span>Generar
                 </button>
                 <div class="btn-group">
                   <button
@@ -279,7 +279,7 @@
                       </div>
                       <div class="col-md-12 d-flex justify-content-end mt-2">
                         <button id="uploadFilesButton" type="button" class="btn btn-label-primary">
-                          <span class="tf-icons ti-xs ti ti-upload me-1"> </span>Subir
+                          <span class="tf-icons ti-xs ti ti-device-floppy me-1"> </span>Guardar
                         </button>
                       </div>
                     </div>
@@ -365,14 +365,15 @@
 
   <!--! Modal eliminar orden de compra -->
   <div class="modal fade modal_cliente" id="delete_orden_compra_modal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-sm" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel1">Eliminar orden</h5>
+          <h5 class="modal-title" id="exampleModalLabel1">Eliminar orden de compra</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          <p>¿Estás seguro de eliminar la orden de compra?</p>
+          <p>¿Estás seguro de eliminar?</p>
+          <small class="text-muted">Esta acción es irreversible.</small>
         </div>
         <div class="modal-footer">
           <button id="confirm_delete_order" type="button" class="btn btn-danger">Eliminar</button>
