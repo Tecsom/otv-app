@@ -200,7 +200,7 @@ $('#ordenes_compra_container').on('click', '.order_container_child', function ()
 
   $folio.text(uniqueFolio);
   $fechaEntrega.text(isoDateToFormatted(data.delivery_date));
-  $clientData.text(data.clientes?.nombre ?? 'SIN CLIENTE RELACIONADO');
+  $clientData.text(data.clientes?.nombre ?? 'Sin cliente relacionado');
   $fechaCreacion.text(isoDateToFormatted(data.created_at));
   $('#ordenes_compra_container .order_container_child').removeClass('bg-label-primary');
   $(this).addClass('bg-label-primary');
