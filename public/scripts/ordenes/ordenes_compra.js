@@ -32,6 +32,11 @@ let loadMore = true;
 let isLoading = false;
 
 const $clients = $('#select_client').select2({
+  language: {
+    searching: function () {
+      return 'Buscando...';
+    }
+  },
   placeholder: 'Selecciona un cliente',
   dropdownParent: $('#create_orden_compra'),
   ajax: {
