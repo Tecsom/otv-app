@@ -274,12 +274,23 @@ function pushUrl(paramName, paramValue) {
 $('#addProductsButton').on('click', async function () {
   const $addProducts = $('#addProductModal');
   const modalData = $addProducts.data();
-  const $productsSelect = $('#add_product_select');
+  const $products = $('#add_product_select');
+  const $revision = $('#add_product_revision')
+  const $quantity = $('#add_product_quantity')
+
+  $products.empty()
+  $revision.empty()
+  $quantity.val("1")
+
+
   if (!modalData.clientes) {
     toastr.warning('Asigna un cliente a la orden para añadir productos');
     return;
   }
-  const resultProducts = await fetchData(`/clientes/${modalData.clientes.id}/piezas`);
+  console.log({modalData})
+  const clientId = modalData.clientes.id
+
+  const resultProducts = await fetchData(`/clientes/${clientId}/piezas`);
   if (!resultProducts.status) {
     toastr.error('Ocurrió un error al cargar piezas');
   }
@@ -290,10 +301,17 @@ $('#addProductsButton').on('click', async function () {
     return;
   }
 
-  console.log({ products });
+  ///clientes/:cliente_id/piezas/:pieza_id/revisiones
+  const revisionesResponse = await fetchData(`/clientes/${clientId}/piezas/${products[0].id}/revisiones`)
+
+  if(!revisionesResponse.status){
+    toastr.error("Ocurrio un error al recuperar revisiones")
+    return
+  }
+
 
   products.forEach(product => {
-    $productsSelect.append(
+    $products.append(
       $('<option>', {
         value: product.id,
         text: product.descripcion
@@ -301,19 +319,34 @@ $('#addProductsButton').on('click', async function () {
     );
   });
 
+
+  const revisiones = revisionesResponse.data //Array de revisiones
+
+  revisiones.forEach(revision => {
+    $revision.append(
+      $('<option>', {
+        value: revision.id,
+        text: revision.nombre
+      })
+    );
+  });
+
   $addProducts.modal('show');
 });
+
+
 
 $('#addProduct').on('submit', async function (e) {
   e.preventDefault();
   const confirmButton = $('#confirm_add_product');
   const $addProductsmodal = $('#addProductModal');
+  const $revision = $('#add_product_revision')
   const order_id = $addProductsmodal.data().id;
 
   const $product = $('#add_product_select');
   const $quantity = $('#add_product_quantity');
 
-  if (!$quantity.val() || !$product.val()) {
+  if (!$quantity.val() || !$product.val() || !$revision.val()) {
     toastr.error('Añade un producto y su cantidad');
     return;
   }
@@ -321,7 +354,8 @@ $('#addProduct').on('submit', async function (e) {
   const productAdd = {
     order_id: order_id,
     pieza_id: $product.val(),
-    quantity: $quantity.val()
+    quantity: $quantity.val(),
+    revision: $revision.val()
   };
   const result = await fetchData('/ordernes/addproduct', 'POST', productAdd);
   console.log({ result });

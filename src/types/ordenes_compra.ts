@@ -16,4 +16,5 @@ export interface ProductAdd {
     order_id: number;
     product_id: number;
     quantity: number;
+    revision: number;
 }
