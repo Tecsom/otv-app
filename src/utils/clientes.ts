@@ -3,7 +3,19 @@ import supabase from '@/config/supabase';
 import { deleteFolder } from './storage';
 
 export const getClientes = async (): Promise<Cliente[]> => {
-  const { data: clientes, error } = await supabase().from('clientes').select('*');
+  const { data: clientes, error } = await supabase().from('clientes').select(`
+  id,
+  created_at,
+  nombre,
+  identificador,
+  domicilio,
+  pais, 
+  estado,
+  ciudad,
+  correo,
+  telefono,
+  celular
+  `);
   if (error) {
     console.error('Error fetching clientes:', error.message);
     throw error;
