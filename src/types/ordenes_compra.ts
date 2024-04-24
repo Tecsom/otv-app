@@ -1,19 +1,19 @@
 import { Cliente } from './clientes';
 export interface CreateOrderDataModel {
-  folio_id: string;
-  client_id: string;
-  delivery_date: string;
+    folio_id: string;
+    client_id: string;
+    delivery_date: string;
 }
 
 export interface OrdenCompra {
-  folio_id: string;
-  client: Cliente;
-  delivery_date: string;
-  unique_folio: number;
+    folio_id: string;
+    client: Cliente;
+    delivery_date: string;
+    unique_folio: number;
 }
 
 export interface ProductAdd {
-  order_id: string;
-  product_id: string;
-  quantity: number;
+    order_id: number;
+    product_id: number;
+    quantity: number;
 }
