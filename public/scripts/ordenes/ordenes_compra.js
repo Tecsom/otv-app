@@ -7,9 +7,9 @@ $('#ordenes_table').DataTable({
     { data: 'numero_parte', title: '# Parte', orderable: true, className: 'non-selectable' },
     { data: 'revision_name', title: 'Revisión', orderable: false, className: 'non-selectable' },
     //{ data: 'descripcion', title: 'Descripción', orderable: true, className: 'non-selectable' },
-    { data: 'costo_produccion', title: 'Costo', orderable: false, className: 'non-selectable' },
+    { data: 'currency_costo_produccion', title: 'Costo', orderable: false, className: 'non-selectable' },
     { data: 'quantity', title: 'Cant.', orderable: false, className: 'non-selectable' },
-    { data: 'costo_venta', title: 'Precio', orderable: false, className: 'non-selectable' }
+    { data: 'currency_costo_venta', title: 'Precio', orderable: false, className: 'non-selectable' }
   ],
   dom: 'rtp',
   language: {
@@ -531,7 +531,9 @@ async function loadProductos(id) {
       numero_parte: product.piezas.numero_parte,
       revision_name: product.revisiones.nombre,
       revision_id: product.revisiones.id,
-      revision_description: product.revisiones.descripcion
+      revision_description: product.revisiones.descripcion,
+      currency_costo_produccion: formatCurrency(product.piezas.costo_produccion),
+      currency_costo_venta: formatCurrency(product.piezas.costo_venta)
     };
   });
 
@@ -698,3 +700,18 @@ $('#add_product_select').on('change',async function(){
 
   $('#add_product_revision').val(lastRevision.id);
 })
+
+
+function formatCurrency(amount) {
+  const currencyCode = 'MXN';
+  const locale = 'es-MX'; 
+
+  const formatter = new Intl.NumberFormat(locale, {
+      style: 'currency',
+      currency: currencyCode
+  });
+
+  return formatter.format(amount);
+}
+
+// Ejemplo de uso
