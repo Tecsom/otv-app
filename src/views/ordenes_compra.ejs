@@ -264,8 +264,15 @@
                     <div class="row">
                       <div class="col-md-12">
                         <label for="input-imgs" class="form-label required">Archivos</label>
-                        <div id="dropzone" class="fallback dropzone">
-                          <input id="input-dropzone" type="file" multiple />
+                      </div>
+                      <div class="col-md-12">
+                        <div class="row">
+                          <div class="col-md-3">Lista de archivos</div>
+                          <div class="col-md-9">
+                            <div id="dropzone" class="fallback dropzone">
+                              <input id="input-dropzone" type="file" multiple />
+                            </div>
+                          </div>
                         </div>
                       </div>
                       <div class="col-md-12 d-flex justify-content-end mt-2">
@@ -274,84 +281,83 @@
                         </button>
                       </div>
                     </div>
+                    <div class="tab-pane fade" id="navs_codes" role="tabpanel"></div>
+                    <div class="tab-pane fade" id="navs_verificaciones" role="tabpanel"></div>
+                    <div class="tab-pane fade" id="navs_embarques" role="tabpanel"></div>
                   </div>
-                  <div class="tab-pane fade" id="navs_codes" role="tabpanel"></div>
-                  <div class="tab-pane fade" id="navs_verificaciones" role="tabpanel"></div>
-                  <div class="tab-pane fade" id="navs_embarques" role="tabpanel"></div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <div class="app-overlay"></div>
-    </div>
-  </div>
-</div>
-
-<!-- Modal Nueva orden de compra-->
-<div class="modal fade modal_cliente" id="create_orden_compra" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel1">Nueva orden</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <form id="create_order" class="row g-3">
-          <div class="col-md-6">
-            <label for="folio_id" class="form-label required">Folio del cliente</label>
-            <input type="text" id="folio_id" name="nombre" class="form-control" />
-          </div>
-          <div class="col-md-6 col-12">
-            <label for="date_picker" class="form-label">Fecha de entrega</label>
-            <input type="hidden" class="form-control flatpickr-input" placeholder="dd/mm/aaaa" id="date_picker" />
-          </div>
-          <div class="col-md-12">
-            <label for="select_client" class="form-label">Cliente</label>
-            <select name="client" id="select_client" class="form-select"></select>
-          </div>
-        </form>
-      </div>
-      <div class="modal-footer">
-        <button id="create_order_button" type="submit" form="create_order" class="btn btn-success">Generar</button>
+        <div class="app-overlay"></div>
       </div>
     </div>
   </div>
-</div>
 
-<!---->
-<div class="modal fade modal_cliente" id="addProductModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel1">Añade un producto</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <form id="addProduct" class="row g-3">
-          <div class="col-md-9">
-            <label for="add_product_select" class="form-label required">Producto</label>
-            <select name="client" id="add_product_select" class="form-select"></select>
-          </div>
-          <div class="col-md-3">
-            <label for="add_product_quantity" class="form-label">Cantidad</label>
-            <input class="form-control" type="number" value="1" id="add_product_quantity" />
-          </div>
-          <div class="col-md-12">
-            <label for="add_product_revision" class="form-label">Revision</label>
-            <select name="client" id="add_product_revision" class="form-select"></select>
-          </div>
-        </form>
-      </div>
-      <div class="modal-footer">
-        <button id="confirm_add_product" type="submit" form="addProduct" class="btn btn-success">Añadir</button>
+  <!-- Modal Nueva orden de compra-->
+  <div class="modal fade modal_cliente" id="create_orden_compra" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel1">Nueva orden</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="create_order" class="row g-3">
+            <div class="col-md-6">
+              <label for="folio_id" class="form-label required">Folio del cliente</label>
+              <input type="text" id="folio_id" name="nombre" class="form-control" />
+            </div>
+            <div class="col-md-6 col-12">
+              <label for="date_picker" class="form-label">Fecha de entrega</label>
+              <input type="hidden" class="form-control flatpickr-input" placeholder="dd/mm/aaaa" id="date_picker" />
+            </div>
+            <div class="col-md-12">
+              <label for="select_client" class="form-label">Cliente</label>
+              <select name="client" id="select_client" class="form-select"></select>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button id="create_order_button" type="submit" form="create_order" class="btn btn-success">Generar</button>
+        </div>
       </div>
     </div>
   </div>
-</div>
-<!--<div class="container-xxl flex-grow-1 container-p-y">
+
+  <!---->
+  <div class="modal fade modal_cliente" id="addProductModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel1">Añade un producto</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="addProduct" class="row g-3">
+            <div class="col-md-9">
+              <label for="add_product_select" class="form-label required">Producto</label>
+              <select name="client" id="add_product_select" class="form-select"></select>
+            </div>
+            <div class="col-md-3">
+              <label for="add_product_quantity" class="form-label">Cantidad</label>
+              <input class="form-control" type="number" value="1" id="add_product_quantity" />
+            </div>
+            <div class="col-md-12">
+              <label for="add_product_revision" class="form-label">Revision</label>
+              <select name="client" id="add_product_revision" class="form-select"></select>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button id="confirm_add_product" type="submit" form="addProduct" class="btn btn-success">Añadir</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!--<div class="container-xxl flex-grow-1 container-p-y">
   <div class="d-flex justify-content-between align-items-center pb-2">
     <h4 class="mb-0">Ordenes de compra</h4>
     <button
@@ -381,9 +387,10 @@
     </div>
   </div>
 </div>-->
-<script>
-  var dropzoneFiles;
-</script>
+  <script>
+    var dropzoneFiles;
+  </script>
 
-<script src="/public/scripts/ordenes/ordenes_compra.js" type="module"></script>
-<script src="/public/scripts/ordenes/archivos.js" type="module"></script>
+  <script src="/public/scripts/ordenes/ordenes_compra.js" type="module"></script>
+  <script src="/public/scripts/ordenes/archivos.js" type="module"></script>
+</div>
