@@ -329,6 +329,10 @@ $('#addProduct').on('submit', async function (e) {
 
 
 async function loadProductos(id){
+  $('#ordenes_table').DataTable().clear();
+  $('#ordenes_table').DataTable().draw();
+
+
   const productsResult = await fetchData(`/ordenes/${id}/productos`)
   const productos = productsResult.data
   console.log({productos})
@@ -341,7 +345,7 @@ async function loadProductos(id){
 
     return{
       id: product.id,
-      cantidad:product.quantity,
+      quantity:product.quantity,
       costo_produccion: product.piezas.costo_produccion,
       costo_venta: product.piezas.costo_venta,
       descripcion: product.piezas.descripcion,
@@ -354,7 +358,6 @@ async function loadProductos(id){
   })
  
 
-  $('#ordenes_table').DataTable().clear();
   $('#ordenes_table').DataTable().rows.add(productosTable).draw();
 
 
