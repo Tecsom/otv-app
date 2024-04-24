@@ -11,6 +11,8 @@ export interface OrdenCompra {
   delivery_date: string;
   unique_folio: number;
   id: number;
+  last_update: string;
+  estado: 'preceso' | 'pendiente' | 'completada';
 }
 
 export interface ProductAdd {
