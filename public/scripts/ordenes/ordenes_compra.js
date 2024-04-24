@@ -258,12 +258,13 @@ $('#addProductsButton').on('click', async function () {
   });
 
   $addProducts.modal('show');
-
-  $addProducts.modal('show');
 });
 
-$('#addProduct').on('submit', async function () {
+$('#addProduct').on('submit', async function (e) {
+  e.preventDefault()
   const confirmButton = $('#confirm_add_product');
+  const $addProductsmodal = $('#addProductModal');
+  const order_id = $addProductsmodal.data().id
 
   const $product = $('#add_product_select');
   const $quantity = $('#add_product_quantity');
@@ -273,6 +274,11 @@ $('#addProduct').on('submit', async function () {
     return;
   }
 
-  const result = await fetchData('/ordernes/addproduct');
+  const productAdd = {
+    order_id:order_id,
+    pieza_id: $product.val(),
+    quantity: $quantity.val()
+  }
+  const result = await fetchData('/ordernes/addproduct', 'POST', productAdd);
   console.log({ result });
 });
