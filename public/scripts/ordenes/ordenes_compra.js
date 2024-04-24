@@ -797,8 +797,32 @@ $('#editProduct').on('submit',async function(e){
   e.preventDefault()
   const $modal = $('#editProductModal')
   const productOrderId = $modal.data().id // id del row
-console.log({productOrderId})
+  console.log({productOrderId})
 
-  
+  const $revision = $('#edit_product_revision')
+  const $cantidad = $('#edit_product_quantity')
+
+  if(!$revision.val() || !$cantidad.val()){
+    toastr.error("Ocurrio un error editando el producto")
+    return
+  }
+
+  const payload = {
+    id: productOrderId,
+    revision: $revision.val(),
+    cantidad: $cantidad.val()
+  }
+
+  const deleteRes = await fetchData(`/ordenes/producto/edit/`, "PUT",payload)
+  if(!deleteRes.status){
+    toastr.error("Ocurrió un error al eliminar producto de la orden")
+    return
+
+  }
+
+ const genealData = $('#ordenes_table').data()
+ console.log({genealData})
+  await loadProductos(genealData.id)
+  $modal.modal('hide')
 
 })

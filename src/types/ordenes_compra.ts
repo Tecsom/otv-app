@@ -21,3 +21,10 @@ export interface ProductAdd {
   quantity: number;
   revision: number;
 }
+
+
+export interface productEdit {
+  id: number
+  revision: number
+  cantidad: number
+}
