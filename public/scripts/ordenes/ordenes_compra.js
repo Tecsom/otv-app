@@ -123,29 +123,29 @@ async function loadOrdenes() {
   $container.empty();
   const ordenes = await getOrdenes();
   ordenes.forEach(orden => {
+    console.log({ orden });
     var $newdiv1 = $(`
         <div class="order_container_child card-body border-bottom" id="order_${orden.unique_folio}">
           <div class="row g-2">
             <div class="col-md-12">
-              <label>Folio Asignado</label>
-              <p class="mb-0">${addLeadingZeros(orden.unique_folio, 6)}</p>
+              <div class="d-flex align-items-center justify-content-between">
+                <span class="badge bg-label-dark">${addLeadingZeros(orden.unique_folio, 6)}</span>
+                <div class="d-flex align-items-center gap-1 text-muted">
+                  <i class="ti ti-calendar-event ti-xs me-1"></i>
+                  <small>${isoDateToFormatted(orden.created_at)}</small>
+                </div>
+              </div>
             </div>
             <div class="col-md-12">
-              <label>Cliente</label>
-              <p class="mb-0">${orden.clientes?.nombre ?? '<span style="color:Red">Sin Cliente</span>'}</p>
+              <hr class="m-0" />
             </div>
             <div class="col-md-12">
-              <label>Folio</label>
-              <p class="mb-0">${orden.folio_id}</p>
-            </div>
-            <div class="col-md-12">
-              <label>Fecha de entrega</label>
-              <p class="mb-0">${isoDateToFormatted(orden.delivery_date)}</p>          
+              <p class="mb-0"><strong>Cliente: </strong>${orden.clientes?.nombre ?? '<span style="color:Red">Sin Cliente</span>'}</p>
+              <p class="mb-0"><strong>Folio de cliente: </strong>${orden.folio_id}</p>
+              <p class="mb-0"><strong>Fecha de entrega: </strong>${isoDateToFormatted(orden.delivery_date)}</p>       
             </div>
           </div>
         </div>
-        
-        
       `);
     $newdiv1.data({ data: orden });
 
@@ -183,18 +183,21 @@ function isoDateToFormatted(fechaISO) {
 
 //añadir, eliminar, editar productos en las ordenes de compras
 
-$('#ordenes_compra_container').on('click','.order_container_child',function(){
-  const $order = $(this)
-  const data = $order.data().data
-  console.log(data)
+$('#ordenes_compra_container').on('click', '.order_container_child', function () {
+  const $order = $(this);
+  const data = $order.data().data;
+  console.log(data);
 
-  const $folio = $('#data-folio')
-  const $fechaCreacion = $('#data-fecha-creación')
-  const $fechaEntrega = $('#data-fecha-entrega')
-  const $clientData = $('#data-client-data')
-  console.log(data.unique_folio)
-  $folio.text(addLeadingZeros(data.unique_folio,6))
-  $fechaEntrega.text(isoDateToFormatted(data.delivery_date))
-  $clientData.text(data.clientes?.nombre ?? "SIN CLIENTE RELACIONADO")
-  $fechaCreacion.text(isoDateToFormatted(data.created_at))
-})
+  const $folio = $('#data-folio');
+  const $fechaCreacion = $('#data-fecha-creación');
+  const $fechaEntrega = $('#data-fecha-entrega');
+  const $clientData = $('#data-client-data');
+  console.log(data.unique_folio);
+  $folio.text(addLeadingZeros(data.unique_folio, 6));
+  $fechaEntrega.text(isoDateToFormatted(data.delivery_date));
+  $clientData.text(data.clientes?.nombre ?? 'Sin cliente relacionado');
+  $fechaCreacion.text(isoDateToFormatted(data.created_at));
+
+  $('#ordenes_compra_container .order_container_child').removeClass('bg-label-primary');
+  $(this).addClass('bg-label-primary');
+});
