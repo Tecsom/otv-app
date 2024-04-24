@@ -30,12 +30,12 @@ export const getClientesPagingC = async (req: Request, res: Response) => {
   const { length, draw, search, start } = queries as QueryTable;
 
   const { error, data } = await supabase().rpc('searchclientes', {
-    search: search.value,
+    search: search?.value ?? search ?? '',
     page: parseInt(start ?? '0') / parseInt(length ?? '10') + 1,
     limitperpage: parseInt(length ?? '10')
   });
   const { error: error_totals, data: data_totals } = await supabase().rpc('searchclientes_totals', {
-    search: search.value,
+    search: search?.value ?? search ?? '',
     page: parseInt(start ?? '0') / parseInt(length ?? '10') + 1,
     limitperpage: parseInt(length ?? '10')
   });

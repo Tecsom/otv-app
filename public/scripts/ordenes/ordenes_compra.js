@@ -6,6 +6,36 @@ const limit = 10;
 let loadMore = true;
 let isLoading = false;
 
+const $clients = $('#select_client').select2({
+  placeholder: 'Selecciona un cliente',
+  dropdownParent: $('#create_orden_compra'),
+  ajax: {
+    url: '/api/clientes/paging',
+    dataType: 'json',
+    delay: 250,
+    data: function (params) {
+      return {
+        search: params.term,
+        length: 10,
+        draw: 1,
+        start: 0
+      };
+    },
+    processResults: function (data) {
+      console.log({ data });
+      return {
+        results: data.data.map(client => {
+          return {
+            id: client.id,
+            text: client.nombre
+          };
+        })
+      };
+    },
+    cache: true
+  }
+});
+
 $(() => {
   init();
 });
@@ -52,16 +82,6 @@ async function init() {
   });
 
   const $clients = $('#select_client');
-  const clientes = await getClientes();
-
-  clientes.forEach(cliente => {
-    $clients.append(
-      $('<option>', {
-        value: cliente.id,
-        text: cliente.nombre
-      })
-    );
-  });
 }
 
 async function getClientes() {
