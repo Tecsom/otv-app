@@ -5,7 +5,9 @@ import {
   createNewOrder,
   addOrderProduct,
   getOrdenesCompraPaging,
-  getProducts
+  getProducts,
+  updateOrder,
+  deleteOrder
 } from './../utils/ordenes_compra';
 import type { CreateOrderDataModel, ProductAdd } from '@/types/ordenes_compra';
 
@@ -15,6 +17,27 @@ export const getOrdenes = async (req: Request, res: Response) => {
     res.status(200).json(ordenes);
   } catch (error: any) {
     res.status(500).json(error);
+  }
+};
+
+export const deleteOrden = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  try {
+    console.log('entra delete');
+    const deleteResult = await deleteOrder(parseInt(id));
+    res.status(200).json(deleteResult);
+  } catch (e) {
+    res.status(500).json(e);
+  }
+};
+
+export const putOrder = async (req: Request, res: Response) => {
+  const payload = req.body;
+  try {
+    const updateResult = await updateOrder(payload);
+    res.status(200).json(updateResult);
+  } catch (e) {
+    res.status(500).json(e);
   }
 };
 

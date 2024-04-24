@@ -62,6 +62,7 @@ $('#uploadFilesButton').click(async () => {
 
   const res = await fetchData(`/ordenes/${order_id}/files`, 'POST', { files });
   button.stop();
+  loadFiles && loadFiles(order_id, true);
   if (res.status === true) {
     toastr.success(res.message, 'Pieza creada');
     $('#modal_create_pieza').modal('hide');

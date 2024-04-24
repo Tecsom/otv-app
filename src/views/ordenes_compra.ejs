@@ -254,17 +254,13 @@
                       <div class="col-md-12">
                         <div class="row">
                           <div class="col-md-3">
-                            <div class="col-md-12 d-none" id="container-imagenes">
+                            <div class="col-md-12" id="container-imagenes">
                               <label for="input-imgs" class="form-label required">Imágenes</label>
-                              <div id="dpz-imgs" class="fallback dropzone">
-                                <input id="input-imgs" type="file" multiple />
-                              </div>
+                              <div id="dpz-imgs" class="list-group mt-2"></div>
                             </div>
-                            <div class="col-md-12 d-none" id="container-archivos">
+                            <div class="col-md-12" id="container-archivos">
                               <label for="input-files" class="form-label required">Archivos</label>
-                              <div id="dpz-files" class="fallback dropzone">
-                                <input id="input-files" type="file" multiple />
-                              </div>
+                              <div id="dpz-files" class="list-group mt-2"></div>
                             </div>
                           </div>
                           <div class="col-md-9">
@@ -295,7 +291,7 @@
     </div>
   </div>
 
-  <!-- Modal Nueva orden de compra-->
+  <!--! Modal Nueva orden de compra-->
   <div class="modal fade modal_cliente" id="create_orden_compra" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
       <div class="modal-content">
@@ -321,6 +317,58 @@
         </div>
         <div class="modal-footer">
           <button id="create_order_button" type="submit" form="create_order" class="btn btn-success">Generar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!--! Modal editar orden de compra-->
+  <div class="modal fade modal_cliente" id="edit_orden_compra_modal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel1">Editar orden</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="edit_order_form" class="row g-3">
+            <div class="col-md-6">
+              <label for="folio_id_edit" class="form-label required">Folio del cliente</label>
+              <input type="text" id="folio_id_edit" name="nombre" class="form-control" />
+            </div>
+            <div class="col-md-6 col-12">
+              <label for="date_picker_edit" class="form-label">Fecha de entrega</label>
+              <input
+                type="hidden"
+                class="form-control flatpickr-input"
+                placeholder="dd/mm/aaaa"
+                id="date_picker_edit" />
+            </div>
+            <div class="col-md-12">
+              <label for="select_client_edit" class="form-label">Cliente</label>
+              <select name="client" id="select_client_edit" class="form-select"></select>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button id="confirm_edit_order" type="submit" form="edit_order_form" class="btn btn-success">Generar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!--! Modal eliminar orden de compra -->
+  <div class="modal fade modal_cliente" id="delete_orden_compra_modal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel1">Eliminar orden</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p>¿Estás seguro de eliminar la orden de compra?</p>
+        </div>
+        <div class="modal-footer">
+          <button id="confirm_delete_order" type="button" class="btn btn-danger">Eliminar</button>
         </div>
       </div>
     </div>
@@ -388,6 +436,7 @@
 </div>-->
   <script>
     var dropzoneFiles;
+    var loadFiles;
   </script>
 
   <script src="/public/scripts/ordenes/ordenes_compra.js" type="module"></script>

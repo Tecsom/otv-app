@@ -1,6 +1,7 @@
 //ordenes_table
 import { fetchData, loadingButton } from '/public/scripts/helpers.js';
 let is_loading = false;
+let flatpickr_edit;
 $('#ordenes_table').DataTable({
   columns: [
     { data: 'numero_parte', title: '# Parte', orderable: true, className: 'non-selectable' },
@@ -52,6 +53,36 @@ const $clients = $('#select_client').select2({
   }
 });
 
+$('#select_client_edit').select2({
+  placeholder: 'Selecciona un cliente',
+  dropdownParent: $('#edit_orden_compra_modal'),
+  ajax: {
+    url: '/api/clientes/paging',
+    dataType: 'json',
+    delay: 250,
+    data: function (params) {
+      return {
+        search: params.term,
+        length: 10,
+        draw: 1,
+        start: 0
+      };
+    },
+    processResults: function (data) {
+      console.log({ data });
+      return {
+        results: data.data.map(client => {
+          return {
+            id: client.id,
+            text: client.nombre
+          };
+        })
+      };
+    },
+    cache: true
+  }
+});
+
 $(() => {
   init();
 });
@@ -66,6 +97,40 @@ async function init() {
     // EN ESTA PARTE ES DONDE SE REGISTRA EL EVENTO
     onChange: function (selectedDates, dateStr, instance) {
       $date_picker.data({ value: selectedDates[0] });
+    },
+    // FIN EVENTO
+    minDate: 'today',
+    dateFormat: 'd/m/Y',
+    //maxDate: 'today',
+    locale: {
+      firstDayOfWeek: 1,
+      weekdays: {
+        shorthand: ['Do', 'Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sa'],
+        longhand: ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado']
+      },
+      months: {
+        shorthand: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Оct', 'Nov', 'Dic'],
+        longhand: [
+          'Enero',
+          'Febrero',
+          'Мarzo',
+          'Abril',
+          'Mayo',
+          'Junio',
+          'Julio',
+          'Agosto',
+          'Septiembre',
+          'Octubre',
+          'Noviembre',
+          'Diciembre'
+        ]
+      }
+    }
+  });
+  flatpickr_edit = $('#date_picker_edit').flatpickr({
+    // EN ESTA PARTE ES DONDE SE REGISTRA EL EVENTO
+    onChange: function (selectedDates, dateStr, instance) {
+      $('#date_picker_edit').data({ value: selectedDates[0] });
     },
     // FIN EVENTO
     minDate: 'today',
@@ -168,7 +233,7 @@ async function loadOrdenes() {
   for (const orden of ordenes) {
     const uniqueFolio = orden.unique_folio ? addLeadingZeros(orden.unique_folio, 6) : 'Sin Folio';
     const $newdiv1 = $(`
-        <div class="order_container_child card-body border-bottom" id="order_${orden.unique_folio}">
+        <div class="order_container_child card-body border-bottom" order_id="${orden.id}" id="order_${orden.unique_folio}">
           <div class="row g-2">
             <div class="col-md-12">
               <div class="d-flex align-items-center justify-content-between">
@@ -270,8 +335,26 @@ $('#ordenes_compra_container').on('click', '.order_container_child', async funct
   loadFiles(data.id);
 });
 
-async function loadFiles(id) {
+const renderListItem = (name, url) => {
+  return `<a ${url && 'signed-url=' + url} href="javascript:void(0);" class="list-group-item list-group-item-action">${name}</a>`;
+};
+
+const renderListFile = (name, url, filename) => {
+  return `
+
+    <a href="javascript:void(0);"  class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+      ${name} 
+      <button style="box-shadow: none;" signed-url=${url} file-name=${filename} type="button" class="btn btn-icon download-file">
+        <span class="ti ti-download"></span>
+      </button>
+    </a>
+  `;
+};
+
+loadFiles = async (id, no_reload = false) => {
   if (isLoading === true) return;
+  $('#dpz-imgs').empty();
+  $('#dpz-files').empty();
 
   isLoading = true;
   const files = await fetchData(`/ordenes/${id}/files`, 'GET');
@@ -281,15 +364,44 @@ async function loadFiles(id) {
     toastr.error('Ocurrió un error al cargar los archivos');
     return;
   }
-  dropzoneFiles.removeAllFiles();
+  if (no_reload === false) dropzoneFiles.removeAllFiles();
 
   for (const archivo of files.data) {
+    const type = archivo.type;
     const blob = await fetch(archivo.data).then(res => res.blob());
-    const file = new File([blob], archivo.name, { type: archivo.type, isUploaded: true });
+    const file = new File([blob], archivo.name, { type, isUploaded: true });
 
-    dropzoneFiles.addFile(file);
+    if (type.includes('image')) {
+      $('#dpz-imgs').append(renderListItem(archivo.name, archivo.data));
+    } else {
+      $('#dpz-files').append(renderListFile(archivo.name, archivo.data, archivo.name));
+    }
+    console.log({ no_reload });
+
+    if (no_reload === false) dropzoneFiles.addFile(file);
   }
-}
+};
+
+$('#dpz-imgs').on('click', '.list-group-item', function () {
+  const url = $(this).attr('signed-url');
+  const lightbox = new FsLightbox();
+  lightbox.props.sources = [url];
+  lightbox.open();
+});
+
+$('#dpz-files').on('click', '.download-file', async function () {
+  const url = $(this).attr('signed-url');
+  const filename = $(this).attr('file-name');
+
+  const response = await fetch(url);
+
+  const blob = await response.blob();
+
+  const link = document.createElement('a');
+  link.href = window.URL.createObjectURL(blob);
+  link.download = filename;
+  link.click();
+});
 
 function pushUrl(paramName, paramValue) {
   var currentUrl = window.location.href;
@@ -433,3 +545,115 @@ function getLastCreated(array) {
 
   return lastCreated;
 }
+
+$('#edit_oc').on('click', async function () {
+  const order_data = $('#container-reporte').data();
+  const $editOrder = $('#edit_orden_compra_modal');
+  const $folio = $('#folio_id_edit');
+  const $date = $('#date_picker_edit');
+  const $client = $('#select_client_edit');
+
+  if (!order_data?.id) {
+    console.error('No orden de compra seleccionada');
+    return;
+  }
+
+  $folio.val(order_data.folio_id);
+  // +6 hours
+  const timestamp = new Date(order_data.delivery_date).getTime() + 6 * 60 * 60 * 1000;
+
+  flatpickr_edit.setDate(new Date(timestamp));
+
+  $client.select2('trigger', 'select', {
+    data: { id: order_data?.clientes?.id, text: order_data?.clientes?.nombre }
+  });
+
+  $editOrder.modal('show');
+});
+
+$('#edit_order_form').on('submit', async function (e) {
+  e.preventDefault();
+  const order_data = $('#container-reporte').data();
+  const $folio = $('#folio_id_edit');
+  const $date = $('#date_picker_edit');
+  const $client = $('#select_client_edit');
+
+  const folio = $folio.val().trim();
+  console.log($date.data());
+  const dateval = flatpickr_edit.selectedDates[0];
+  const client_id = $client.val();
+
+  console.log({ folio, dateval, client_id });
+
+  if (!client_id || !dateval || !folio) {
+    toastr.error('Completa los campos para crear orden', 'Formulario incompleto');
+    return;
+  }
+
+  const date = new Date(dateval);
+  date.setUTCHours(date.getUTCHours() - 6);
+  const isoStringDate = date.toISOString();
+
+  console.log({ order_data });
+
+  const result = await fetchData(`/ordenes/update`, 'PUT', {
+    folio_id: folio,
+    delivery_date: isoStringDate,
+    client_id: client_id,
+    id: order_data.id
+  });
+
+  const apiResult = result.data;
+
+  if (!apiResult.status) {
+    toastr.error(apiResult.data.details, 'Ocurrió un error');
+    return;
+  }
+  toastr.success('Editado con éxito');
+  $folio.val('');
+  $date.val('');
+  $client.val('');
+  $('#edit_orden_compra_modal').modal('hide');
+  page = 1;
+  loadMore = true;
+  $('#ordenes_compra_container').empty();
+  await loadOrdenes();
+  const element_selected = $(`[order_id=${order_data.id}]`);
+  element_selected.trigger('click');
+});
+
+$('#delete_oc').on('click', async function () {
+  const order_data = $('#container-reporte').data();
+  const order_id = order_data.id;
+
+  if (!order_id) {
+    console.error('No orden de compra seleccionada');
+    return;
+  }
+
+  $('#delete_orden_compra_modal').modal('show');
+});
+
+$('#confirm_delete_order').on('click', async function () {
+  const order_data = $('#container-reporte').data();
+  const order_id = order_data.id;
+
+  if (!order_id) {
+    console.error('No orden de compra seleccionada');
+    return;
+  }
+
+  const result = await fetchData(`/ordenes/${order_id}/delete`, 'DELETE');
+
+  if (!result.status) {
+    toastr.error('Ocurrió un error al eliminar la orden de compra');
+    return;
+  }
+
+  toastr.success('Orden de compra eliminada con éxito');
+  $('#delete_orden_compra_modal').modal('hide');
+  $('#ordenes_compra_container').empty();
+  page = 1;
+  loadMore = true;
+  await loadOrdenes();
+});
