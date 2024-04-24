@@ -4,6 +4,7 @@ import { fetchData, loadingButton } from '/public/scripts/helpers.js';
 let page = 1;
 const limit = 10;
 let loadMore = true;
+let isLoading = false;
 
 $(() => {
   init();
@@ -116,7 +117,9 @@ async function getOrdenes() {
   // page, pageSize, search
   if (!loadMore) return [];
   const query = `?page=${page}&pageSize=${limit}`;
+  isLoading = true;
   const ordenes = await fetchData('/ordenes/paging' + query, 'GET'); //api/ordenes
+  isLoading = false;
 
   if (!ordenes.status) {
     toastr.error('Ocurrió un error al obtener ordenes');
@@ -167,6 +170,21 @@ async function loadOrdenes() {
 }
 
 loadOrdenes();
+
+$('#ordenes_compra_container').on('scroll', async function () {
+  const hasBottomReached = checkIfHasBottomReached(this);
+
+  if (hasBottomReached && loadMore && !isLoading) await loadOrdenes();
+});
+
+const checkIfHasBottomReached = el => {
+  const offset = 10;
+  if (el === null) return false;
+
+  const dif = el.scrollHeight - el.scrollTop;
+
+  return dif <= el.clientHeight + offset;
+};
 
 function addLeadingZeros(number, length) {
   // Convert number to string
