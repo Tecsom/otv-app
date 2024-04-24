@@ -110,6 +110,9 @@ $('#create_order').on('submit', async function (e) {
   $date.val('');
   $client.val('');
   $('#create_orden_compra').modal('hide');
+  $('#ordenes_compra_container').empty();
+  page = 1;
+  loadMore = true;
   await loadOrdenes();
 });
 
@@ -136,7 +139,7 @@ async function getOrdenes() {
 
 async function loadOrdenes() {
   const $container = $('#ordenes_compra_container');
-  $container.empty();
+
   const ordenes = await getOrdenes();
   for (const orden of ordenes) {
     const uniqueFolio = orden.unique_folio ? addLeadingZeros(orden.unique_folio, 6) : 'Sin Folio';
@@ -279,10 +282,10 @@ $('#addProductsButton').on('click', async function () {
 });
 
 $('#addProduct').on('submit', async function (e) {
-  e.preventDefault()
+  e.preventDefault();
   const confirmButton = $('#confirm_add_product');
   const $addProductsmodal = $('#addProductModal');
-  const order_id = $addProductsmodal.data().id
+  const order_id = $addProductsmodal.data().id;
 
   const $product = $('#add_product_select');
   const $quantity = $('#add_product_quantity');
@@ -293,10 +296,10 @@ $('#addProduct').on('submit', async function (e) {
   }
 
   const productAdd = {
-    order_id:order_id,
+    order_id: order_id,
     pieza_id: $product.val(),
     quantity: $quantity.val()
-  }
+  };
   const result = await fetchData('/ordernes/addproduct', 'POST', productAdd);
   console.log({ result });
 });
