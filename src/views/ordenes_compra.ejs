@@ -170,7 +170,7 @@
                       aria-controls="navs_productos"
                       aria-selected="true">
                       <i class="ti ti-box ti-xs me-1"></i>
-                      Piezas
+                      Productos
                     </button>
                   </li>
                   <li class="nav-item" role="presentation">
@@ -342,25 +342,25 @@
 
   <!---->
   <div class="modal fade modal_cliente" id="addProductModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-sm" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel1">Añade un producto</h5>
+          <h5 class="modal-title" id="exampleModalLabel1">Añadir producto</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
           <form id="addProduct" class="row g-3">
-            <div class="col-md-9">
+            <div class="col-md-12">
               <label for="add_product_select" class="form-label required">Producto</label>
               <select name="client" id="add_product_select" class="form-select"></select>
             </div>
-            <div class="col-md-3">
-              <label for="add_product_quantity" class="form-label">Cantidad</label>
-              <input class="form-control" type="number" value="1" id="add_product_quantity" />
-            </div>
-            <div class="col-md-12">
+            <div class="col-md-6">
               <label for="add_product_revision" class="form-label">Revision</label>
               <select name="client" id="add_product_revision" class="form-select"></select>
+            </div>
+            <div class="col-md-6">
+              <label for="add_product_quantity" class="form-label">Cantidad</label>
+              <input class="form-control" type="number" value="1" id="add_product_quantity" />
             </div>
           </form>
         </div>
