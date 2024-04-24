@@ -3,12 +3,12 @@ import { fetchData, loadingButton } from '/public/scripts/helpers.js';
 let is_loading = false;
 $('#ordenes_table').DataTable({
   columns: [
-    { data: 'numero_parte', title: 'NO. DE PARTE', orderable: true, className: 'non-selectable' },
-    { data: 'revision_name', title: 'REVISIÓN', orderable: false, className: 'non-selectable' },
-    { data: 'descripcion', title: 'DESCRIPCIÓN', orderable: true, className: 'non-selectable' },
-    { data: 'costo_produccion', title: 'COSTO', orderable: false, className: 'non-selectable' },
-    { data: 'quantity', title: 'CANT.', orderable: false, className: 'non-selectable' },
-    { data: 'costo_venta', title: 'PRECIO', orderable: false, className: 'non-selectable' }
+    { data: 'numero_parte', title: '# Parte', orderable: true, className: 'non-selectable' },
+    { data: 'revision_name', title: 'Revisión', orderable: false, className: 'non-selectable' },
+    //{ data: 'descripcion', title: 'Descripción', orderable: true, className: 'non-selectable' },
+    { data: 'costo_produccion', title: 'Costo', orderable: false, className: 'non-selectable' },
+    { data: 'quantity', title: 'Cant.', orderable: false, className: 'non-selectable' },
+    { data: 'costo_venta', title: 'Precio', orderable: false, className: 'non-selectable' }
   ],
   dom: 'rtp',
   language: {
