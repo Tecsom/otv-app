@@ -14,7 +14,6 @@ async function init() {
   $date_picker.flatpickr({
     // EN ESTA PARTE ES DONDE SE REGISTRA EL EVENTO
     onChange: function (selectedDates, dateStr, instance) {
-      //console.log(selectedDates + '/' + dateStr);
       $date_picker.data({ value: selectedDates[0] });
     },
     // FIN EVENTO
@@ -123,13 +122,13 @@ async function loadOrdenes() {
   $container.empty();
   const ordenes = await getOrdenes();
   ordenes.forEach(orden => {
-    console.log({ orden });
+    const uniqueFolio = orden.unique_folio ? addLeadingZeros(orden.unique_folio, 6) : "Sin Folio"
     var $newdiv1 = $(`
         <div class="order_container_child card-body border-bottom" id="order_${orden.unique_folio}">
           <div class="row g-2">
             <div class="col-md-12">
               <div class="d-flex align-items-center justify-content-between">
-                <span class="badge bg-label-dark">${addLeadingZeros(orden.unique_folio, 6)}</span>
+                <span class="badge bg-label-dark">${uniqueFolio}</span>
                 <div class="d-flex align-items-center gap-1 text-muted">
                   <i class="ti ti-calendar-event ti-xs me-1"></i>
                   <small>${isoDateToFormatted(orden.created_at)}</small>
@@ -188,7 +187,6 @@ $('#ordenes_compra_container').on('click','.order_container_child',function(){
   const data = $order.data().data
   const $addProductsmodal = $('#addProductModal')
   $addProductsmodal.data(data)
-  console.log(data)
 
   if(!data.clientes){
     toastr.warning("Selecciona un nuevo cliente para para la orden")
@@ -198,8 +196,9 @@ $('#ordenes_compra_container').on('click','.order_container_child',function(){
   const $fechaCreacion = $('#data-fecha-creación')
   const $fechaEntrega = $('#data-fecha-entrega')
   const $clientData = $('#data-client-data')
-  console.log(data.unique_folio)
-  $folio.text(addLeadingZeros(data.unique_folio,6))
+  const uniqueFolio = data.unique_folio ? addLeadingZeros(data.unique_folio, 6) : "Sin Folio"
+
+  $folio.text(uniqueFolio)
   $fechaEntrega.text(isoDateToFormatted(data.delivery_date))
   $clientData.text(data.clientes?.nombre ?? "SIN CLIENTE RELACIONADO")
   $fechaCreacion.text(isoDateToFormatted(data.created_at))
@@ -212,7 +211,6 @@ function pushUrl(paramName, paramValue) {
   var baseUrl = currentUrl.split('?')[0]; 
   var newUrl = baseUrl + '?' + paramName + '=' + paramValue;
   window.history.pushState({ path: newUrl }, '', newUrl);
-  console.log('Updated URL:', newUrl);
 }
 
 $('#addProductsButton').on('click',async function(){
@@ -235,8 +233,7 @@ $('#addProductsButton').on('click',async function(){
       return
     }
 
-    console.log({products})
-
+  
     products.forEach(product => {
       $productsSelect.append($('<option>', {
         value: product.id,
@@ -247,9 +244,23 @@ $('#addProductsButton').on('click',async function(){
 
     $addProducts.modal('show')
 
-    console.log(modalData)
 
+})
 
+$('#addProduct').on('submit',async function(){
+
+  const confirmButton = $('#confirm_add_product')
+
+  const $product = $('#add_product_select')
+  const $quantity = $('#add_product_quantity')
+
+  if(!$quantity.val() || !$product.val()){
+    toastr.error("Añade un producto y su cantidad")
+    return
+  }
+
+  const result = await fetchData('/ordernes/addproduct')
+  console.log({result})
 
 
 })
