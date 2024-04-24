@@ -6,7 +6,6 @@ const tableActions = `<div class="d-inline-block text-nowrap">
                     <button class="btn btn-sm btn-icon delete-icon" title="Eliminar" data-bs-toggle="tooltip" data-bs-placement="top"><i class="ti ti-trash-x"></i></button>
                 </div>`;
 
-                
 let is_loading = false;
 let flatpickr_edit;
 $('#ordenes_table').DataTable({
@@ -17,7 +16,7 @@ $('#ordenes_table').DataTable({
     { data: 'currency_costo_produccion', title: 'Costo', orderable: false, className: 'non-selectable' },
     { data: 'quantity', title: 'Cant.', orderable: false, className: 'non-selectable' },
     { data: 'currency_costo_venta', title: 'Precio', orderable: false, className: 'non-selectable' },
-    {  defaultContent: tableActions }
+    { defaultContent: tableActions, width: '30px' }
   ],
   dom: 'rtp',
   language: {
@@ -727,13 +726,11 @@ function formatCurrency(amount) {
 
 // Ejemplo de uso
 
-
 $('#ordenes_table').on('click', 'tbody tr', async function () {
   const data = $('#ordenes_table').DataTable().row(this).data();
-  console.log({data})
-  console.log(data.id)
-  const deleteRes = await fetchData(`/ordenes/producto/delete/${data.id}`, "DELETE")
-  console.log(deleteRes)
-  await loadProductos(data.order_id)
-
+  console.log({ data });
+  console.log(data.id);
+  const deleteRes = await fetchData(`/ordenes/producto/delete/${data.id}`, 'DELETE');
+  console.log(deleteRes);
+  await loadProductos(data.order_id);
 });
