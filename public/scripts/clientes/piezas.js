@@ -148,7 +148,7 @@ const renderListFile = (name, url, filename) => {
 
     <a href="javascript:void(0);"  class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
       ${name} 
-      <button signed-url=${url} file-name=${filename} type="button" class="btn btn-icon me-2 btn-primary download-file">
+      <button style="box-shadow: none;" signed-url=${url} file-name=${filename} type="button" class="btn btn-icon download-file">
         <span class="ti ti-download"></span>
       </button>
     </a>

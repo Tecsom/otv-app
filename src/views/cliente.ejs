@@ -135,8 +135,8 @@
                 data-bs-target="#navs_catalogo"
                 aria-controls="navs_catalogo"
                 aria-selected="true">
-                <i class="ti ti-device-imac ti-xs me-1"></i>
-                Catálogo
+                <i class="ti ti-box ti-xs me-1"></i>
+                Piezas
               </button>
             </li>
             <li class="nav-item" role="presentation">
@@ -618,8 +618,11 @@
             <select id="select_revision" class="form-select mt-2">
               <option value="0">Revisión actual</option>
             </select>
+            <div class="mt-2">
+              <span class="text-muted small">Creado el: </span><span id="revision_date_created" class="text-muted small">[Fecha de creación]</span>
+            </div>
+            
           </div>
-          <div class="col-md-12">Información de la revisión</div>
           <div class="col-md-12">
             <div class="d-flex gap-2">
               <button id="btn_edit_revision" type="button" class="btn btn-label-secondary flex-grow-1">
@@ -632,13 +635,13 @@
           </div>
           <div class="col-md-12">
             <h6 class="mb-0">Imágenes</h6>
-            <div id="offcanvas-images-list" class="list-group">
+            <div id="offcanvas-images-list" class="list-group mt-2">
 
             </div>
           </div>
           <div class="col-md-12">
             <h6 class="mb-0">Archivos</h6>
-            <div id="offcanvas-files-list" class="list-group">
+            <div id="offcanvas-files-list" class="list-group mt-2">
 
             </div>
           </div>
