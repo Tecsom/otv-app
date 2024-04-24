@@ -209,7 +209,7 @@
                     <div class="row">
                       <div class="col-md-12">
                         <div class="d-flex justify-content-end">
-                          <button type="button" class="btn btn-label-primary">
+                          <button id="addProductsButton" type="button" class="btn btn-label-primary">
                             <span class="tf-icons ti-xs ti ti-plus me-1"> </span>Añadir
                           </button>
                         </div>
@@ -245,7 +245,7 @@
   </div>
 </div>
 
-<!-- Modal -->
+<!-- Modal Nueva orden de compra-->
 <div class="modal fade modal_cliente" id="create_orden_compra" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
     <div class="modal-content">
@@ -278,6 +278,33 @@
 
 <!---->
 
+
+-->
+<div class="modal fade modal_cliente" id="addProductModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel1">Añade un producto</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="addProduct" class="row g-3">
+          <div class="col-md-9">
+            <label for="add_product_select" class="form-label required">Producto</label>
+            <select name="client" id="add_product_select" class="form-select"></select>
+          </div>
+          <div class="col-md-3">
+            <label for="add_product_quantity" class="form-label">Cantidad</label>
+            <input class="form-control" type="number" value="1" id="add_product_quantity">
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button id="confirm_add_product" type="submit" form="create_order" class="btn btn-success">Añadir</button>
+      </div>
+    </div>
+  </div>
+</div>
 <!--<div class="container-xxl flex-grow-1 container-p-y">
   <div class="d-flex justify-content-between align-items-center pb-2">
     <h4 class="mb-0">Ordenes de compra</h4>

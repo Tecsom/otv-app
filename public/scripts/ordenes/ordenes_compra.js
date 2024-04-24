@@ -81,7 +81,7 @@ $('#create_order').on('submit', async function (e) {
   const client_id = $client.val();
 
   if (!client_id || !dateval || !folio) {
-    toastr.error('Completa los campos para crear órden', 'Formulario incompleto');
+    toastr.error('Completa los campos para crear orden', 'Formulario incompleto');
     return;
   }
 
@@ -112,7 +112,7 @@ $('#create_order').on('submit', async function (e) {
 async function getOrdenes() {
   const ordenes = await fetchData('/ordenes', 'GET'); //api/ordenes
   if (!ordenes.status) {
-    toastr.error('Ocurrio un error al obtener órdenes');
+    toastr.error('Ocurrio un error al obtener ordenes');
     return;
   }
   return ordenes.data;
@@ -183,21 +183,73 @@ function isoDateToFormatted(fechaISO) {
 
 //añadir, eliminar, editar productos en las ordenes de compras
 
-$('#ordenes_compra_container').on('click', '.order_container_child', function () {
-  const $order = $(this);
-  const data = $order.data().data;
-  console.log(data);
+$('#ordenes_compra_container').on('click','.order_container_child',function(){
+  const $order = $(this)
+  const data = $order.data().data
+  const $addProductsmodal = $('#addProductModal')
+  $addProductsmodal.data(data)
+  console.log(data)
 
-  const $folio = $('#data-folio');
-  const $fechaCreacion = $('#data-fecha-creación');
-  const $fechaEntrega = $('#data-fecha-entrega');
-  const $clientData = $('#data-client-data');
-  console.log(data.unique_folio);
-  $folio.text(addLeadingZeros(data.unique_folio, 6));
-  $fechaEntrega.text(isoDateToFormatted(data.delivery_date));
-  $clientData.text(data.clientes?.nombre ?? 'Sin cliente relacionado');
-  $fechaCreacion.text(isoDateToFormatted(data.created_at));
+  if(!data.clientes){
+    toastr.warning("Selecciona un nuevo cliente para para la orden")
+  }
 
+  const $folio = $('#data-folio')
+  const $fechaCreacion = $('#data-fecha-creación')
+  const $fechaEntrega = $('#data-fecha-entrega')
+  const $clientData = $('#data-client-data')
+  console.log(data.unique_folio)
+  $folio.text(addLeadingZeros(data.unique_folio,6))
+  $fechaEntrega.text(isoDateToFormatted(data.delivery_date))
+  $clientData.text(data.clientes?.nombre ?? "SIN CLIENTE RELACIONADO")
+  $fechaCreacion.text(isoDateToFormatted(data.created_at))
   $('#ordenes_compra_container .order_container_child').removeClass('bg-label-primary');
   $(this).addClass('bg-label-primary');
-});
+})
+
+function pushUrl(paramName, paramValue) {
+  var currentUrl = window.location.href;
+  var baseUrl = currentUrl.split('?')[0]; 
+  var newUrl = baseUrl + '?' + paramName + '=' + paramValue;
+  window.history.pushState({ path: newUrl }, '', newUrl);
+  console.log('Updated URL:', newUrl);
+}
+
+$('#addProductsButton').on('click',async function(){
+
+    const $addProducts = $('#addProductModal')
+    const modalData = $addProducts.data()
+    const $productsSelect = $('#add_product_select')
+    if(!modalData.clientes){
+      toastr.warning("Asigna un cliente a la orden para añadir productos")
+      return
+    }
+    const resultProducts = await fetchData(`/clientes/${modalData.clientes.id}/piezas`)
+    if(!resultProducts.status){
+      toastr.error("Ocurrió un error al cargar piezas")
+    }
+    const products = resultProducts.data
+
+    if(products.length === 0){
+      toastr.warning("Es necesario añadir piezas y/o productos al cliente para poder continuar", "Cliente sin piezas")
+      return
+    }
+
+    console.log({products})
+
+    products.forEach(product => {
+      $productsSelect.append($('<option>', {
+        value: product.id,
+        text: product.descripcion
+      }));
+    });
+
+
+    $addProducts.modal('show')
+
+    console.log(modalData)
+
+
+
+
+})
