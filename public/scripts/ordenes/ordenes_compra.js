@@ -237,9 +237,10 @@ function isoDateToFormatted(fechaISO) {
 
 //añadir, eliminar, editar productos en las ordenes de compras
 
-$('#ordenes_compra_container').on('click', '.order_container_child', function () {
+$('#ordenes_compra_container').on('click', '.order_container_child', async function () {
   const $order = $(this);
-  const data = $order.data().data;
+  const data = $order.data().data; //ORDER DATA
+  console.log({data})
   const $addProductsmodal = $('#addProductModal');
   $addProductsmodal.data(data);
 
@@ -259,6 +260,8 @@ $('#ordenes_compra_container').on('click', '.order_container_child', function ()
   $fechaCreacion.text(isoDateToFormatted(data.created_at));
   $('#ordenes_compra_container .order_container_child').removeClass('bg-label-primary');
   $(this).addClass('bg-label-primary');
+  
+  loadProductos(data.id)
 });
 
 function pushUrl(paramName, paramValue) {
@@ -322,4 +325,52 @@ $('#addProduct').on('submit', async function (e) {
   };
   const result = await fetchData('/ordernes/addproduct', 'POST', productAdd);
   console.log({ result });
+});
+
+
+async function loadProductos(id){
+  const productsResult = await fetchData(`/ordenes/${id}/productos`)
+  const productos = productsResult.data
+  console.log({productos})
+
+  if(productos.length == 0){
+    return
+  }
+  
+  const productosTable = productos.map(product => {
+
+    return{
+      id: product.id,
+      cantidad:product.quantity,
+      costo_produccion: product.piezas.costo_produccion,
+      costo_venta: product.piezas.costo_venta,
+      descripcion: product.piezas.descripcion,
+      estado: product.piezas.estado,
+      pieza_id: product.piezas.pieza_id,
+      numero_parte: product.piezas.numero_parte
+
+    }
+
+  })
+ 
+
+  $('#ordenes_table').DataTable().clear();
+  $('#ordenes_table').DataTable().rows.add(productosTable).draw();
+
+
+}
+
+$('#ordenes_table').DataTable({
+  columns: [
+    { data: 'numero_parte', title: 'NO. DE PARTE', orderable: true, className: 'non-selectable' },
+    { data: 'descripcion', title: 'DESCRIPCIÓN', orderable: true, className: 'non-selectable' },
+    { data: 'costo_produccion', title: 'COSTO', orderable: false, className: 'non-selectable' },
+    { data: 'quantity', title: 'CANT.', orderable: false, className: 'non-selectable' },
+    { data: 'costo_venta', title: 'PRECIO', orderable: false, className: 'non-selectable' },
+  ],
+  dom: 'rtp',
+  language: {
+    url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/es-ES.json'
+  },
+  order: [[0, 'asc']],
 });

@@ -51,7 +51,6 @@ export const addProductToOrder = async (req: Request, res: Response) => {
 export const getOrderProducts = async (req: Request, res: Response) => {
 
     const orderid = req.params.order_id
-    console.log({ orderid })
     try {
         const products = await getProducts(orderid)
         res.status(200).json(products)

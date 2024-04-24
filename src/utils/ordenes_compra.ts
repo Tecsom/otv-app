@@ -83,17 +83,17 @@ export const addOrderProduct = async (product: ProductAdd): Promise<boolean> => 
 }
 
 export const getProducts = async (id: string) => {
+    console.log({ id })
     const { data: productos, error } = await supabase().from('order_products').select(`
     id,
     created_at,
     piezas (id, numero_parte, descripcion, estado, costo_venta, costo_produccion),
     quantity
-    `).eq('id', id);
+    `).eq('order_id', id);
 
     if (error) {
         console.log(error)
         throw new Error(error.details)
     }
-    console.log({ productos })
     return productos
 }
