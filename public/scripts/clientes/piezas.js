@@ -139,6 +139,21 @@ const dropzoneFilesNew = new Dropzone('#dpz-files-new', {
   dictRemoveFile: 'Eliminar archivo',
   dictMaxFilesExceeded: 'No puedes subir más archivos.'
 });
+const renderListItem = (name, url) => {
+  return `<a ${url && 'signed-url=' + url} href="javascript:void(0);" class="list-group-item list-group-item-action">${name}</a>`;
+};
+
+const renderListFile = (name, url, filename) => {
+  return `
+
+    <a href="javascript:void(0);"  class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+      ${name} 
+      <button signed-url=${url} file-name=${filename} type="button" class="btn btn-icon me-2 btn-primary download-file">
+        <span class="ti ti-download"></span>
+      </button>
+    </a>
+  `;
+};
 
 const processFile = file => {
   return new Promise((resolve, reject) => {
@@ -204,8 +219,28 @@ piezas_table.on('click', 'tbody tr', async function () {
     toastr.error(res_revisiones.message, 'Error obteniendo las revisiones');
     return;
   }
-
   addRevisionesToSelect(res_revisiones.data);
+  // /clientes/:cliente_id/piezas/:pieza_id/revisiones/:revision_id/files
+  const res_files = await fetchData(
+    `/clientes/${cliente_id}/piezas/${id}/revisiones/${res_revisiones.data[0].id}/files`
+  );
+  if (!res_files.status) {
+    toastr.error(res_files.message, 'Error obteniendo los archivos');
+    return;
+  }
+  const { images, files } = res_files.data;
+
+  $('#offcanvas-images-list').empty();
+  $('#offcanvas-files-list').empty();
+
+  for (const image of images) {
+    $('#offcanvas-images-list').append(renderListItem(image.name, image.data));
+  }
+
+  for (const file of files) {
+    $('#offcanvas-files-list').append(renderListFile(file.name, file.data, file.name));
+  }
+  // renderListItem
 
   $('#badge-status-pieza').text(estado ? 'Activo' : 'No activo');
   if (estado) $('#badge-status-pieza').removeClass('bg-label-danger').addClass('bg-label-success');
@@ -422,4 +457,25 @@ $('#delete_revision_btn').on('click', async function () {
     return;
   }
   toastr.error(res.message, 'Error eliminando la revisión');
+});
+
+$('#offcanvas-images-list').on('click', '.list-group-item', function () {
+  const url = $(this).attr('signed-url');
+  const lightbox = new FsLightbox();
+  lightbox.props.sources = [url];
+  lightbox.open();
+});
+
+$('#offcanvas-files-list').on('click', '.download-file', async function () {
+  const url = $(this).attr('signed-url');
+  const filename = $(this).attr('file-name');
+
+  const response = await fetch(url);
+
+  const blob = await response.blob();
+
+  const link = document.createElement('a');
+  link.href = window.URL.createObjectURL(blob);
+  link.download = filename;
+  link.click();
 });
