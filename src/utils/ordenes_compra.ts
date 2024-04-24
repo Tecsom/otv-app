@@ -88,6 +88,7 @@ export const getProducts = async (id: string) => {
     id,
     created_at,
     piezas (id, numero_parte, descripcion, estado, costo_venta, costo_produccion),
+    revisiones (id, nombre, descripcion),
     quantity
     `).eq('order_id', id);
 

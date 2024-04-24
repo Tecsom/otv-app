@@ -1,6 +1,27 @@
 //ordenes_table
 import { fetchData, loadingButton } from '/public/scripts/helpers.js';
 
+
+$('#ordenes_table').DataTable({
+  columns: [
+    { data: 'numero_parte', title: 'NO. DE PARTE', orderable: true, className: 'non-selectable' },
+    { data: 'revision_name', title: 'REVISIÓN', orderable: false, className: 'non-selectable' },
+    { data: 'descripcion', title: 'DESCRIPCIÓN', orderable: true, className: 'non-selectable' },
+    { data: 'costo_produccion', title: 'COSTO', orderable: false, className: 'non-selectable' },
+    { data: 'quantity', title: 'CANT.', orderable: false, className: 'non-selectable' },
+    { data: 'costo_venta', title: 'PRECIO', orderable: false, className: 'non-selectable' },
+
+  ],
+  dom: 'rtp',
+  language: {
+    url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/es-ES.json'
+  },
+  order: [[0, 'asc']],
+});
+
+
+
+
 let page = 1;
 const limit = 10;
 let loadMore = true;
@@ -81,17 +102,6 @@ async function init() {
     }
   });
 
-  const $clients = $('#select_client');
-}
-
-async function getClientes() {
-  const clientes = await fetchData('/clientes', 'GET');
-  if (!clientes.status) {
-    console.log('No se encontraron clientes');
-    return [];
-  }
-
-  return clientes.data;
 }
 
 $('#create_order').on('submit', async function (e) {
@@ -385,7 +395,10 @@ async function loadProductos(id){
       descripcion: product.piezas.descripcion,
       estado: product.piezas.estado,
       pieza_id: product.piezas.pieza_id,
-      numero_parte: product.piezas.numero_parte
+      numero_parte: product.piezas.numero_parte,
+      revision_name: product.revisiones.nombre,
+      revision_id:product.revisiones.id,
+      revision_description:product.revisiones.descripcion
 
     }
 
@@ -396,18 +409,3 @@ async function loadProductos(id){
 
 
 }
-
-$('#ordenes_table').DataTable({
-  columns: [
-    { data: 'numero_parte', title: 'NO. DE PARTE', orderable: true, className: 'non-selectable' },
-    { data: 'descripcion', title: 'DESCRIPCIÓN', orderable: true, className: 'non-selectable' },
-    { data: 'costo_produccion', title: 'COSTO', orderable: false, className: 'non-selectable' },
-    { data: 'quantity', title: 'CANT.', orderable: false, className: 'non-selectable' },
-    { data: 'costo_venta', title: 'PRECIO', orderable: false, className: 'non-selectable' },
-  ],
-  dom: 'rtp',
-  language: {
-    url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/es-ES.json'
-  },
-  order: [[0, 'asc']],
-});
