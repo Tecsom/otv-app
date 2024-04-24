@@ -34,3 +34,7 @@ export const renderOrdenesCompra = async (req: Request, res: Response) => {
     res.status(404).render('404.ejs');
   }
 };
+
+export const renderVerificador = async (_: Request, res: Response) => res.render('verificador.ejs');
+export const renderVerificadorEmbarques = async (_: Request, res: Response) => res.render('verificador-embarques.ejs');
+export const renderVerificadorOrdenes = async (_: Request, res: Response) => res.render('verificador-ordenes.ejs');
