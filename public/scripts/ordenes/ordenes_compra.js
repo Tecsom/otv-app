@@ -1,5 +1,12 @@
 //ordenes_table
 import { fetchData, loadingButton, isoDateToFormatted } from '/public/scripts/helpers.js';
+
+const tableActions = `<div class="d-inline-block text-nowrap">
+                    <button class="btn btn-sm btn-icon edit-icon" title="Editar" data-bs-toggle="tooltip" data-bs-placement="top"><i class="ti ti-edit"></i></button>
+                    <button class="btn btn-sm btn-icon delete-icon" title="Eliminar" data-bs-toggle="tooltip" data-bs-placement="top"><i class="ti ti-trash-x"></i></button>
+                </div>`;
+
+                
 let is_loading = false;
 let flatpickr_edit;
 $('#ordenes_table').DataTable({
@@ -9,7 +16,8 @@ $('#ordenes_table').DataTable({
     //{ data: 'descripcion', title: 'Descripción', orderable: true, className: 'non-selectable' },
     { data: 'currency_costo_produccion', title: 'Costo', orderable: false, className: 'non-selectable' },
     { data: 'quantity', title: 'Cant.', orderable: false, className: 'non-selectable' },
-    { data: 'currency_costo_venta', title: 'Precio', orderable: false, className: 'non-selectable' }
+    { data: 'currency_costo_venta', title: 'Precio', orderable: false, className: 'non-selectable' },
+    {  defaultContent: tableActions }
   ],
   dom: 'rtp',
   language: {
@@ -526,13 +534,14 @@ async function loadProductos(id) {
       costo_venta: product.piezas.costo_venta,
       descripcion: product.piezas.descripcion,
       estado: product.piezas.estado,
-      pieza_id: product.piezas.pieza_id,
+      pieza_id: product.piezas.id,
       numero_parte: product.piezas.numero_parte,
       revision_name: product.revisiones.nombre,
       revision_id: product.revisiones.id,
       revision_description: product.revisiones.descripcion,
       currency_costo_produccion: formatCurrency(product.piezas.costo_produccion),
-      currency_costo_venta: formatCurrency(product.piezas.costo_venta)
+      currency_costo_venta: formatCurrency(product.piezas.costo_venta),
+      order_id: id
     };
   });
 
@@ -711,3 +720,14 @@ function formatCurrency(amount) {
 }
 
 // Ejemplo de uso
+
+
+$('#ordenes_table').on('click', 'tbody tr', async function () {
+  const data = $('#ordenes_table').DataTable().row(this).data();
+  console.log({data})
+  console.log(data.id)
+  const deleteRes = await fetchData(`/ordenes/producto/delete/${data.id}`, "DELETE")
+  console.log(deleteRes)
+  await loadProductos(data.order_id)
+
+});
