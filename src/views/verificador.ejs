@@ -1,4 +1,27 @@
+<style>
+  .square-container {
+    position: relative;
+    width: 35%; /* Set the width as desired */
+  }
+  .square-container:before {
+    content: '';
+    display: block;
+    padding-top: 100%; /* 1:1 Aspect Ratio (height = width) */
+  }
+  .square-content {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+</style>
+
 <div class="d-flex align-items-center h-100 flex-wrap justify-content-center gap-5">
-  <div style="width: 40%; height: 40%" class="bg-label-primary rounded card"></div>
-  <div style="width: 40%; height: 40%" class="bg-label-primary rounded card"></div>
+  <div class="bg-label-primary rounded card square-container">
+    <div class="square-content d-flex align-items-center justify-content-center">Content</div>
+  </div>
+  <div class="bg-label-primary rounded card square-container">
+    <div class="square-content d-flex align-items-center justify-content-center">Content</div>
+  </div>
 </div>
