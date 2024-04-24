@@ -89,7 +89,6 @@ $('#create_order').on('submit', async function (e) {
   date.setUTCHours(date.getUTCHours() - 6);
   const isoStringDate = date.toISOString();
 
-  console.log({ isoStringDate });
   const result = await fetchData('/ordenes/create', 'POST', {
     folio_id: folio,
     delivery_date: isoStringDate,
@@ -123,9 +122,7 @@ async function loadOrdenes() {
   const $container = $('#ordenes_compra_container');
   $container.empty();
   const ordenes = await getOrdenes();
-  console.log({ ordenes });
   ordenes.forEach(orden => {
-    console.log({ orden });
     var $newdiv1 = $(`
         <div class="order_container_child card-body border-bottom" id="order_${orden.unique_folio}">
           <div class="row g-2">
@@ -185,3 +182,19 @@ function isoDateToFormatted(fechaISO) {
 }
 
 //añadir, eliminar, editar productos en las ordenes de compras
+
+$('#ordenes_compra_container').on('click','.order_container_child',function(){
+  const $order = $(this)
+  const data = $order.data().data
+  console.log(data)
+
+  const $folio = $('#data-folio')
+  const $fechaCreacion = $('#data-fecha-creación')
+  const $fechaEntrega = $('#data-fecha-entrega')
+  const $clientData = $('#data-client-data')
+  console.log(data.unique_folio)
+  $folio.text(addLeadingZeros(data.unique_folio,6))
+  $fechaEntrega.text(isoDateToFormatted(data.delivery_date))
+  $clientData.text(data.clientes?.nombre ?? "SIN CLIENTE RELACIONADO")
+  $fechaCreacion.text(isoDateToFormatted(data.created_at))
+})

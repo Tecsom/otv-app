@@ -1,5 +1,12 @@
 <link rel="stylesheet" href="/public/assets/vendor/css/pages/app-chat.css" />
-
+<style>
+  .order_container_child{
+    cursor: pointer;
+  }
+  .order_container_child:hover{
+    background-color: rgba(0,0,0,0.1);
+  }
+</style>
 <div class="container-xxl flex-grow-1 container-p-y">
   <div class="d-flex justify-content-between align-items-center pb-2 border-bottom">
     <h4 class="mb-0">Órdenes de compra</h4>
@@ -104,8 +111,8 @@
                   data-overlay=""
                   data-target="#app-chat-contacts"></i>
                 <div class="chat-contact-info flex-grow-1 ms-2">
-                  <h6 class="m-0">[Folio]</h6>
-                  <small class="user-status text-muted" id="reporte_folio">[Fecha y hora]</small>
+                  <h6 class="m-0"><span id="data-folio">[Folio]</span></h6>
+                  <small class="user-status text-muted" id="data-fecha-creación">[Fecha y hora]</small>
                 </div>
               </div>
               <div class="d-flex align-items-center gap-2">
@@ -136,12 +143,12 @@
               <div class="card-body">
                 <div class="d-flex justify-content-between flex-xl-row flex-md-column flex-sm-row flex-column">
                   <div>
-                    <p class="mb-0">[Datos del cliente]</p>
+                    <p class="mb-0"><span id="data-client-data">[Datos del cliente]</span></p>
                   </div>
                   <div>
                     <div>
                       <span>Fecha de entrega: </span>
-                      <span class="fw-medium">[Fecha de entrega]</span>
+                      <span class="fw-medium" id="data-fecha-entrega">[Fecha de entrega]</span>
                     </div>
                   </div>
                 </div>

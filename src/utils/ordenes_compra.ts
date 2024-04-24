@@ -17,7 +17,9 @@ export const getOrdenesCompra = async () => {
     folio_id,
     clientes (id, nombre),
     delivery_date,
-    unique_folio
+    unique_folio,
+    id,
+    created_at
     `);
     if (error) {
         console.error('Error fetching Ordenes:', error.message);
