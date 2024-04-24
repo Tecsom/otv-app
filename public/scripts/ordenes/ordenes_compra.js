@@ -327,6 +327,8 @@ $('#ordenes_compra_container').on('click', '.order_container_child', async funct
 
   loadProductos(data.id);
   loadFiles(data.id);
+  $('#container-no-data').addClass('d-none');
+  $('#container-data').removeClass('d-none');
 });
 
 const renderListItem = (name, url) => {
