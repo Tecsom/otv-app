@@ -94,12 +94,12 @@ async function init() {
 
   $('#add_product_revision').select2({
     dropdownParent: $('#addProductModal')
-  })
+  });
 
   $('#add_product_select').select2({
     dropdownParent: $('#addProductModal'),
-    placeholder:"Selecciona un producto"
-  })
+    placeholder: 'Selecciona un producto'
+  });
 
   const $date_picker = $('#date_picker');
   $date_picker.flatpickr({
@@ -345,6 +345,12 @@ const renderListFile = (name, url, filename) => {
   `;
 };
 
+const renderNoData = type => {
+  return `<div class="d-flex justify-content-center align-items-center" style="height: 100%;">
+  <h6 class="text-muted">Sin ${type}</h4>
+</div>`;
+};
+
 loadFiles = async (id, no_reload = false) => {
   if (isLoading === true) return;
   $('#dpz-imgs').empty();
@@ -370,9 +376,16 @@ loadFiles = async (id, no_reload = false) => {
     } else {
       $('#dpz-files').append(renderListFile(archivo.name, archivo.data, archivo.name));
     }
-    console.log({ no_reload });
 
     if (no_reload === false) dropzoneFiles.addFile(file);
+  }
+
+  if ($('#dpz-imgs').children().length === 0) {
+    $('#dpz-imgs').append(renderNoData('imagenes'));
+  }
+
+  if ($('#dpz-files').children().length === 0) {
+    $('#dpz-files').append(renderNoData('archivos'));
   }
 };
 
@@ -433,7 +446,6 @@ $('#addProductsButton').on('click', async function () {
     return;
   }
 
-
   products.forEach(product => {
     $products.append(
       $('<option>', {
@@ -443,7 +455,7 @@ $('#addProductsButton').on('click', async function () {
     );
   });
 
-  $products.val("")
+  $products.val('');
 
   // const revisiones = revisionesResponse.data; //Array de revisiones
   // const lastRevision = getLastCreated(revisiones);
@@ -484,12 +496,12 @@ $('#addProduct').on('submit', async function (e) {
   };
   const result = await fetchData('/ordernes/addproduct', 'POST', productAdd);
 
-  if(!result.status){
-    toastr.error("ocurrió un error al agregar cliente")
-    return
+  if (!result.status) {
+    toastr.error('ocurrió un error al agregar cliente');
+    return;
   }
-  await loadProductos(order_id)
-  $('#addProductModal').modal('hide')
+  await loadProductos(order_id);
+  $('#addProductModal').modal('hide');
 });
 
 async function loadProductos(id) {
@@ -656,13 +668,11 @@ $('#confirm_delete_order').on('click', async function () {
   await loadOrdenes();
 });
 
-
-
-$('#add_product_select').on('change',async function(){
+$('#add_product_select').on('change', async function () {
   const $addProducts = $('#addProductModal');
   const modalData = $addProducts.data();
   const clientId = modalData.clientes.id;
-  const value = $(this).val()
+  const value = $(this).val();
 
   const revisionesResponse = await fetchData(`/clientes/${clientId}/piezas/${value}/revisiones`);
 
@@ -684,16 +694,15 @@ $('#add_product_select').on('change',async function(){
   });
 
   $('#add_product_revision').val(lastRevision.id);
-})
-
+});
 
 function formatCurrency(amount) {
   const currencyCode = 'MXN';
-  const locale = 'es-MX'; 
+  const locale = 'es-MX';
 
   const formatter = new Intl.NumberFormat(locale, {
-      style: 'currency',
-      currency: currencyCode
+    style: 'currency',
+    currency: currencyCode
   });
 
   return formatter.format(amount);
