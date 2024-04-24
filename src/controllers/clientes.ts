@@ -34,6 +34,9 @@ export const getClientesPagingC = async (req: Request, res: Response) => {
     page: parseInt(start ?? '0') / parseInt(length ?? '10') + 1,
     limitperpage: parseInt(length ?? '10')
   });
+
+  console.log({ data, error });
+
   const { error: error_totals, data: data_totals } = await supabase().rpc('searchclientes_totals', {
     search: search?.value ?? search ?? '',
     page: parseInt(start ?? '0') / parseInt(length ?? '10') + 1,
@@ -243,6 +246,8 @@ export const getPiezasTableC = async (req: Request, res: Response) => {
     limitperpage: parseInt(length ?? '10'),
     client: parseInt(client_id as string)
   });
+
+  console.log({ error, data });
 
   res.status(200).json({
     draw,

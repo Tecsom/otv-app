@@ -57,3 +57,18 @@ export class loadingButton {
     button.prop('disabled', false);
   }
 }
+
+export function isoDateToFormatted(fechaISO) {
+  // Crear un objeto Date usando la cadena de fecha ISO 8601
+  const fecha = new Date(fechaISO);
+
+  // Extraer día, mes y año
+  const dia = fecha.getUTCDate(); // Obtener día (en formato de 1 a 31)
+  const mes = fecha.getUTCMonth() + 1; // Obtener mes (en formato de 0 a 11, por eso se suma 1)
+  const anio = fecha.getUTCFullYear(); // Obtener año
+
+  // Formatear la fecha como dd/mm/yyyy
+  const fechaFormateada = `${dia.toString().padStart(2, '0')}/${mes.toString().padStart(2, '0')}/${anio}`;
+
+  return fechaFormateada;
+}

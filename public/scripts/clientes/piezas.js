@@ -1,4 +1,4 @@
-import { fetchData, loadingButton } from '/public/scripts/helpers.js';
+import { fetchData, loadingButton, isoDateToFormatted } from '/public/scripts/helpers.js';
 
 const previewTemplate = `<div class="dz-preview dz-file-preview">
 <div class="dz-details">
@@ -213,7 +213,13 @@ $('#crear-pieza-form').on('submit', async function (e) {
 
 piezas_table.on('click', 'tbody tr', async function () {
   const data = piezas_table.row(this).data();
-  const { cliente_id, id, estado } = data;
+  const { cliente_id, id, estado, created_at, numero_parte, descripcion } = data;
+  $('#offcanvas_pieza').attr('data-pieza-id', id);
+  $('#offcanvas_pieza').data('pieza_data', data);
+  $('#revision_date_created').text(isoDateToFormatted(created_at));
+  $('#offcanvas_pieza_title').text(numero_parte);
+  $('#numero_parte_oc').text(numero_parte);
+  $('#descripcion_oc').text(descripcion);
   const res_revisiones = await fetchData(`/clientes/${cliente_id}/piezas/${id}/revisiones`);
   if (!res_revisiones.status) {
     toastr.error(res_revisiones.message, 'Error obteniendo las revisiones');
@@ -221,14 +227,21 @@ piezas_table.on('click', 'tbody tr', async function () {
   }
   addRevisionesToSelect(res_revisiones.data);
   // /clientes/:cliente_id/piezas/:pieza_id/revisiones/:revision_id/files
-  const res_files = await fetchData(
-    `/clientes/${cliente_id}/piezas/${id}/revisiones/${res_revisiones.data[0].id}/files`
-  );
-  if (!res_files.status) {
-    toastr.error(res_files.message, 'Error obteniendo los archivos');
+  $('#offcanvas_pieza').offcanvas('show');
+
+  $('#badge-status-pieza').text(estado ? 'Activo' : 'No activo');
+  if (estado) $('#badge-status-pieza').removeClass('bg-label-danger').addClass('bg-label-success');
+  else $('#badge-status-pieza').removeClass('bg-label-success').addClass('bg-label-danger');
+});
+
+const loadFilesList = async (cliente_id, pieza_id, revision_id) => {
+  console.log('load');
+  const res = await fetchData(`/clientes/${cliente_id}/piezas/${pieza_id}/revisiones/${revision_id}/files`);
+  if (!res.status) {
+    toastr.error(res.message, 'Error obteniendo los archivos');
     return;
   }
-  const { images, files } = res_files.data;
+  const { images, files } = res.data;
 
   $('#offcanvas-images-list').empty();
   $('#offcanvas-files-list').empty();
@@ -240,23 +253,26 @@ piezas_table.on('click', 'tbody tr', async function () {
   for (const file of files) {
     $('#offcanvas-files-list').append(renderListFile(file.name, file.data, file.name));
   }
-  // renderListItem
-
-  $('#badge-status-pieza').text(estado ? 'Activo' : 'No activo');
-  if (estado) $('#badge-status-pieza').removeClass('bg-label-danger').addClass('bg-label-success');
-  else $('#badge-status-pieza').removeClass('bg-label-success').addClass('bg-label-danger');
-  $('#offcanvas_pieza').offcanvas('show');
-  $('#offcanvas_pieza').attr('data-pieza-id', id);
-  $('#offcanvas_pieza').data('pieza_data', data);
-});
+};
 
 const addRevisionesToSelect = (revisiones = []) => {
   select_revision.empty();
+  const latest_revision = [...revisiones].sort((a, b) => new Date(b.created_at) - new Date(a.created_at))[0];
+
   for (const revision of revisiones) {
     const { id, nombre } = revision;
-    select_revision.append(new Option(nombre, id)).trigger('change');
+    const is_latest = latest_revision.id === id;
+    if (is_latest) select_revision.append(`<option value="${id}" selected>${nombre}</option>`).trigger('change');
+    else select_revision.append(`<option value="${id}">${nombre}</option>`);
   }
 };
+
+select_revision.on('change', async function () {
+  const pieza_id = $('#offcanvas_pieza').attr('data-pieza-id');
+  const revision_id = $(this).val();
+
+  await loadFilesList(clientData.id, pieza_id, revision_id);
+});
 
 $('#btn_edit_pieza').on('click', async function () {
   const pieza_data = $('#offcanvas_pieza').data('pieza_data');
@@ -440,6 +456,7 @@ $('#delete_pieza_btn').on('click', async function () {
 $('#btn-delete-revision').on('click', async function () {
   $('#delete_revision_modal').modal('show');
   $('#offcanvas_pieza').offcanvas('hide');
+  $('#revision-delete').text(select_revision.find('option:selected').text());
 });
 
 $('#delete_revision_btn').on('click', async function () {

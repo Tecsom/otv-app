@@ -8,8 +8,9 @@ piezas_table = $('#piezas_table').DataTable({
     selector: 'td:not(.non-selectable)'
   },
   columns: [
-    { data: 'numero_parte', title: 'Número de parte', orderable: true, className: 'non-selectable' },
-    { data: 'descripcion', title: 'Descripción', orderable: true, className: 'non-selectable' }
+    { data: 'numero_parte', title: 'Número de parte', orderable: false, className: 'non-selectable' },
+    { data: 'descripcion', title: 'Descripción', orderable: false, className: 'non-selectable' },
+    { data: 'revision', title: 'Revisión', orderable: false, className: 'non-selectable' }
   ],
   dom: 'rtp',
   language: {
