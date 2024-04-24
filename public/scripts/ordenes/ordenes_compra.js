@@ -183,9 +183,9 @@ async function loadOrdenes() {
               <hr class="m-0" />
             </div>
             <div class="col-md-12">
-              <p class="mb-0"><strong>Cliente: </strong>${orden.clientes?.nombre ?? '<span style="color:Red">Sin cliente relacionado</span>'}</p>
-              <p class="mb-0"><strong>Folio de cliente: </strong>${orden.folio_id}</p>
-              <p class="mb-0"><strong>Fecha de entrega: </strong>${isoDateToFormatted(orden.delivery_date)}</p>       
+              <p class="mb-0 small"><strong>Cliente: </strong>${orden.clientes?.nombre ?? '<span style="color:Red">Sin cliente relacionado</span>'}</p>
+              <p class="mb-0 small"><strong>Folio de cliente: </strong>${orden.folio_id}</p>
+              <p class="mb-0 small"><strong>Fecha de entrega: </strong>${isoDateToFormatted(orden.delivery_date)}</p>       
             </div>
           </div>
         </div>
