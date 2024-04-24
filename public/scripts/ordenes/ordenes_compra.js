@@ -1,7 +1,6 @@
 //ordenes_table
 import { fetchData, loadingButton } from '/public/scripts/helpers.js';
 
-
 $('#ordenes_table').DataTable({
   columns: [
     { data: 'numero_parte', title: 'NO. DE PARTE', orderable: true, className: 'non-selectable' },
@@ -9,18 +8,14 @@ $('#ordenes_table').DataTable({
     { data: 'descripcion', title: 'DESCRIPCIÓN', orderable: true, className: 'non-selectable' },
     { data: 'costo_produccion', title: 'COSTO', orderable: false, className: 'non-selectable' },
     { data: 'quantity', title: 'CANT.', orderable: false, className: 'non-selectable' },
-    { data: 'costo_venta', title: 'PRECIO', orderable: false, className: 'non-selectable' },
-
+    { data: 'costo_venta', title: 'PRECIO', orderable: false, className: 'non-selectable' }
   ],
   dom: 'rtp',
   language: {
     url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/es-ES.json'
   },
-  order: [[0, 'asc']],
+  order: [[0, 'asc']]
 });
-
-
-
 
 let page = 1;
 const limit = 10;
@@ -101,7 +96,6 @@ async function init() {
       }
     }
   });
-
 }
 
 $('#create_order').on('submit', async function (e) {
@@ -250,9 +244,10 @@ function isoDateToFormatted(fechaISO) {
 $('#ordenes_compra_container').on('click', '.order_container_child', async function () {
   const $order = $(this);
   const data = $order.data().data; //ORDER DATA
-  console.log({data})
+  console.log({ data });
   const $addProductsmodal = $('#addProductModal');
   $addProductsmodal.data(data);
+  $('#container-reporte').data(data);
 
   if (!data.clientes) {
     toastr.warning('Selecciona un nuevo cliente para la orden');
@@ -270,9 +265,28 @@ $('#ordenes_compra_container').on('click', '.order_container_child', async funct
   $fechaCreacion.text(isoDateToFormatted(data.created_at));
   $('#ordenes_compra_container .order_container_child').removeClass('bg-label-primary');
   $(this).addClass('bg-label-primary');
-  
-  loadProductos(data.id)
+
+  loadProductos(data.id);
+  loadFiles(data.id);
 });
+
+async function loadFiles(id) {
+  const files = await fetchData(`/ordenes/${id}/files`, 'GET');
+
+  if (!files.status) {
+    toastr.error('Ocurrió un error al cargar los archivos');
+    return;
+  }
+  dropzoneFiles.removeAllFiles();
+
+  for (const archivo of files.data) {
+    console.log({ archivo });
+    const blob = await fetch(archivo.data).then(res => res.blob());
+    const file = new File([blob], archivo.name, { type: archivo.type, isUploaded: true });
+
+    dropzoneFiles.addFile(file);
+  }
+}
 
 function pushUrl(paramName, paramValue) {
   var currentUrl = window.location.href;
@@ -285,20 +299,19 @@ $('#addProductsButton').on('click', async function () {
   const $addProducts = $('#addProductModal');
   const modalData = $addProducts.data();
   const $products = $('#add_product_select');
-  const $revision = $('#add_product_revision')
-  const $quantity = $('#add_product_quantity')
+  const $revision = $('#add_product_revision');
+  const $quantity = $('#add_product_quantity');
 
-  $products.empty()
-  $revision.empty()
-  $quantity.val("1")
-
+  $products.empty();
+  $revision.empty();
+  $quantity.val('1');
 
   if (!modalData.clientes) {
     toastr.warning('Asigna un cliente a la orden para añadir productos');
     return;
   }
-  console.log({modalData})
-  const clientId = modalData.clientes.id
+  console.log({ modalData });
+  const clientId = modalData.clientes.id;
 
   const resultProducts = await fetchData(`/clientes/${clientId}/piezas`);
   if (!resultProducts.status) {
@@ -312,13 +325,12 @@ $('#addProductsButton').on('click', async function () {
   }
 
   ///clientes/:cliente_id/piezas/:pieza_id/revisiones
-  const revisionesResponse = await fetchData(`/clientes/${clientId}/piezas/${products[0].id}/revisiones`)
+  const revisionesResponse = await fetchData(`/clientes/${clientId}/piezas/${products[0].id}/revisiones`);
 
-  if(!revisionesResponse.status){
-    toastr.error("Ocurrio un error al recuperar revisiones")
-    return
+  if (!revisionesResponse.status) {
+    toastr.error('Ocurrio un error al recuperar revisiones');
+    return;
   }
-
 
   products.forEach(product => {
     $products.append(
@@ -329,8 +341,7 @@ $('#addProductsButton').on('click', async function () {
     );
   });
 
-
-  const revisiones = revisionesResponse.data //Array de revisiones
+  const revisiones = revisionesResponse.data; //Array de revisiones
 
   revisiones.forEach(revision => {
     $revision.append(
@@ -344,13 +355,11 @@ $('#addProductsButton').on('click', async function () {
   $addProducts.modal('show');
 });
 
-
-
 $('#addProduct').on('submit', async function (e) {
   e.preventDefault();
   const confirmButton = $('#confirm_add_product');
   const $addProductsmodal = $('#addProductModal');
-  const $revision = $('#add_product_revision')
+  const $revision = $('#add_product_revision');
   const order_id = $addProductsmodal.data().id;
 
   const $product = $('#add_product_select');
@@ -371,25 +380,22 @@ $('#addProduct').on('submit', async function (e) {
   console.log({ result });
 });
 
-
-async function loadProductos(id){
+async function loadProductos(id) {
   $('#ordenes_table').DataTable().clear();
   $('#ordenes_table').DataTable().draw();
 
+  const productsResult = await fetchData(`/ordenes/${id}/productos`);
+  const productos = productsResult.data;
+  console.log({ productos });
 
-  const productsResult = await fetchData(`/ordenes/${id}/productos`)
-  const productos = productsResult.data
-  console.log({productos})
-
-  if(productos.length == 0){
-    return
+  if (productos.length == 0) {
+    return;
   }
-  
-  const productosTable = productos.map(product => {
 
-    return{
+  const productosTable = productos.map(product => {
+    return {
       id: product.id,
-      quantity:product.quantity,
+      quantity: product.quantity,
       costo_produccion: product.piezas.costo_produccion,
       costo_venta: product.piezas.costo_venta,
       descripcion: product.piezas.descripcion,
@@ -397,15 +403,10 @@ async function loadProductos(id){
       pieza_id: product.piezas.pieza_id,
       numero_parte: product.piezas.numero_parte,
       revision_name: product.revisiones.nombre,
-      revision_id:product.revisiones.id,
-      revision_description:product.revisiones.descripcion
-
-    }
-
-  })
- 
+      revision_id: product.revisiones.id,
+      revision_description: product.revisiones.descripcion
+    };
+  });
 
   $('#ordenes_table').DataTable().rows.add(productosTable).draw();
-
-
 }

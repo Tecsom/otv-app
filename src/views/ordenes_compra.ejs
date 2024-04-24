@@ -232,7 +232,21 @@
                       </div>
                     </div>
                   </div>
-                  <div class="tab-pane fade" id="navs_files" role="tabpanel"></div>
+                  <div class="tab-pane fade" id="navs_files" role="tabpanel">
+                    <div class="row">
+                      <div class="col-md-12">
+                        <label for="input-imgs" class="form-label required">Archivos</label>
+                        <div id="dropzone" class="fallback dropzone">
+                          <input id="input-dropzone" type="file" multiple />
+                        </div>
+                      </div>
+                      <div class="col-md-12 d-flex justify-content-end mt-2">
+                        <button id="uploadFilesButton" type="button" class="btn btn-label-primary">
+                          <span class="tf-icons ti-xs ti ti-upload me-1"> </span>Subir
+                        </button>
+                      </div>
+                    </div>
+                  </div>
                   <div class="tab-pane fade" id="navs_codes" role="tabpanel"></div>
                 </div>
               </div>
@@ -337,5 +351,9 @@
     </div>
   </div>
 </div>-->
+<script>
+  var dropzoneFiles;
+</script>
 
 <script src="/public/scripts/ordenes/ordenes_compra.js" type="module"></script>
+<script src="/public/scripts/ordenes/archivos.js" type="module"></script>
