@@ -35,6 +35,10 @@ export const renderOrdenesCompra = async (req: Request, res: Response) => {
   }
 };
 
-export const renderVerificador = async (_: Request, res: Response) => res.render('verificador.ejs', { layout: "./../layouts/horizontal.ejs"});
-export const renderVerificadorEmbarques = async (_: Request, res: Response) => res.render('verificador-embarques.ejs', { layout: "./../layouts/horizontal.ejs"});
-export const renderVerificadorOrdenes = async (_: Request, res: Response) => res.render('verificador-ordenes.ejs', { layout: "./../layouts/horizontal.ejs"});
+export const renderVerificador = async (_: Request, res: Response) =>
+  res.render('verificador.ejs', { layout: './../layouts/horizontal.ejs' });
+export const renderVerificadorEmbarques = async (_: Request, res: Response) =>
+  res.render('verificador-embarques.ejs', { layout: './../layouts/horizontal.ejs' });
+export const renderVerificadorOrdenes = async (_: Request, res: Response) =>
+  res.render('verificador-ordenes.ejs', { layout: './../layouts/horizontal.ejs' });
+export const renderConfiguracion = async (_: Request, res: Response) => res.render('configuracion.ejs');
