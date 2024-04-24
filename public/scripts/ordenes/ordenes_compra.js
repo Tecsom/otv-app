@@ -92,6 +92,15 @@ async function init() {
     wheelPropagation: false
   });
 
+  $('#add_product_revision').select2({
+    dropdownParent: $('#addProductModal')
+  })
+
+  $('#add_product_select').select2({
+    dropdownParent: $('#addProductModal'),
+    placeholder:"Selecciona un producto"
+  })
+
   const $date_picker = $('#date_picker');
   $date_picker.flatpickr({
     // EN ESTA PARTE ES DONDE SE REGISTRA EL EVENTO
@@ -439,12 +448,6 @@ $('#addProductsButton').on('click', async function () {
     return;
   }
 
-  const revisionesResponse = await fetchData(`/clientes/${clientId}/piezas/${products[0].id}/revisiones`);
-
-  if (!revisionesResponse.status) {
-    toastr.error('Ocurrio un error al recuperar revisiones');
-    return;
-  }
 
   products.forEach(product => {
     $products.append(
@@ -455,19 +458,21 @@ $('#addProductsButton').on('click', async function () {
     );
   });
 
-  const revisiones = revisionesResponse.data; //Array de revisiones
-  const lastRevision = getLastCreated(revisiones);
+  $products.val("")
 
-  revisiones.forEach(revision => {
-    $revision.append(
-      $('<option>', {
-        value: revision.id,
-        text: revision.nombre
-      })
-    );
-  });
+  // const revisiones = revisionesResponse.data; //Array de revisiones
+  // const lastRevision = getLastCreated(revisiones);
 
-  $revision.val(lastRevision.id);
+  // revisiones.forEach(revision => {
+  //   $revision.append(
+  //     $('<option>', {
+  //       value: revision.id,
+  //       text: revision.nombre
+  //     })
+  //   );
+  // });
+
+  // $revision.val(lastRevision.id);
   $addProducts.modal('show');
 });
 
@@ -657,3 +662,33 @@ $('#confirm_delete_order').on('click', async function () {
   loadMore = true;
   await loadOrdenes();
 });
+
+
+
+$('#add_product_select').on('change',async function(){
+  const $addProducts = $('#addProductModal');
+  const modalData = $addProducts.data();
+  const clientId = modalData.clientes.id;
+  const value = $(this).val()
+
+  const revisionesResponse = await fetchData(`/clientes/${clientId}/piezas/${value}/revisiones`);
+
+  if (!revisionesResponse.status) {
+    toastr.error('Ocurrio un error al recuperar revisiones');
+    return;
+  }
+
+  const revisiones = revisionesResponse.data;
+  const lastRevision = getLastCreated(revisiones);
+
+  revisiones.forEach(revision => {
+    $('#add_product_revision').append(
+      $('<option>', {
+        value: revision.id,
+        text: revision.nombre
+      })
+    );
+  });
+
+  $('#add_product_revision').val(lastRevision.id);
+})
