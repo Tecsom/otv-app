@@ -97,7 +97,7 @@ $('#create_order').on('submit', async function (e) {
   const apiResult = result.data;
 
   if (!apiResult.status) {
-    toastr.error(apiResult.data.details, 'Ocurró un error');
+    toastr.error(apiResult.data.details, 'Ocurrió un error');
     return;
   }
   toastr.success('Creado con éxito');
@@ -111,7 +111,7 @@ $('#create_order').on('submit', async function (e) {
 async function getOrdenes() {
   const ordenes = await fetchData('/ordenes', 'GET'); //api/ordenes
   if (!ordenes.status) {
-    toastr.error('Ocurrio un error al obtener ordenes');
+    toastr.error('Ocurrió un error al obtener ordenes');
     return;
   }
   return ordenes.data;
@@ -122,7 +122,7 @@ async function loadOrdenes() {
   $container.empty();
   const ordenes = await getOrdenes();
   ordenes.forEach(orden => {
-    const uniqueFolio = orden.unique_folio ? addLeadingZeros(orden.unique_folio, 6) : "Sin Folio"
+    const uniqueFolio = orden.unique_folio ? addLeadingZeros(orden.unique_folio, 6) : 'Sin Folio';
     var $newdiv1 = $(`
         <div class="order_container_child card-body border-bottom" id="order_${orden.unique_folio}">
           <div class="row g-2">
@@ -182,85 +182,83 @@ function isoDateToFormatted(fechaISO) {
 
 //añadir, eliminar, editar productos en las ordenes de compras
 
-$('#ordenes_compra_container').on('click','.order_container_child',function(){
-  const $order = $(this)
-  const data = $order.data().data
-  const $addProductsmodal = $('#addProductModal')
-  $addProductsmodal.data(data)
+$('#ordenes_compra_container').on('click', '.order_container_child', function () {
+  const $order = $(this);
+  const data = $order.data().data;
+  const $addProductsmodal = $('#addProductModal');
+  $addProductsmodal.data(data);
 
-  if(!data.clientes){
-    toastr.warning("Selecciona un nuevo cliente para para la orden")
+  if (!data.clientes) {
+    toastr.warning('Selecciona un nuevo cliente para la orden');
   }
 
-  const $folio = $('#data-folio')
-  const $fechaCreacion = $('#data-fecha-creación')
-  const $fechaEntrega = $('#data-fecha-entrega')
-  const $clientData = $('#data-client-data')
-  const uniqueFolio = data.unique_folio ? addLeadingZeros(data.unique_folio, 6) : "Sin Folio"
+  const $folio = $('#data-folio');
+  const $fechaCreacion = $('#data-fecha-creación');
+  const $fechaEntrega = $('#data-fecha-entrega');
+  const $clientData = $('#data-client-data');
+  const uniqueFolio = data.unique_folio ? addLeadingZeros(data.unique_folio, 6) : 'Sin Folio';
 
-  $folio.text(uniqueFolio)
-  $fechaEntrega.text(isoDateToFormatted(data.delivery_date))
-  $clientData.text(data.clientes?.nombre ?? "SIN CLIENTE RELACIONADO")
-  $fechaCreacion.text(isoDateToFormatted(data.created_at))
+  $folio.text(uniqueFolio);
+  $fechaEntrega.text(isoDateToFormatted(data.delivery_date));
+  $clientData.text(data.clientes?.nombre ?? 'SIN CLIENTE RELACIONADO');
+  $fechaCreacion.text(isoDateToFormatted(data.created_at));
   $('#ordenes_compra_container .order_container_child').removeClass('bg-label-primary');
   $(this).addClass('bg-label-primary');
-})
+});
 
 function pushUrl(paramName, paramValue) {
   var currentUrl = window.location.href;
-  var baseUrl = currentUrl.split('?')[0]; 
+  var baseUrl = currentUrl.split('?')[0];
   var newUrl = baseUrl + '?' + paramName + '=' + paramValue;
   window.history.pushState({ path: newUrl }, '', newUrl);
 }
 
-$('#addProductsButton').on('click',async function(){
+$('#addProductsButton').on('click', async function () {
+  const $addProducts = $('#addProductModal');
+  const modalData = $addProducts.data();
+  const $productsSelect = $('#add_product_select');
+  if (!modalData.clientes) {
+    toastr.warning('Asigna un cliente a la orden para añadir productos');
+    return;
+  }
+  const resultProducts = await fetchData(`/clientes/${modalData.clientes.id}/piezas`);
+  if (!resultProducts.status) {
+    toastr.error('Ocurrió un error al cargar piezas');
+  }
+  const products = resultProducts.data;
 
-    const $addProducts = $('#addProductModal')
-    const modalData = $addProducts.data()
-    const $productsSelect = $('#add_product_select')
-    if(!modalData.clientes){
-      toastr.warning("Asigna un cliente a la orden para añadir productos")
-      return
-    }
-    const resultProducts = await fetchData(`/clientes/${modalData.clientes.id}/piezas`)
-    if(!resultProducts.status){
-      toastr.error("Ocurrió un error al cargar piezas")
-    }
-    const products = resultProducts.data
-
-    if(products.length === 0){
-      toastr.warning("Es necesario añadir piezas y/o productos al cliente para poder continuar", "Cliente sin piezas")
-      return
-    }
-
-  
-    products.forEach(product => {
-      $productsSelect.append($('<option>', {
-        value: product.id,
-        text: product.descripcion
-      }));
-    });
-
-
-    $addProducts.modal('show')
-
-
-})
-
-$('#addProduct').on('submit',async function(){
-
-  const confirmButton = $('#confirm_add_product')
-
-  const $product = $('#add_product_select')
-  const $quantity = $('#add_product_quantity')
-
-  if(!$quantity.val() || !$product.val()){
-    toastr.error("Añade un producto y su cantidad")
-    return
+  if (products.length === 0) {
+    toastr.warning('Es necesario añadir piezas y/o productos al cliente para poder continuar', 'Cliente sin piezas');
+    return;
   }
 
-  const result = await fetchData('/ordernes/addproduct')
-  console.log({result})
+  console.log({ products });
 
+  products.forEach(product => {
+    $productsSelect.append(
+      $('<option>', {
+        value: product.id,
+        text: product.descripcion
+      })
+    );
+  });
 
-})
+  $addProducts.modal('show');
+
+  $addProducts.modal('show');
+});
+
+$('#addProduct').on('submit', async function () {
+  const confirmButton = $('#confirm_add_product');
+
+  const $product = $('#add_product_select');
+  const $quantity = $('#add_product_quantity');
+
+  if (!$quantity.val() || !$product.val()) {
+    toastr.error('Añade un producto y su cantidad');
+    return;
+  }
+
+  const result = await fetchData('/ordernes/addproduct');
+  console.log({ result });
+});
