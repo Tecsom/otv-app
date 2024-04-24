@@ -262,7 +262,8 @@
                     name="code_string"
                     class="form-control"
                     placeholder="Selecciona una opción o escribe un valor"
-                    value="<%= clientData.code_string %>" />
+                    value="<%= clientData.code_string %>"
+                     />
                 </div>
                 <div class="col-md-12">
                   <label for="select2Basic" class="form-label">Tipo de código</label>
@@ -636,7 +637,10 @@
 </div>
 
 <script>
+  '<% const parsed = clientData %>'
+  '<% delete clientData.code_string %>'
   var clientData = JSON.parse('<%- JSON.stringify(clientData) %>') ?? {};
+  console.log({ clientData })
   var piezasData = JSON.parse('<%- JSON.stringify(piezasData) %>') ?? [];
   var piezas_table;
 </script>

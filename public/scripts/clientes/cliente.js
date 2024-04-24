@@ -45,16 +45,27 @@ $(document).ready(function () {
 
   const TagifyCustomInlineSuggestionEl = document.querySelector('#TagifyCustomInlineSuggestion');
 
+  // const whitelist = [
+  //   'Número de parte',
+  //   'Revisión de parte',
+  //   'ID de cliente',
+  //   'ID orden de compra',
+  //   'Semana del año (Fecha de entrega - WW)',
+  //   'Año (Fecha de entrega - YYYY)',
+  //   'Año (Fecha de entrega - YY)',
+  //   'Identificador de proveedor',
+  //   '# Consecutivo de la pieza por OC'
+  // ];
   const whitelist = [
-    'Número de parte',
-    'Revisión de parte',
-    'ID de cliente',
-    'ID orden de compra',
-    'Semana del año (Fecha de entrega - WW)',
-    'Año (Fecha de entrega - YYYY)',
-    'Año (Fecha de entrega - YY)',
-    'Identificador de proveedor',
-    '# Consecutivo de la pieza por OC'
+    { value: 'Número de parte', id: 'numero_parte' },
+    { value: 'Revisión de parte', id: 'revision_parte' },
+    { value: 'ID de cliente', id: 'cliente_id' },
+    { value: 'ID orden de compra', id: 'orden_compra_id' },
+    { value: 'Semana del año (Fecha de entrega - WW)', id: 'semana_ano' },
+    { value: 'Año (Fecha de entrega - YYYY)', id: 'ano_YYYY' },
+    { value: 'Año (Fecha de entrega - YY)', id: 'ano_YY' },
+    { value: 'Identificador de proveedor', id: 'proveedor_id' },
+    { value: '# Consecutivo de la pieza por OC', id: 'consecutivo' }
   ];
   // Inline
   let TagifyCustomInlineSuggestion = new Tagify(TagifyCustomInlineSuggestionEl, {
@@ -100,8 +111,7 @@ $('#form_qr_config').on('submit', async function (e) {
   button.start();
   const formData = new FormData(this);
   let data = Object.fromEntries(formData);
-  console.log({ cs: data.code_string });
-  data.code_string = (JSON.parse(data?.code_string) ?? []).map(code => code.value).join(', ');
+  data.code_string = JSON.parse(data.code_string);
 
   const res = await fetchData(`/clientes/${clientData.id}`, 'PUT', data);
   button.stop();
