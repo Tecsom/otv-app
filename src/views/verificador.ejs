@@ -15,13 +15,29 @@
     width: 100%;
     height: 100%;
   }
+
+  .image-selector {
+    width: 50%;
+    height: auto;
+  }
 </style>
 
 <div class="d-flex align-items-center h-100 flex-wrap justify-content-center gap-5">
-  <div class="bg-label-primary rounded card square-container">
-    <div class="square-content d-flex align-items-center justify-content-center">Content</div>
-  </div>
-  <div class="bg-label-primary rounded card square-container">
-    <div class="square-content d-flex align-items-center justify-content-center">Content</div>
-  </div>
+  <a class="bg-label-primary rounded card square-container cursor-pointer" href="/verificador/ordenes">
+    <div class="square-content d-flex align-items-center justify-content-center">
+      <div class="text-center">
+        <img style="width: 50%" src="../../public/assets/img/otv-assets/3dinvoice.png" />
+        <h3 class="mt-2">Órdenes de compra</h3>
+      </div>
+    </div>
+  </a>
+
+  <a class="bg-label-primary rounded card square-container cursor-pointer" href="/verificador/embarques">
+    <div class="square-content d-flex align-items-center justify-content-center">
+      <div class="text-center">
+        <img style="width: 50%" src="../../public/assets/img/otv-assets/truck3d.png" />
+        <h3 class="mt-2">Embarques</h3>
+      </div>
+    </div>
+  </a>
 </div>
