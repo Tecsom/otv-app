@@ -25,6 +25,29 @@ export const getClientesC = async (req: Request, res: Response) => {
   }
 };
 
+export const getClientesPagingC = async (req: Request, res: Response) => {
+  const queries = req.query as any;
+  const { length, draw, search, start } = queries as QueryTable;
+
+  const { error, data } = await supabase().rpc('searchclientes', {
+    search: search.value,
+    page: parseInt(start ?? '0') / parseInt(length ?? '10') + 1,
+    limitperpage: parseInt(length ?? '10')
+  });
+  const { error: error_totals, data: data_totals } = await supabase().rpc('searchclientes_totals', {
+    search: search.value,
+    page: parseInt(start ?? '0') / parseInt(length ?? '10') + 1,
+    limitperpage: parseInt(length ?? '10')
+  });
+
+  res.status(200).json({
+    draw,
+    recordsTotal: data_totals[0].total_records,
+    recordsFiltered: data_totals[0].total_records,
+    data
+  });
+};
+
 export const createClienteC = async (req: Request, res: Response) => {
   const clienteData = req.body as Cliente;
   try {

@@ -13,12 +13,14 @@ import {
   createRevisionC,
   getPiezasTableC,
   deletePiezaC,
-  deleteRevisionC
+  deleteRevisionC,
+  getClientesPagingC
 } from '../controllers/clientes';
 
 const router = express.Router();
 
 router.get('/clientes', getClientesC);
+router.get('/clientes/paging', getClientesPagingC);
 router.post('/clientes', createClienteC);
 router.delete('/clientes/:id', deleteClienteC);
 router.put('/clientes/:id', updateClienteC);
