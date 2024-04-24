@@ -1,6 +1,6 @@
 //ordenes_table
 import { fetchData, loadingButton } from '/public/scripts/helpers.js';
-
+let is_loading = false;
 $('#ordenes_table').DataTable({
   columns: [
     { data: 'numero_parte', title: 'NO. DE PARTE', orderable: true, className: 'non-selectable' },
@@ -271,7 +271,11 @@ $('#ordenes_compra_container').on('click', '.order_container_child', async funct
 });
 
 async function loadFiles(id) {
+  if (isLoading === true) return;
+
+  isLoading = true;
   const files = await fetchData(`/ordenes/${id}/files`, 'GET');
+  isLoading = false;
 
   if (!files.status) {
     toastr.error('Ocurrió un error al cargar los archivos');
@@ -280,7 +284,6 @@ async function loadFiles(id) {
   dropzoneFiles.removeAllFiles();
 
   for (const archivo of files.data) {
-    console.log({ archivo });
     const blob = await fetch(archivo.data).then(res => res.blob());
     const file = new File([blob], archivo.name, { type: archivo.type, isUploaded: true });
 
@@ -324,7 +327,7 @@ $('#addProductsButton').on('click', async function () {
     return;
   }
 
-  const revisionesResponse = await fetchData(`/clientes/${clientId}/piezas/${products[0].id}/revisiones`)
+  const revisionesResponse = await fetchData(`/clientes/${clientId}/piezas/${products[0].id}/revisiones`);
 
   if (!revisionesResponse.status) {
     toastr.error('Ocurrio un error al recuperar revisiones');
@@ -340,9 +343,8 @@ $('#addProductsButton').on('click', async function () {
     );
   });
 
-
-  const revisiones = revisionesResponse.data //Array de revisiones
-  const lastRevision =  getLastCreated(revisiones)
+  const revisiones = revisionesResponse.data; //Array de revisiones
+  const lastRevision = getLastCreated(revisiones);
 
   revisiones.forEach(revision => {
     $revision.append(
@@ -353,7 +355,7 @@ $('#addProductsButton').on('click', async function () {
     );
   });
 
-  $revision.val(lastRevision.id)
+  $revision.val(lastRevision.id);
   $addProducts.modal('show');
 });
 
@@ -413,22 +415,20 @@ async function loadProductos(id) {
   $('#ordenes_table').DataTable().rows.add(productosTable).draw();
 }
 
-
-
 function getLastCreated(array) {
   if (array.length === 0) {
-      return null; 
+    return null;
   }
 
-  let lastCreated = array[0]; 
+  let lastCreated = array[0];
 
   for (let i = 1; i < array.length; i++) {
-      const fechaActual = new Date(array[i].created_at);
-      const fechaUltimo = new Date(lastCreated.created_at);
+    const fechaActual = new Date(array[i].created_at);
+    const fechaUltimo = new Date(lastCreated.created_at);
 
-      if (fechaActual > fechaUltimo) {
-        lastCreated = array[i]; 
-      }
+    if (fechaActual > fechaUltimo) {
+      lastCreated = array[i];
+    }
   }
 
   return lastCreated;

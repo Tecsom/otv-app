@@ -267,7 +267,20 @@
                       </div>
                       <div class="col-md-12">
                         <div class="row">
-                          <div class="col-md-3">Lista de archivos</div>
+                          <div class="col-md-3">
+                            <div class="col-md-12 d-none" id="container-imagenes">
+                              <label for="input-imgs" class="form-label required">Imágenes</label>
+                              <div id="dpz-imgs" class="fallback dropzone">
+                                <input id="input-imgs" type="file" multiple />
+                              </div>
+                            </div>
+                            <div class="col-md-12 d-none" id="container-archivos">
+                              <label for="input-files" class="form-label required">Archivos</label>
+                              <div id="dpz-files" class="fallback dropzone">
+                                <input id="input-files" type="file" multiple />
+                              </div>
+                            </div>
+                          </div>
                           <div class="col-md-9">
                             <div id="dropzone" class="fallback dropzone">
                               <input id="input-dropzone" type="file" multiple />
