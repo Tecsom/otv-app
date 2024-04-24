@@ -72,3 +72,24 @@ export function isoDateToFormatted(fechaISO) {
 
   return fechaFormateada;
 }
+
+//neceisto la función que le pase la fecha en utc 2024-04-24 22:17:29.11027+00 y me devuelva la fecha en formato dd/mm/yyyy hh:mm:ss de la hora local
+
+export function isoDateToFormattedWithTime(fechaISO) {
+  // Crear un objeto Date usando la cadena de fecha ISO 8601
+  const fecha = new Date(fechaISO);
+
+  // Extraer día, mes y año
+  const dia = fecha.getDate(); // Obtener día (en formato de 1 a 31)
+  const mes = fecha.getMonth() + 1; // Obtener mes (en formato de 0 a 11, por eso se suma 1)
+  const anio = fecha.getFullYear(); // Obtener año
+
+  const hora = fecha.getHours();
+  const minutos = fecha.getMinutes();
+  const segundos = fecha.getSeconds();
+
+  // Formatear la fecha como dd/mm/yyyy
+  const fechaFormateada = `${dia.toString().padStart(2, '0')}/${mes.toString().padStart(2, '0')}/${anio} ${hora}:${minutos}:${segundos}`;
+
+  return fechaFormateada;
+}

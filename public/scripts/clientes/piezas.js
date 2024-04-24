@@ -1,4 +1,4 @@
-import { fetchData, loadingButton, isoDateToFormatted } from '/public/scripts/helpers.js';
+import { fetchData, loadingButton, isoDateToFormattedWithTime } from '/public/scripts/helpers.js';
 
 const previewTemplate = `<div class="dz-preview dz-file-preview">
 <div class="dz-details">
@@ -155,6 +155,12 @@ const renderListFile = (name, url, filename) => {
   `;
 };
 
+const renderNoData = type => {
+  return `<div class="d-flex justify-content-center align-items-center" style="height: 100%;">
+    <h6 class="text-muted">Sin ${type}</h4>
+  </div>`;
+};
+
 const processFile = file => {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -216,7 +222,7 @@ piezas_table.on('click', 'tbody tr', async function () {
   const { cliente_id, id, estado, created_at, numero_parte, descripcion } = data;
   $('#offcanvas_pieza').attr('data-pieza-id', id);
   $('#offcanvas_pieza').data('pieza_data', data);
-  $('#revision_date_created').text(isoDateToFormatted(created_at));
+  $('#revision_date_created').text(isoDateToFormattedWithTime(created_at));
   $('#offcanvas_pieza_title').text(numero_parte);
   $('#numero_parte_oc').text(numero_parte);
   $('#descripcion_oc').text(descripcion);
@@ -249,6 +255,9 @@ const loadFilesList = async (cliente_id, pieza_id, revision_id) => {
   for (const image of images) {
     $('#offcanvas-images-list').append(renderListItem(image.name, image.data));
   }
+
+  if (images.length === 0) $('#offcanvas-images-list').append(renderNoData('imágenes'));
+  if (files.length === 0) $('#offcanvas-files-list').append(renderNoData('archivos'));
 
   for (const file of files) {
     $('#offcanvas-files-list').append(renderListFile(file.name, file.data, file.name));
