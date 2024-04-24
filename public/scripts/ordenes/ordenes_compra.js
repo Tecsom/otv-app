@@ -498,7 +498,13 @@ $('#addProduct').on('submit', async function (e) {
     revision: $revision.val()
   };
   const result = await fetchData('/ordernes/addproduct', 'POST', productAdd);
-  console.log({ result });
+
+  if(!result.status){
+    toastr.error("ocurrió un error al agregar cliente")
+    return
+  }
+  await loadProductos(order_id)
+  $('#addProductModal').modal('hide')
 });
 
 async function loadProductos(id) {
