@@ -1,6 +1,10 @@
 //ordenes_table
 import { fetchData, loadingButton } from '/public/scripts/helpers.js';
 
+let page = 1;
+const limit = 10;
+let loadMore = true;
+
 $(() => {
   init();
 });
@@ -109,11 +113,21 @@ $('#create_order').on('submit', async function (e) {
 });
 
 async function getOrdenes() {
-  const ordenes = await fetchData('/ordenes', 'GET'); //api/ordenes
+  // page, pageSize, search
+  if (!loadMore) return [];
+  const query = `?page=${page}&pageSize=${limit}`;
+  const ordenes = await fetchData('/ordenes/paging' + query, 'GET'); //api/ordenes
+
   if (!ordenes.status) {
     toastr.error('Ocurrió un error al obtener ordenes');
     return;
   }
+
+  if (ordenes.data.length < limit) {
+    loadMore = false;
+  }
+
+  page = page + 1;
   return ordenes.data;
 }
 
@@ -121,9 +135,9 @@ async function loadOrdenes() {
   const $container = $('#ordenes_compra_container');
   $container.empty();
   const ordenes = await getOrdenes();
-  ordenes.forEach(orden => {
+  for (const orden of ordenes) {
     const uniqueFolio = orden.unique_folio ? addLeadingZeros(orden.unique_folio, 6) : 'Sin Folio';
-    var $newdiv1 = $(`
+    const $newdiv1 = $(`
         <div class="order_container_child card-body border-bottom" id="order_${orden.unique_folio}">
           <div class="row g-2">
             <div class="col-md-12">
@@ -149,7 +163,7 @@ async function loadOrdenes() {
     $newdiv1.data({ data: orden });
 
     $container.append($newdiv1);
-  });
+  }
 }
 
 loadOrdenes();
