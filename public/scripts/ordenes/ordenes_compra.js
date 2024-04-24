@@ -16,7 +16,7 @@ $('#ordenes_table').DataTable({
     { data: 'currency_costo_produccion', title: 'Costo', orderable: false, className: 'non-selectable' },
     { data: 'quantity', title: 'Cant.', orderable: false, className: 'non-selectable' },
     { data: 'currency_costo_venta', title: 'Precio', orderable: false, className: 'non-selectable' },
-    { defaultContent: tableActions, width: '30px' }
+    { title: 'Opciones', defaultContent: tableActions, width: '50px' }
   ],
   dom: 'rtp',
   language: {
