@@ -131,8 +131,16 @@
                     <i class="ti ti-dots-vertical"></i>
                   </button>
                   <ul class="dropdown-menu">
-                    <li><a class="dropdown-item" href="javascript:void(0);">Editar</a></li>
-                    <li><a class="dropdown-item" href="javascript:void(0);">Eliminar</a></li>
+                    <li>
+                      <a id="edit_oc" class="dropdown-item d-flex align-items-center gap-2" href="javascript:void(0);"
+                        ><i class="ti ti-edit ti-xs me-1"></i>Editar</a
+                      >
+                    </li>
+                    <li>
+                      <a id="delete_oc" class="dropdown-item d-flex align-items-center gap-2" href="javascript:void(0);"
+                        ><i class="ti ti-trash-x ti-xs me-1"></i>Eliminar</a
+                      >
+                    </li>
                   </ul>
                 </div>
               </div>
@@ -154,30 +162,66 @@
                 </div>
               </div>
               <hr class="my-0" />
+              <div class="card-header pt-1">
+                <ul class="nav nav-tabs card-header-tabs" role="tablist">
+                  <li class="nav-item" role="presentation">
+                    <button
+                      type="button"
+                      class="nav-link active"
+                      role="tab"
+                      data-bs-toggle="tab"
+                      data-bs-target="#navs_productos"
+                      aria-controls="navs_productos"
+                      aria-selected="true">
+                      <i class="ti ti-device-imac ti-xs me-1"></i>
+                      Productos
+                    </button>
+                  </li>
+                  <li class="nav-item" role="presentation">
+                    <button
+                      type="button"
+                      class="nav-link"
+                      role="tab"
+                      data-bs-toggle="tab"
+                      data-bs-target="#navs_files"
+                      aria-controls="navs_files"
+                      aria-selected="false"
+                      tabindex="-1">
+                      <i class="ti ti-clock ti-xs me-1"></i>
+                      Archivos
+                    </button>
+                  </li>
+                </ul>
+              </div>
               <div class="card-body">
-                <div class="row">
-                  <div class="col-md-12">
-                    <div class="d-flex justify-content-end">
-                      <button type="button" class="btn btn-label-primary">
-                        <span class="tf-icons ti-xs ti ti-plus me-1"> </span>Añadir
-                      </button>
+                <div class="tab-content p-0 pt-3">
+                  <div class="tab-pane fade show active" id="navs_productos" role="tabpanel">
+                    <div class="row">
+                      <div class="col-md-12">
+                        <div class="d-flex justify-content-end">
+                          <button type="button" class="btn btn-label-primary">
+                            <span class="tf-icons ti-xs ti ti-plus me-1"> </span>Añadir
+                          </button>
+                        </div>
+                      </div>
+                      <div class="col-md-12">
+                        <div class="table-responsive border-top mt-2">
+                          <table class="table m-0">
+                            <thead>
+                              <tr>
+                                <th>No. de parte</th>
+                                <th>Descripción</th>
+                                <th>Costo</th>
+                                <th>Cant.</th>
+                                <th>Precio</th>
+                              </tr>
+                            </thead>
+                          </table>
+                        </div>
+                      </div>
                     </div>
                   </div>
-                  <div class="col-md-12">
-                    <div class="table-responsive border-top mt-2">
-                      <table class="table m-0">
-                        <thead>
-                          <tr>
-                            <th>No. de parte</th>
-                            <th>Descripción</th>
-                            <th>Costo</th>
-                            <th>Cant.</th>
-                            <th>Precio</th>
-                          </tr>
-                        </thead>
-                      </table>
-                    </div>
-                  </div>
+                  <div class="tab-pane fade" id="navs_files" role="tabpanel"></div>
                 </div>
               </div>
             </div>
