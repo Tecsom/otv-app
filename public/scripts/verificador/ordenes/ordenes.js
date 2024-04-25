@@ -6,6 +6,12 @@ import { fetchData, loadingButton, isoDateToFormatted } from '/public/scripts/he
 //             <th>Descripción</th>
 //             <th>Opciones</th>
 
+const optiones_html = `
+  <button class="btn btn-primary btn-sm btn-opciones-pieza">
+    <i class="ti ti-eye"></i>
+  </button>
+  `;
+
 const table_piezas = $('#table_piezas_oc').DataTable({
   language: {
     url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/es-ES.json'
@@ -14,7 +20,8 @@ const table_piezas = $('#table_piezas_oc').DataTable({
     { data: 'codigo', title: '#CODIGO' },
     { data: 'numero_parte', title: 'No. de parte' },
     { data: 'revision', title: 'Revisión' },
-    { data: 'descripcion', title: 'Descripción' }
+    { data: 'descripcion', title: 'Descripción' },
+    { defaultContent: optiones_html, title: 'Opciones' }
   ],
   searching: false,
   paging: false,
@@ -51,4 +58,10 @@ $(document).ready(function () {
 
 $('#startVerificacion').on('click', function () {
   $('#start_verificacion').modal('show');
+});
+
+$('#table_piezas_oc').on('click', '.btn-opciones-pieza', function () {
+  const data = table_piezas.row($(this).parents('tr')).data();
+  console.log(data);
+  $('#modal_view_pieza').modal('show');
 });
