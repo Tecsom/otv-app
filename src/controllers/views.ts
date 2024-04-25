@@ -41,4 +41,7 @@ export const renderVerificadorEmbarques = async (_: Request, res: Response) =>
   res.render('verificador-embarques.ejs', { layout: './../layouts/horizontal.ejs' });
 export const renderVerificadorOrdenes = async (_: Request, res: Response) =>
   res.render('verificador-ordenes.ejs', { layout: './../layouts/horizontal.ejs' });
-export const renderConfiguracion = async (_: Request, res: Response) => res.render('configuracion.ejs');
+export const renderConfiguracion = async (_: Request, res: Response) => {
+  const ordenData = await getOrden;
+  return res.render('configuracion.ejs');
+};
