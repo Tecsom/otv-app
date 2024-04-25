@@ -522,6 +522,7 @@ $('#addProduct').on('submit', async function (e) {
     return;
   }
   await loadProductos(order_id);
+
   $('#addProductModal').modal('hide');
 });
 
@@ -538,7 +539,7 @@ async function loadProductos(id) {
   }
 
   const tableData = $('#ordenes_table').data();
-  let consecutivo = {};
+
   console.log({ productos });
 
   const productosTable = productos.map(product => {
@@ -572,6 +573,8 @@ async function loadProductos(id) {
     return acc;
   }, []);
 
+  console.log(tableData.clientes);
+
   let codeProdsTable = [];
 
   for (const product of productos) {
@@ -579,7 +582,8 @@ async function loadProductos(id) {
     for (const code of codes) {
       codeProdsTable.push({
         code: code.code,
-        numero_parte: product.piezas.numero_parte
+        numero_parte: product.piezas.numero_parte,
+        code_type: tableData.clientes.code_type
       });
     }
   }

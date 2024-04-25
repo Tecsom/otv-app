@@ -26,20 +26,23 @@ $('#codigos_table').on('click', 'tbody tr button', async function (e) {
 
   if (buttonClicked.hasClass('barcode-icon')) {
     //VERIFICAR QUE TIPO DE CODIGO NECESITA
-    const code_type = 'datamatrix';
-
-    if (code_type == 'qr') {
-      const svgNode = QRCode(data.code);
-
-      $('#viewCodeModal').modal('show');
-      $('#codeWrapper').empty();
-      $('#codeWrapper').append(svgNode);
-    } else if (code_type == 'datamatrix') {
-      const svgNode = DATAMatrix(data.code);
-
-      $('#viewCodeModal').modal('show');
-      $('#codeWrapper').empty();
-      $('#codeWrapper').append(svgNode);
-    }
+    showBarcode(data);
   }
 });
+
+const showBarcode = async data => {
+  const code_type = data.code_type;
+  if (code_type == 'QR') {
+    const svgNode = QRCode(data.code);
+
+    $('#viewCodeModal').modal('show');
+    $('#codeWrapper').empty();
+    $('#codeWrapper').append(svgNode);
+  } else if (code_type == 'DM') {
+    const svgNode = DATAMatrix(data.code);
+
+    $('#viewCodeModal').modal('show');
+    $('#codeWrapper').empty();
+    $('#codeWrapper').append(svgNode);
+  }
+};

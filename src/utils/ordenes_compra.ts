@@ -170,7 +170,7 @@ export const addOrderProduct = async (product: ProductAdd): Promise<boolean> => 
     throw new Error('Ocurrio un error al subir a supabase');
   }
 
-  generateProductCodeDb(data as ProductCode, product.quantity);
+  await generateProductCodeDb(data as ProductCode, product.quantity);
 
   return true;
 };

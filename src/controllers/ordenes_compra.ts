@@ -152,7 +152,7 @@ export const deleteOrderProduct = async (req: Request, res: Response) => {
 
 export const editOrderProduct = async (req: Request, res: Response) => {
   const payload = req.body;
-  console.log(payload);
+
   try {
     const editResult = await OrderProductEdit(payload);
     res.status(200).json({ editResult });
