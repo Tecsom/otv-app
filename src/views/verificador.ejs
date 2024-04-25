@@ -41,3 +41,10 @@
     </div>
   </a>
 </div>
+
+<script>
+  const socket = io.connect();
+  socket.on('scanner', data => {
+    console.log({ data });
+  });
+</script>

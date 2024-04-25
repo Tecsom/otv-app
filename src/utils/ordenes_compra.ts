@@ -30,6 +30,15 @@ export const getOrdenesCompra = async () => {
   return Ordenes;
 };
 
+export const getOrdenByCodeProd = async (code: string) => {
+  const { data: orden, error } = await supabase().rpc('buscar_orden_por_codigo', { codigo_busqueda: code });
+  if (error) {
+    console.error('Error fetching Ordenes:', error.message);
+    throw error;
+  }
+  return orden;
+};
+
 export const generarOrdenDeCompraEstatica = async (order_data: any) => {
   const { order_id, ...static_data } = order_data;
 

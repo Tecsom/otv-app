@@ -1,5 +1,10 @@
 import { SerialPort } from 'serialport';
 import { PortInfo } from '@serialport/bindings-interface';
+import { BrowserWindow } from 'electron';
+import { getOrdenByCodeProd } from './ordenes_compra';
+declare global {
+  var globalWindow: BrowserWindow;
+}
 
 export class Scanner {
   private port: SerialPort | null = null;
@@ -48,7 +53,14 @@ export class Scanner {
   scan(callback: (data: Buffer) => void): void {
     if (!this.port) throw new Error('Port not connected');
 
-    this.port.on('data', data => {
+    this.port.on('data', async data => {
+      const current_url = globalThis.globalWindow?.webContents.getURL();
+      if (current_url.includes('verificador')) {
+        const orden = await getOrdenByCodeProd(data.toString());
+        console.log({ orden });
+        // globalThis.globalWindow?.loadURL('http://localhost:3000/');
+      }
+      console.log('redirected to localhost:3000');
       callback(data);
     });
   }

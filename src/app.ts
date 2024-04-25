@@ -12,7 +12,7 @@ import { initScanner } from './controllers/scanner';
 import { BrowserWindow, app } from 'electron';
 
 declare global {
-  var globalWindow: any;
+  var globalWindow: BrowserWindow;
 }
 
 const appExpress = express();
