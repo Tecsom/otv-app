@@ -483,7 +483,7 @@ $('#addProductsButton').on('click', async function () {
     $products.append(
       $('<option>', {
         value: product.id,
-        text: product.descripcion
+        text: product.numero_parte
       })
     );
   }
@@ -774,7 +774,7 @@ $('#ordenes_table').on('click', 'tbody tr button', async function (e) {
     $('#edit_product_select').append(
       $('<option>', {
         value: data.pieza_id,
-        text: data.descripcion
+        text: data.numero_parte
       })
     );
     $('#edit_product_select').val(data.pieza_id);

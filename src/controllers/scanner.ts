@@ -54,7 +54,10 @@ const onScanner = async (data: Buffer) => {
   if (current_url.includes('verificador') && !current_url.includes('ordenes')) {
     const orden_res = await getOrdenByCodeProd(data.toString());
     const orden = orden_res && orden_res.length > 0 ? orden_res[0] : null;
-    console.log({ orden });
+    if (!orden?.id) {
+      console.log('Orden no encontrada');
+      return;
+    }
     globalThis.globalWindow?.loadURL('http://localhost:3000/verificador/ordenes/' + orden.id);
     return;
   }

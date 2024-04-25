@@ -113,9 +113,6 @@ const verificarPieza = async codigo => {
   row.addClass('bg-label-success');
   const cells = row.find('td');
 
-  //set cells color to white
-  cells.css('color', 'white');
-
   //set datatable row data to verified
   pieza.verified = true;
   table_piezas.rows().invalidate().draw();
