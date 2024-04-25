@@ -30,6 +30,15 @@ export const getOrdenesCompra = async () => {
   return Ordenes;
 };
 
+export const getStaticOrden = async (id: number) => {
+  const { data: orden, error } = await supabase().from('ordenes_static').select('*').eq('order_id', id).single();
+  if (error) {
+    console.error('Error fetching Ordenes:', error.message);
+    throw error;
+  }
+  return orden;
+};
+
 export const getOrdenByCodeProd = async (code: string) => {
   const { data: orden, error } = await supabase().rpc('buscar_orden_por_codigo', { codigo_busqueda: code });
   if (error) {
