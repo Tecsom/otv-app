@@ -22,7 +22,7 @@ router.get('/unidades', renderUnidadesMedida);
 router.get('/ordenes', renderOrdenesCompra);
 router.get('/verificador', renderVerificador);
 router.get('/verificador/embarques', renderVerificadorEmbarques);
-router.get('/verificador/ordenes', renderVerificadorOrdenes);
+router.get('/verificador/ordenes/:order_id', renderVerificadorOrdenes);
 router.get('/configuracion', renderConfiguracion);
 
 export default router;
