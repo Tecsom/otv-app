@@ -22,6 +22,24 @@ export const getPiezaById = async (id: number): Promise<Pieza | null> => {
   return pieza ?? null;
 };
 
+export const getPiezaWithCliente = async (id: number): Promise<Pieza | null> => {
+  const { data: pieza, error } = await supabase()
+    .from('piezas')
+    .select(
+      `
+    *,
+    clientes (id, nombre, code_string, proveedor_id)
+    `
+    )
+    .eq('id', id)
+    .single();
+  if (error) {
+    console.error('Error fetching pieza:', error.message);
+    throw error;
+  }
+  return pieza ?? null;
+};
+
 export const createPieza = async (pieza: Pieza): Promise<Pieza | null> => {
   const { data, error } = await supabase().from('piezas').insert(pieza).select('*').single();
   if (error) {
@@ -141,4 +159,13 @@ export const deleteRevision = async (id: number): Promise<number> => {
     throw error;
   }
   return id;
+};
+
+export const getRevisionById = async (id: number): Promise<Revision | null> => {
+  const { data: revision, error } = await supabase().from('revisiones').select('*').eq('id', id).single();
+  if (error) {
+    console.error('Error fetching revision:', error.message);
+    throw error;
+  }
+  return revision ?? null;
 };

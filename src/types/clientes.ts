@@ -10,4 +10,7 @@ export type Cliente = {
   correo: string;
   telefono: string;
   celular: string;
+  code_string: string;
+  code_type: string;
+  proveedor_id: string;
 };

@@ -1,9 +1,12 @@
+import { Cliente } from './clientes';
+
 export type Pieza = {
   id: number;
   created_at: string;
   numero_parte: string;
   descripcion: string;
   cliente_id: number;
+  clientes?: Cliente;
 };
 
 export type Revision = {

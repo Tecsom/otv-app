@@ -1,8 +1,10 @@
-import type { OrdenCompra, ProductAdd, productEdit } from '@/types/ordenes_compra';
+import type { OrdenCompra, ProductAdd, ProductCode, ProductOrder, productEdit } from '@/types/ordenes_compra';
 import supabase from '@/config/supabase';
 import type { CreateOrderDataModel } from '@/types/ordenes_compra';
 import type { ApiResult } from '@/types/types';
 import { deleteFolder } from './storage';
+import { getPiezaById, getPiezaWithCliente, getRevisionById } from './piezas';
+import { getRevisionesByPiezaC } from '@/controllers/clientes';
 
 /**
  * 
@@ -123,8 +125,8 @@ export const deleteOrder = async (id: number): Promise<ApiResult> => {
 };
 
 export const getProducts = async (id: string) => {
-  console.log({ id });
-  const { data: productos, error } = await supabase()
+  let productos: any = [];
+  const { data: productos_res, error } = await supabase()
     .from('order_products')
     .select(
       `
@@ -141,15 +143,34 @@ export const getProducts = async (id: string) => {
     console.log(error);
     throw new Error(error.details);
   }
+
+  for (const product of productos_res) {
+    const codes = await getProductsCodes(product.id);
+    productos.push({ ...product, codes });
+  }
+
+  return productos;
+};
+
+export const getProductsCodes = async (id: number) => {
+  const { data: productos, error } = await supabase().from('order_products_codes').select('*').eq('product_id', id);
+
+  if (error) {
+    console.log(error);
+    throw new Error(error.details);
+  }
   return productos;
 };
 
 export const addOrderProduct = async (product: ProductAdd): Promise<boolean> => {
-  const { error: uploadError } = await supabase().from('order_products').insert(product);
+  const { error: uploadError, data } = await supabase().from('order_products').insert(product).select('*').single();
+
   if (uploadError) {
     console.log(uploadError);
     throw new Error('Ocurrio un error al subir a supabase');
   }
+
+  generateProductCodeDb(data as ProductCode, product.quantity);
 
   return true;
 };
@@ -180,3 +201,156 @@ export const OrderProductEdit = async (payload: productEdit): Promise<boolean> =
 
   return true;
 };
+
+const generateProductCodeDb = async (product: ProductCode, quantity: number): Promise<void> => {
+  console.log({ product });
+  //generate array of products depends on the quantity
+
+  let codes = [];
+
+  for (let i = 0; i < quantity; i++) {
+    const code = await generateCodesForProduct({ ...product }, i);
+    if (!code) {
+      console.log('No se generó código para el producto');
+      continue;
+    }
+    codes.push({ code, product_id: product.id });
+  }
+  console.log(codes);
+
+  const { error } = await supabase().from('order_products_codes').insert(codes);
+  if (error) {
+    console.log(error);
+    throw new Error('Error generando códigos de productos');
+  }
+};
+
+const generateCodesForProduct = async (product: ProductCode, index: number): Promise<string> => {
+  const pieza = await getPiezaWithCliente(product.pieza_id);
+  const revision = await getRevisionById(product.revision);
+
+  product.numero_parte = pieza?.numero_parte ?? '';
+  product.revision_name = revision?.nombre ?? '';
+  product.proveedor_id = pieza?.clientes?.proveedor_id ?? '';
+  product.cliente_id = pieza?.clientes?.id ?? 0;
+  product.id = product.order_id;
+
+  if (!pieza?.clientes?.code_string) return '';
+
+  const { code_string } = pieza?.clientes;
+  const code = JSON.parse(code_string ?? '[]');
+
+  let code_str = '';
+
+  for (const { id: key, value } of code) {
+    const key_obj = code_map.find(c => c.value === value)?.key;
+    if (key === 'consecutivo') {
+      const folio = index.toString()?.padStart(4, '0');
+      code_str += folio;
+      continue;
+    } else if (key === 'ano_YYYY') {
+      const delivery_date = new Date(product.created_at);
+      const year = delivery_date.getFullYear();
+
+      code_str += year;
+
+      continue;
+    } else if (key === 'ano_YY') {
+      const delivery_date = new Date(product.created_at);
+      const year = delivery_date.getFullYear().toString().slice(-2);
+
+      code_str += year;
+
+      continue;
+    } else if (key === 'semana_ano') {
+      const delivery_date = new Date(product.created_at);
+      const week = getWeekNumber(delivery_date);
+
+      code_str += `${week.toString().padStart(2, '0')}`;
+
+      continue;
+    }
+    if (!key_obj) {
+      code_str += value;
+      continue;
+    }
+
+    code_str += product[key_obj as keyof ProductCode] ?? '';
+  }
+  console.log({ code_str });
+  return code_str;
+};
+
+const code_map = [
+  { value: 'Número de parte', id: 'numero_parte', key: 'numero_parte' },
+  { value: 'Revisión de parte', id: 'revision_parte', key: 'revision_name' },
+  { value: 'ID de cliente', id: 'cliente_id', key: 'client_id' },
+  { value: 'ID orden de compra', id: 'orden_compra_id', key: 'id' },
+  { value: 'Semana del año (Fecha de entrega - WW)', id: 'semana_ano', key: 'semana_ano' },
+  { value: 'Año (Fecha de entrega - YYYY)', id: 'ano_YYYY', key: 'ano_4y' },
+  { value: 'Año (Fecha de entrega - YY)', id: 'ano_YY', key: 'ano_2y' },
+  { value: 'Identificador de proveedor', id: 'proveedor_id', key: 'proveedor_id' },
+  { value: '# Consecutivo de la pieza por OC', id: 'consecutivo', key: 'consecutivo' }
+];
+
+// function generateCode(product, consecutivo) {
+//     const full_data = $('#container-reporte').data() ?? {};
+//     const { code_string } = full_data.clientes;
+//     const code = JSON.parse(code_string ?? '[]');
+
+//     let code_str = '';
+//     const { numero_parte } = product;
+//     for (const { id: key, value } of code) {
+//       const key_obj = code_map.find(c => c.value === value)?.key;
+//       if (key === 'consecutivo') {
+//         const numero = consecutivo[numero_parte] || 1;
+//         consecutivo[numero_parte] = numero + 1;
+//         const folio = numero.toString()?.padStart(4, '0');
+//         code_str += folio;
+//         continue;
+//       } else if (key === 'ano_YYYY') {
+//         const delivery_date = new Date(full_data.delivery_date);
+//         const year = delivery_date.getFullYear();
+
+//         code_str += year;
+
+//         continue;
+//       } else if (key === 'ano_YY') {
+//         const delivery_date = new Date(full_data.delivery_date);
+//         const year = delivery_date.getFullYear().toString().slice(-2);
+
+//         code_str += year;
+
+//         continue;
+//       } else if (key === 'semana_ano') {
+//         const delivery_date = new Date(full_data.delivery_date);
+//         const [year, week] = getWeekNumber(delivery_date);
+
+//         code_str += `${week.toString().padStart(2, '0')}`;
+
+//         continue;
+//       }
+
+//       if (!key_obj) {
+//         code_str += value;
+//         continue;
+//       }
+//       code_str += product[key_obj];
+//     }
+
+//     return code_str;
+//   }
+
+function getWeekNumber(d: any): number {
+  // Copy date so don't modify original
+  d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+  // Set to nearest Thursday: current date + 4 - current day number
+  // Make Sunday's day number 7
+  d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7));
+  // Get first day of year
+  const yearStart: any = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+  // Calculate full weeks to nearest Thursday
+  const weekNo: number = Math.ceil(((d - yearStart) / 86400000 + 1) / 7);
+  // Return array of year and week number
+  return weekNo;
+}
