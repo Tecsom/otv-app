@@ -1,5 +1,5 @@
 <div class="d-flex justify-content-between align-items-center pb-2 border-bottom">
-  <h4 class="mb-0">[Folio OC] - [Fecha de entrega]</h4>
+  <h4 class="mb-0"><span id="folio_oc"> [Folio OC] </span> - <span id="fecha_entrega_oc"></span></h4>
   <button
     id="startVerificacion"
     type="button"
@@ -13,15 +13,9 @@
 <div class="layout-demo-wrapper">
   <div class="card w-100">
     <div class="table-responsive text-nowrap">
-      <table class="table table-sm">
+      <table id="table_piezas_oc" class="table table-sm">
         <thead>
-          <tr>
-            <th>#CODIGO</th>
-            <th>No. de parte</th>
-            <th>Revisión</th>
-            <th>Descripción</th>
-            <th>Opciones</th>
-          </tr>
+          <tr></tr>
         </thead>
       </table>
     </div>
@@ -29,7 +23,6 @@
 </div>
 <script>
   const ordenData = JSON.parse('<%- ordenData %>');
-  console.log({ ordenData });
 </script>
 
 <script src="/public/scripts/verificador/ordenes/ordenes.js" type="module"></script>
