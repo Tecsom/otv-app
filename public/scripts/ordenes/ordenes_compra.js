@@ -51,7 +51,6 @@ const $clients = $('#select_client').select2({
       };
     },
     processResults: function (data) {
-      
       return {
         results: data.data.map(client => {
           return {
@@ -81,7 +80,6 @@ $('#select_client_edit').select2({
       };
     },
     processResults: function (data) {
-      
       return {
         results: data.data.map(client => {
           return {
@@ -316,8 +314,8 @@ function addLeadingZeros(number, length) {
 $('#ordenes_compra_container').on('click', '.order_container_child', async function () {
   const $order = $(this);
   const data = $order.data().data; //ORDER DATA
-  
-  $('#ordenes_table').data(data)
+
+  $('#ordenes_table').data(data);
   const $addProductsmodal = $('#addProductModal');
   $addProductsmodal.data(data);
   $('#container-reporte').data(data);
@@ -448,7 +446,7 @@ $('#addProductsButton').on('click', async function () {
     toastr.warning('Asigna un cliente a la orden para añadir productos');
     return;
   }
-  
+
   const clientId = modalData.clientes.id;
 
   const resultProducts = await fetchData(`/clientes/${clientId}/piezas`);
@@ -463,28 +461,26 @@ $('#addProductsButton').on('click', async function () {
   }
 
   products.forEach(product => {
-    const matchingRow = $('#ordenes_table').DataTable().rows().data().filter(function (value, index) {
-      return value[0] === product.pieza_id;
-  });
+    const matchingRow = $('#ordenes_table')
+      .DataTable()
+      .rows()
+      .data()
+      .filter(function (value, index) {
+        return value[0] === product.pieza_id;
+      });
 
-  // Verifica si matchingRow no es undefined y también si su longitud es cero
-  if (!matchingRow || matchingRow.length === 0) {
-
-    $products.append(
-      $('<option>', {
-        value: product.id,
-        text: product.descripcion
-      })
-    );
-  }
+    // Verifica si matchingRow no es undefined y también si su longitud es cero
+    if (!matchingRow || matchingRow.length === 0) {
+      $products.append(
+        $('<option>', {
+          value: product.id,
+          text: product.descripcion
+        })
+      );
+    }
   });
-  
 
   $products.val('');
-
-  
-  
-
 
   // const revisiones = revisionesResponse.data; //Array de revisiones
   // const lastRevision = getLastCreated(revisiones);
@@ -536,17 +532,16 @@ $('#addProduct').on('submit', async function (e) {
 async function loadProductos(id) {
   $('#ordenes_table').DataTable().clear();
   $('#ordenes_table').DataTable().draw();
+  codigos_table.clear().draw();
 
   const productsResult = await fetchData(`/ordenes/${id}/productos`);
   const productos = productsResult.data;
-  
 
   if (productos.length == 0) {
     return;
   }
 
-  const tableData = $('#ordenes_table').data()
-
+  const tableData = $('#ordenes_table').data();
 
   const productosTable = productos.map(product => {
     return {
@@ -565,13 +560,15 @@ async function loadProductos(id) {
       currency_costo_venta: formatCurrency(product.piezas.costo_venta),
       order_id: id,
       client_id: tableData.clientes.id,
-      client_name: tableData.clientes.nombre
+      client_name: tableData.clientes.nombre,
+      piezas: product.piezas,
+      revisiones: product.revisiones,
+      proveedor_id: tableData.clientes.proveedor_id
     };
   });
 
-  
-
   $('#ordenes_table').DataTable().rows.add(productosTable).draw();
+  codigos_table.rows.add(productosTable).draw();
 }
 
 function getLastCreated(array) {
@@ -626,11 +623,9 @@ $('#edit_order_form').on('submit', async function (e) {
   const $client = $('#select_client_edit');
 
   const folio = $folio.val().trim();
-  
+
   const dateval = flatpickr_edit.selectedDates[0];
   const client_id = $client.val();
-
-  
 
   if (!client_id || !dateval || !folio) {
     toastr.error('Completa los campos para crear orden', 'Formulario incompleto');
@@ -640,8 +635,6 @@ $('#edit_order_form').on('submit', async function (e) {
   const date = new Date(dateval);
   date.setUTCHours(date.getUTCHours() - 6);
   const isoStringDate = date.toISOString();
-
-  
 
   const result = await fetchData(`/ordenes/update`, 'PUT', {
     folio_id: folio,
@@ -747,36 +740,32 @@ function formatCurrency(amount) {
 
 // Ejemplo de uso
 
-
 $('#ordenes_table').on('click', 'tbody tr button', async function (e) {
-
   const buttonClicked = $(this); // Obtener el botón que ha sido clicado
   const row = buttonClicked.closest('tr'); // Encontrar la fila asociada al botón clicado
   const data = $('#ordenes_table').DataTable().row(row).data(); // Obtener los datos de la fila
-  
-  if (buttonClicked.hasClass('edit-icon')) {
-    
 
+  if (buttonClicked.hasClass('edit-icon')) {
     $('#edit_product_select').append(
       $('<option>', {
         value: data.pieza_id,
         text: data.descripcion
       })
     );
-    $('#edit_product_select').val(data.pieza_id)
+    $('#edit_product_select').val(data.pieza_id);
     $('#edit_product_select').trigger('change');
 
-    $('#edit_product_quantity').val(data.quantity)
-  
+    $('#edit_product_quantity').val(data.quantity);
+
     const revisionesResponse = await fetchData(`/clientes/${data.client_id}/piezas/${data.pieza_id}/revisiones`);
-  
+
     if (!revisionesResponse.status) {
       toastr.error('Ocurrio un error al recuperar revisiones');
       return;
     }
-  
+
     const revisiones = revisionesResponse.data;
-  
+
     revisiones.forEach(revision => {
       $('#edit_product_revision').append(
         $('<option>', {
@@ -785,57 +774,49 @@ $('#ordenes_table').on('click', 'tbody tr button', async function (e) {
         })
       );
     });
-  
+
     $('#edit_product_revision').val(data.revision_id);
-    const $modal = $('#editProductModal')
-    $modal.data({id:data.id}) // id del row
-    $modal.modal('show')
-
-  }else if (buttonClicked.hasClass('delete-icon')){
-
-    const deleteRes = await fetchData(`/ordenes/producto/delete/${data.id}`, "DELETE")
-    if(!deleteRes.status){
-      toastr.error("Ocurrió un error al eliminar producto de la orden")
-      return
-
+    const $modal = $('#editProductModal');
+    $modal.data({ id: data.id }); // id del row
+    $modal.modal('show');
+  } else if (buttonClicked.hasClass('delete-icon')) {
+    const deleteRes = await fetchData(`/ordenes/producto/delete/${data.id}`, 'DELETE');
+    if (!deleteRes.status) {
+      toastr.error('Ocurrió un error al eliminar producto de la orden');
+      return;
     }
-    await loadProductos(data.order_id)
+    await loadProductos(data.order_id);
   }
-  
-
 });
 
+$('#editProduct').on('submit', async function (e) {
+  e.preventDefault();
+  const $modal = $('#editProductModal');
+  const productOrderId = $modal.data().id; // id del row
+  console.log({ productOrderId });
 
-$('#editProduct').on('submit',async function(e){
-  e.preventDefault()
-  const $modal = $('#editProductModal')
-  const productOrderId = $modal.data().id // id del row
-  console.log({productOrderId})
+  const $revision = $('#edit_product_revision');
+  const $cantidad = $('#edit_product_quantity');
 
-  const $revision = $('#edit_product_revision')
-  const $cantidad = $('#edit_product_quantity')
-
-  if(!$revision.val() || !$cantidad.val()){
-    toastr.error("Ocurrio un error editando el producto")
-    return
+  if (!$revision.val() || !$cantidad.val()) {
+    toastr.error('Ocurrio un error editando el producto');
+    return;
   }
 
   const payload = {
     id: productOrderId,
     revision: $revision.val(),
     cantidad: $cantidad.val()
+  };
+
+  const deleteRes = await fetchData(`/ordenes/producto/edit/`, 'PUT', payload);
+  if (!deleteRes.status) {
+    toastr.error('Ocurrió un error al eliminar producto de la orden');
+    return;
   }
 
-  const deleteRes = await fetchData(`/ordenes/producto/edit/`, "PUT",payload)
-  if(!deleteRes.status){
-    toastr.error("Ocurrió un error al eliminar producto de la orden")
-    return
-
-  }
-
- const genealData = $('#ordenes_table').data()
- console.log({genealData})
-  await loadProductos(genealData.id)
-  $modal.modal('hide')
-
-})
+  const genealData = $('#ordenes_table').data();
+  console.log({ genealData });
+  await loadProductos(genealData.id);
+  $modal.modal('hide');
+});

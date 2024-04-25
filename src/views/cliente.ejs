@@ -267,6 +267,10 @@
                     <option value="DM" <%= clientData.code_type === "DM" ? "selected":"" %>>Código DataMatrix</option>
                   </select>
                 </div>
+                <div class="col-md-12">
+                  <label for="select2Basic" class="form-label">Identificador de proveedor</label>
+                  <input type="text" class="form-control" name="proveedor_id" value="<%= clientData.proveedor_id %>" />
+                </div>
                 <div class="col-md-12 d-flex justify-content-end">
                   <button type="submit" class="btn btn-success">Guardar</button>
                 </div>

@@ -285,10 +285,12 @@
                         </button>
                       </div>
                     </div>
-                    <div class="tab-pane fade" id="navs_codes" role="tabpanel"></div>
-                    <div class="tab-pane fade" id="navs_verificaciones" role="tabpanel"></div>
-                    <div class="tab-pane fade" id="navs_embarques" role="tabpanel"></div>
                   </div>
+                  <div class="tab-pane fade" id="navs_codes" role="tabpanel">
+                    <table id="codigos_table" class="table m-0 w-100"></table>
+                  </div>
+                  <div class="tab-pane fade" id="navs_verificaciones" role="tabpanel"></div>
+                  <div class="tab-pane fade" id="navs_embarques" role="tabpanel"></div>
                 </div>
               </div>
             </div>
@@ -417,8 +419,6 @@
     </div>
   </div>
 
-
-
   <!--MODAL DE AGREGAR  UN PRODUCTO A LA ORDEN-->
   <div class="modal fade modal_cliente" id="editProductModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-sm" role="document">
@@ -446,7 +446,9 @@
           </form>
         </div>
         <div class="modal-footer">
-          <button id="confirm_edit_product" type="submit" form="editProduct" class="btn btn-success">Terminar edición</button>
+          <button id="confirm_edit_product" type="submit" form="editProduct" class="btn btn-success">
+            Terminar edición
+          </button>
         </div>
       </div>
     </div>
@@ -485,8 +487,10 @@
   <script>
     var dropzoneFiles;
     var loadFiles;
+    var codigos_table;
   </script>
 
   <script src="/public/scripts/ordenes/ordenes_compra.js" type="module"></script>
   <script src="/public/scripts/ordenes/archivos.js" type="module"></script>
+  <script src="/public/scripts/ordenes/codigos.js" type="module"></script>
 </div>
