@@ -18,7 +18,11 @@ const table_piezas = $('#table_piezas_oc').DataTable({
   ],
   searching: false,
   paging: false,
-  info: false
+  info: false,
+  autoWidth: false,
+  rowGroup: {
+    dataSrc: 'numero_parte'
+  }
 });
 
 $(document).ready(function () {
