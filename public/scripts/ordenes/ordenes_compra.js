@@ -408,7 +408,7 @@ loadFiles = async (id, no_reload = false) => {
   }
 
   if ($('#dpz-imgs').children().length === 0) {
-    $('#dpz-imgs').append(renderNoData('imagenes'));
+    $('#dpz-imgs').append(renderNoData('imágenes'));
   }
 
   if ($('#dpz-files').children().length === 0) {
@@ -799,6 +799,7 @@ $('#add_product_select').on('change', async function () {
   const revisiones = revisionesResponse.data;
   const lastRevision = getLastCreated(revisiones);
 
+  $('#add_product_revision').empty();
   revisiones.forEach(revision => {
     $('#add_product_revision').append(
       $('<option>', {

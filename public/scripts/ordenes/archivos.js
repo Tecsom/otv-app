@@ -24,7 +24,7 @@ dropzoneFiles = new Dropzone('#dropzone', {
   addRemoveLinks: true,
   url: '/',
 
-  dictDefaultMessage: 'Arrastra aquí las imágenes de la pieza',
+  dictDefaultMessage: 'Arrastra aquí las imágenes o archivos de la pieza',
   dictFallbackMessage: 'Tu navegador no soporta la carga de archivos por arrastrar y soltar.',
   dictFallbackText:
     'Por favor, utiliza el formulario alternativo a continuación para cargar tus archivos como en los viejos tiempos.',
