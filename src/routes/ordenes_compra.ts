@@ -1,16 +1,16 @@
 import express from 'express';
 import {
-    getOrdenes,
-    newOrder,
-    getOrdenesPagingC,
-    addProductToOrder,
-    getOrderProducts,
-    postFiles,
-    getFilesC,
-    putOrder,
-    deleteOrden,
-    deleteOrderProduct,
-    editOrderProduct
+  getOrdenes,
+  newOrder,
+  getOrdenesPagingC,
+  addProductToOrder,
+  getOrderProducts,
+  postFiles,
+  getFilesC,
+  putOrder,
+  deleteOrden,
+  deleteOrderProduct,
+  editOrderProduct
 } from '../controllers/ordenes_compra';
 
 const router = express.Router();
@@ -21,10 +21,10 @@ router.post('/ordenes/create', newOrder);
 router.put('/ordenes/update', putOrder);
 router.delete('/ordenes/:id/delete', deleteOrden);
 router.post('/ordernes/addproduct', addProductToOrder);
+router.put('/ordenes/producto/edit/', editOrderProduct);
+router.delete('/ordenes/producto/delete/:product_id', deleteOrderProduct);
 router.get('/ordenes/:order_id/productos', getOrderProducts);
 router.post('/ordenes/:order_id/files', postFiles);
 router.get('/ordenes/:order_id/files', getFilesC);
-router.delete('/ordenes/producto/delete/:product_id', deleteOrderProduct)
-router.put('/ordenes/producto/edit/', editOrderProduct)
 
 export default router;
