@@ -6,6 +6,18 @@ const tableActions = `<div class="d-inline-block text-nowrap">
                     <button class="btn btn-sm btn-icon delete-icon" title="Eliminar" data-bs-toggle="tooltip" data-bs-placement="top"><i class="ti ti-trash-x"></i></button>
                 </div>`;
 
+const code_map = [
+  { value: 'Número de parte', id: 'numero_parte', key: 'numero_parte' },
+  { value: 'Revisión de parte', id: 'revision_parte', key: 'revision_name' },
+  { value: 'ID de cliente', id: 'cliente_id', key: 'client_id' },
+  { value: 'ID orden de compra', id: 'orden_compra_id', key: 'id' },
+  { value: 'Semana del año (Fecha de entrega - WW)', id: 'semana_ano', key: 'semana_ano' },
+  { value: 'Año (Fecha de entrega - YYYY)', id: 'ano_YYYY', key: 'ano_4y' },
+  { value: 'Año (Fecha de entrega - YY)', id: 'ano_YY', key: 'ano_2y' },
+  { value: 'Identificador de proveedor', id: 'proveedor_id', key: 'proveedor_id' },
+  { value: '# Consecutivo de la pieza por OC', id: 'consecutivo', key: 'consecutivo' }
+];
+
 let is_loading = false;
 let flatpickr_edit;
 $('#ordenes_table').DataTable({
@@ -454,31 +466,26 @@ $('#addProductsButton').on('click', async function () {
     toastr.error('Ocurrió un error al cargar piezas');
   }
   const products = resultProducts.data;
-
   if (products.length === 0) {
     toastr.warning('Es necesario añadir piezas y/o productos al cliente para poder continuar', 'Cliente sin piezas');
     return;
   }
 
-  products.forEach(product => {
-    const matchingRow = $('#ordenes_table')
-      .DataTable()
-      .rows()
-      .data()
-      .filter(function (value, index) {
-        return value[0] === product.pieza_id;
-      });
-
-    // Verifica si matchingRow no es undefined y también si su longitud es cero
-    if (!matchingRow || matchingRow.length === 0) {
-      $products.append(
-        $('<option>', {
-          value: product.id,
-          text: product.descripcion
-        })
-      );
-    }
+  //dont add products that are already in the table
+  const notAddedProducts = products.filter(product => {
+    const tableProds = $('#ordenes_table').DataTable().rows().data().toArray();
+    return !tableProds.some(p => p.pieza_id === product.id);
   });
+
+  //add products to select
+  for (const product of notAddedProducts) {
+    $products.append(
+      $('<option>', {
+        value: product.id,
+        text: product.descripcion
+      })
+    );
+  }
 
   $products.val('');
 
@@ -542,6 +549,7 @@ async function loadProductos(id) {
   }
 
   const tableData = $('#ordenes_table').data();
+  let consecutivo = {};
 
   const productosTable = productos.map(product => {
     return {
@@ -567,8 +575,78 @@ async function loadProductos(id) {
     };
   });
 
+  const codeProdsTable = productosTable.map(product => {
+    return {
+      ...product,
+      code: generateCode(product, consecutivo)
+    };
+  });
+
   $('#ordenes_table').DataTable().rows.add(productosTable).draw();
-  codigos_table.rows.add(productosTable).draw();
+  console.log({ codeProdsTable });
+  codigos_table.rows.add(codeProdsTable).draw();
+}
+
+function generateCode(product, consecutivo) {
+  const full_data = $('#container-reporte').data() ?? {};
+  const { code_string } = full_data.clientes;
+  const code = JSON.parse(code_string ?? '[]');
+
+  let code_str = '';
+  const { numero_parte } = product;
+  for (const { id: key, value } of code) {
+    const key_obj = code_map.find(c => c.value === value)?.key;
+    if (key === 'consecutivo') {
+      const numero = consecutivo[numero_parte] || 1;
+      consecutivo[numero_parte] = numero + 1;
+      const folio = numero.toString()?.padStart(4, '0');
+      code_str += folio;
+      continue;
+    } else if (key === 'ano_YYYY') {
+      const delivery_date = new Date(full_data.delivery_date);
+      const year = delivery_date.getFullYear();
+
+      code_str += year;
+
+      continue;
+    } else if (key === 'ano_YY') {
+      const delivery_date = new Date(full_data.delivery_date);
+      const year = delivery_date.getFullYear().toString().slice(-2);
+
+      code_str += year;
+
+      continue;
+    } else if (key === 'semana_ano') {
+      const delivery_date = new Date(full_data.delivery_date);
+      const [year, week] = getWeekNumber(delivery_date);
+
+      code_str += `${week.toString().padStart(2, '0')}`;
+
+      continue;
+    }
+
+    if (!key_obj) {
+      code_str += value;
+      continue;
+    }
+    code_str += product[key_obj];
+  }
+
+  return code_str;
+}
+
+function getWeekNumber(d) {
+  // Copy date so don't modify original
+  d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+  // Set to nearest Thursday: current date + 4 - current day number
+  // Make Sunday's day number 7
+  d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7));
+  // Get first day of year
+  var yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+  // Calculate full weeks to nearest Thursday
+  var weekNo = Math.ceil(((d - yearStart) / 86400000 + 1) / 7);
+  // Return array of year and week number
+  return [d.getUTCFullYear(), weekNo];
 }
 
 function getLastCreated(array) {
