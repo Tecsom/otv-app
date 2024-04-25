@@ -463,15 +463,28 @@ $('#addProductsButton').on('click', async function () {
   }
 
   products.forEach(product => {
+    const matchingRow = $('#ordenes_table').DataTable().rows().data().filter(function (value, index) {
+      return value[0] === product.pieza_id;
+  });
+
+  // Verifica si matchingRow no es undefined y también si su longitud es cero
+  if (!matchingRow || matchingRow.length === 0) {
+
     $products.append(
       $('<option>', {
         value: product.id,
         text: product.descripcion
       })
     );
+  }
   });
+  
 
   $products.val('');
+
+  
+  
+
 
   // const revisiones = revisionesResponse.data; //Array de revisiones
   // const lastRevision = getLastCreated(revisiones);
