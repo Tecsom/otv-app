@@ -4,16 +4,19 @@ const tableActions = `<div class="d-inline-block text-nowrap">
 
 codigos_table = $('#codigos_table').DataTable({
   columns: [
-    { data: 'numero_parte', title: '# Parte', orderable: true, className: 'non-selectable' },
+    //{ data: 'numero_parte', title: '# Parte', orderable: true, className: 'non-selectable' },
     { data: 'code', title: 'Código', orderable: false, className: 'non-selectable' },
-    { title: '', defaultContent: tableActions, width: '10px' }
+    { title: '', defaultContent: tableActions, width: '30px' }
   ],
   dom: 'rtp',
   language: {
     url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/es-ES.json'
   },
   order: [[0, 'asc']],
-  autoWidth: false
+  autoWidth: false,
+  rowGroup: {
+    dataSrc: 'numero_parte'
+  }
 });
 
 $('#codigos_table').on('click', 'tbody tr button', async function (e) {
@@ -23,7 +26,7 @@ $('#codigos_table').on('click', 'tbody tr button', async function (e) {
 
   if (buttonClicked.hasClass('barcode-icon')) {
     //VERIFICAR QUE TIPO DE CODIGO NECESITA
-    const code_type = 'qr';
+    const code_type = 'datamatrix';
 
     if (code_type == 'qr') {
       const svgNode = QRCode(data.code);

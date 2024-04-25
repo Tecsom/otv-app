@@ -265,7 +265,7 @@
                       </div>
                       <div class="col-md-12">
                         <div class="border-top mt-2">
-                          <table id="ordenes_table" class="table m-0 w-100"></table>
+                          <table id="ordenes_table" class="table m-0 w-100 table-sm"></table>
                         </div>
                       </div>
                     </div>
@@ -301,7 +301,20 @@
                     </div>
                   </div>
                   <div class="tab-pane fade" id="navs_codes" role="tabpanel">
-                    <table id="codigos_table" class="table m-0 w-100"></table>
+                    <div class="d-flex justify-content-between">
+                      <div>
+                        <p class="mb-0">
+                          <strong>Tipo de código: </strong><span id="code_type">[Tipo de código]</span>
+                        </p>
+                        <p class="mb-0">
+                          <strong>Total de códigos: </strong><span id="code_total">[Total de códigos]</span>
+                        </p>
+                      </div>
+                      <button type="button" class="btn btn-label-dark waves-effect">
+                        <span class="tf-icons ti-xs ti ti-download me-1"> </span>Descargar CSV
+                      </button>
+                    </div>
+                    <table id="codigos_table" class="table m-0 w-100 border-top mt-3 table-sm"></table>
                   </div>
                   <div class="tab-pane fade" id="navs_verificaciones" role="tabpanel">Historial de verificaciones</div>
                   <div class="tab-pane fade" id="navs_embarques" role="tabpanel">Embarques asignados</div>
