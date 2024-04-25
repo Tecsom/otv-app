@@ -572,12 +572,17 @@ async function loadProductos(id) {
     return acc;
   }, []);
 
-  const codeProdsTable = tableRep.map(product => {
-    return {
-      ...product,
-      code: 'Sin código'
-    };
-  });
+  let codeProdsTable = [];
+
+  for (const product of productos) {
+    const codes = product.codes;
+    for (const code of codes) {
+      codeProdsTable.push({
+        code: code.code,
+        numero_parte: product.piezas.numero_parte
+      });
+    }
+  }
 
   $('#ordenes_table').DataTable().rows.add(productosTable).draw();
   codigos_table.rows.add(codeProdsTable).draw();

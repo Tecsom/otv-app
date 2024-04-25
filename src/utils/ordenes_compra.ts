@@ -199,12 +199,26 @@ export const OrderProductEdit = async (payload: productEdit): Promise<boolean> =
     throw new Error('Error editando producto de orden');
   }
 
+  await generateProductCodeDb(data as ProductCode, payload.cantidad);
+
+  return true;
+};
+
+const deleteCodesFromProduct = async (product_id: number): Promise<boolean> => {
+  const { error } = await supabase().from('order_products_codes').delete().eq('product_id', product_id);
+
+  if (error) {
+    console.log(error);
+    throw new Error('Error eliminando códigos de producto');
+  }
+
   return true;
 };
 
 const generateProductCodeDb = async (product: ProductCode, quantity: number): Promise<void> => {
-  console.log({ product });
   //generate array of products depends on the quantity
+
+  await deleteCodesFromProduct(product.id);
 
   let codes = [];
 
@@ -216,7 +230,6 @@ const generateProductCodeDb = async (product: ProductCode, quantity: number): Pr
     }
     codes.push({ code, product_id: product.id });
   }
-  console.log(codes);
 
   const { error } = await supabase().from('order_products_codes').insert(codes);
   if (error) {
@@ -277,7 +290,7 @@ const generateCodesForProduct = async (product: ProductCode, index: number): Pro
 
     code_str += product[key_obj as keyof ProductCode] ?? '';
   }
-  console.log({ code_str });
+
   return code_str;
 };
 
@@ -292,54 +305,6 @@ const code_map = [
   { value: 'Identificador de proveedor', id: 'proveedor_id', key: 'proveedor_id' },
   { value: '# Consecutivo de la pieza por OC', id: 'consecutivo', key: 'consecutivo' }
 ];
-
-// function generateCode(product, consecutivo) {
-//     const full_data = $('#container-reporte').data() ?? {};
-//     const { code_string } = full_data.clientes;
-//     const code = JSON.parse(code_string ?? '[]');
-
-//     let code_str = '';
-//     const { numero_parte } = product;
-//     for (const { id: key, value } of code) {
-//       const key_obj = code_map.find(c => c.value === value)?.key;
-//       if (key === 'consecutivo') {
-//         const numero = consecutivo[numero_parte] || 1;
-//         consecutivo[numero_parte] = numero + 1;
-//         const folio = numero.toString()?.padStart(4, '0');
-//         code_str += folio;
-//         continue;
-//       } else if (key === 'ano_YYYY') {
-//         const delivery_date = new Date(full_data.delivery_date);
-//         const year = delivery_date.getFullYear();
-
-//         code_str += year;
-
-//         continue;
-//       } else if (key === 'ano_YY') {
-//         const delivery_date = new Date(full_data.delivery_date);
-//         const year = delivery_date.getFullYear().toString().slice(-2);
-
-//         code_str += year;
-
-//         continue;
-//       } else if (key === 'semana_ano') {
-//         const delivery_date = new Date(full_data.delivery_date);
-//         const [year, week] = getWeekNumber(delivery_date);
-
-//         code_str += `${week.toString().padStart(2, '0')}`;
-
-//         continue;
-//       }
-
-//       if (!key_obj) {
-//         code_str += value;
-//         continue;
-//       }
-//       code_str += product[key_obj];
-//     }
-
-//     return code_str;
-//   }
 
 function getWeekNumber(d: any): number {
   // Copy date so don't modify original
