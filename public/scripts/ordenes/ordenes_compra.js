@@ -574,8 +574,15 @@ async function loadProductos(id) {
       proveedor_id: tableData.clientes.proveedor_id
     };
   });
+  //Add elements to the table in order to repeat them the number of de quantity
+  const tableRep = productosTable.reduce((acc, product) => {
+    for (let i = 0; i < product.quantity; i++) {
+      acc.push(product);
+    }
+    return acc;
+  }, []);
 
-  const codeProdsTable = productosTable.map(product => {
+  const codeProdsTable = tableRep.map(product => {
     return {
       ...product,
       code: generateCode(product, consecutivo)
