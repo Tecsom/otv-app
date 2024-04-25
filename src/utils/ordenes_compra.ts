@@ -53,7 +53,7 @@ export const createNewOrder = async (payload: CreateOrderDataModel): Promise<Api
     delivery_date: payload.delivery_date
   };
 
-  const { error: uploadError } = await supabase().from('ordenes').insert(newOrden);
+  const { error: uploadError, data } = await supabase().from('ordenes').insert(newOrden).select('*').single();
 
   if (uploadError) {
     console.log({ uploadError });
@@ -66,7 +66,7 @@ export const createNewOrder = async (payload: CreateOrderDataModel): Promise<Api
   }
 
   const result: ApiResult = {
-    data: newOrden,
+    data,
     message: 'Orden creada con éxito',
     status: true
   };

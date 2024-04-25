@@ -222,6 +222,8 @@ $('#create_order').on('submit', async function (e) {
   $('#ordenes_compra_container').empty();
   page = 1;
   loadMore = true;
+
+  $('#ordenes_compra_container').data('selected', apiResult.data.id);
   await loadOrdenes();
 });
 
@@ -279,6 +281,13 @@ async function loadOrdenes() {
     $newdiv1.data({ data: orden });
 
     $container.append($newdiv1);
+
+    const selected = $('#ordenes_compra_container').data('selected');
+    console.log({ orden, selected });
+    if (selected && parseInt(selected) === orden.id) {
+      $newdiv1.trigger('click');
+      console.log('click');
+    }
   }
 }
 
