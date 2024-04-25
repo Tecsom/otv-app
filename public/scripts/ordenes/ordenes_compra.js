@@ -538,7 +538,7 @@ $('#addProduct').on('submit', async function (e) {
   $('#addProductModal').modal('hide');
 });
 
-async function loadProductos(id) {
+loadProductos = async id => {
   $('#ordenes_table').DataTable().clear();
   $('#ordenes_table').DataTable().draw();
   codigos_table.clear().draw();
@@ -594,7 +594,7 @@ async function loadProductos(id) {
   $('#ordenes_table').DataTable().rows.add(productosTable).draw();
   $('#code_total').text(codeProdsTable.length);
   codigos_table.rows.add(codeProdsTable).draw();
-}
+};
 function getLastCreated(array) {
   if (array.length === 0) {
     return null;

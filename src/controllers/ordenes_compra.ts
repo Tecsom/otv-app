@@ -10,7 +10,8 @@ import {
   deleteOrder,
   removeOrderProduct,
   OrderProductEdit,
-  getProductsCodes
+  getProductsCodes,
+  generarOrdenDeCompraEstatica
 } from './../utils/ordenes_compra';
 import type { CreateOrderDataModel, ProductAdd } from '@/types/ordenes_compra';
 
@@ -31,6 +32,18 @@ export const deleteOrden = async (req: Request, res: Response) => {
     res.status(200).json(deleteResult);
   } catch (e) {
     res.status(500).json(e);
+  }
+};
+
+export const generateOrder = async (req: Request, res: Response) => {
+  try {
+    const data = req.body;
+    const Result = await generarOrdenDeCompraEstatica(data);
+    console.log({ Result });
+    res.status(200).json(Result.data);
+  } catch (error: any) {
+    console.log({ error });
+    res.status(500).json(error);
   }
 };
 

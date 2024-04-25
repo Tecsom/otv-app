@@ -120,7 +120,7 @@
                 </div>
               </div>
               <div class="d-flex align-items-center gap-2">
-                <button type="button" class="btn btn-label-success">
+                <button type="button" class="btn btn-label-success" id="generate_order">
                   <span class="tf-icons ti-xs ti ti-lock me-1"> </span>Generar
                 </button>
                 <div class="btn-group">
@@ -415,6 +415,23 @@
       </div>
     </div>
   </div>
+  <!--! Modal eliminar orden de compra -->
+  <div class="modal fade modal_cliente" id="generate_order_modal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-sm" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel1">Generar orden de compra</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p>¿Estás seguro de generar la orden?</p>
+        </div>
+        <div class="modal-footer">
+          <button id="confirm_generate_order" type="button" class="btn btn-success">Generar</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!--MODAL DE AGREGAR  UN PRODUCTO A LA ORDEN-->
   <div class="modal fade modal_cliente" id="addProductModal" tabindex="-1" aria-hidden="true">
@@ -501,9 +518,11 @@
     var dropzoneFiles;
     var loadFiles;
     var codigos_table;
+    var loadProductos = () => {};
   </script>
 
   <script src="/public/scripts/ordenes/ordenes_compra.js" type="module"></script>
   <script src="/public/scripts/ordenes/archivos.js" type="module"></script>
   <script src="/public/scripts/ordenes/codigos.js" type="module"></script>
+  <script src="/public/scripts/ordenes/orden_compra.js" type="module"></script>
 </div>

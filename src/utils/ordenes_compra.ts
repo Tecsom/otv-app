@@ -30,6 +30,32 @@ export const getOrdenesCompra = async () => {
   return Ordenes;
 };
 
+export const generarOrdenDeCompraEstatica = async order_data => {
+  const { order_id, ...static_data } = order_data;
+
+  const { data: orden, error } = await supabase()
+    .from('ordenes_static')
+    .insert({
+      ...static_data
+    })
+    .select('*')
+    .single();
+
+  if (error) {
+    console.error('Error fetching Ordenes:', error.message);
+    throw error;
+  }
+
+  await updateOrder({ id: order_id, estado: 'entregada' });
+
+  const result: ApiResult = {
+    data: orden,
+    message: 'Orden creada con éxito',
+    status: true
+  };
+  return result;
+};
+
 export const getOrdenesCompraPaging = async (page: number, pageSize: number, search: string | null) => {
   const { data: Ordenes, error } = await supabase().rpc('search_ordenes_compra', {
     search: search ?? '',
