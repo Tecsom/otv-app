@@ -46,3 +46,34 @@ const showBarcode = async data => {
     $('#codeWrapper').append(svgNode);
   }
 };
+
+$('#download-csv').on('click', function () {
+  const data = codigos_table.rows().data();
+  const csvData = [];
+  const headers = ['Número de Parte', 'Código'];
+  csvData.push(headers);
+
+  data.each(row => {
+    csvData.push([row.numero_parte, row.code]);
+  });
+
+  const csv = csvData.map(row => row.join(',')).join('\n');
+
+  const blob = new Blob([csv], { type: 'text/csv' });
+
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement('a');
+
+  a.setAttribute('hidden', '');
+
+  a.setAttribute('href', url);
+
+  a.setAttribute('download', 'codigos.csv');
+
+  document.body.appendChild(a);
+
+  a.click();
+
+  document.body.removeChild(a);
+});

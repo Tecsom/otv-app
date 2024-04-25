@@ -110,6 +110,10 @@ export const postFiles = async (req: Request, res: Response) => {
       });
       uploadFiles.push(upload);
     }
+    await updateOrder({
+      id: parseInt(order_id),
+      last_update: new Date().toISOString()
+    });
     res.status(200).json({ message: 'Files uploaded' });
   } catch (error) {
     await deleteFolder('ordenes_compra', `${order_id}`);

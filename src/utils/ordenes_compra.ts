@@ -171,17 +171,21 @@ export const addOrderProduct = async (product: ProductAdd): Promise<boolean> => 
   }
 
   await generateProductCodeDb(data as ProductCode, product.quantity);
+  await updateOrder({ id: data.order_id, last_update: new Date().toISOString() });
 
   return true;
 };
 
 export const removeOrderProduct = async (product_id: string): Promise<boolean> => {
+  const order_data = (await supabase().from('order_products').select('*').eq('id', product_id).single()).data;
   const { error: uploadError } = await supabase().from('order_products').delete().eq('id', product_id);
   if (uploadError) {
     console.log(uploadError);
     throw new Error('Error eliminando producto');
   }
+  console.log({ order_data });
 
+  await updateOrder({ id: order_data.order_id, last_update: new Date().toISOString() });
   return true;
 };
 
@@ -195,11 +199,13 @@ export const OrderProductEdit = async (payload: productEdit): Promise<boolean> =
     .eq('id', payload.id)
     .select('*')
     .single();
+
   if (uploadError) {
     throw new Error('Error editando producto de orden');
   }
 
   await generateProductCodeDb(data as ProductCode, payload.cantidad);
+  await updateOrder({ id: data.order_id, last_update: new Date().toISOString() });
 
   return true;
 };

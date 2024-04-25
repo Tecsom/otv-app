@@ -316,6 +316,9 @@ $('#ordenes_compra_container').on('click', '.order_container_child', async funct
   const $order = $(this);
   const data = $order.data().data; //ORDER DATA
 
+  const code_type = data?.clientes?.code_type ?? '';
+
+  $('#code_type').text(code_type);
   $('#ordenes_table').data(data);
   const $addProductsmodal = $('#addProductModal');
   $addProductsmodal.data(data);
@@ -565,15 +568,6 @@ async function loadProductos(id) {
       proveedor_id: tableData.clientes.proveedor_id
     };
   });
-  //Add elements to the table in order to repeat them the number of de quantity
-  const tableRep = productosTable.reduce((acc, product) => {
-    for (let i = 0; i < product.quantity; i++) {
-      acc.push(product);
-    }
-    return acc;
-  }, []);
-
-  console.log(tableData.clientes);
 
   let codeProdsTable = [];
 
@@ -589,6 +583,7 @@ async function loadProductos(id) {
   }
 
   $('#ordenes_table').DataTable().rows.add(productosTable).draw();
+  $('#code_total').text(codeProdsTable.length);
   codigos_table.rows.add(codeProdsTable).draw();
 }
 function getLastCreated(array) {
