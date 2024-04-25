@@ -32,11 +32,27 @@ export const getOrdenesCompra = async () => {
 
 export const getStaticOrden = async (id: number) => {
   console.log({ id });
-  const { data: orden, error } = await supabase().from('ordenes_static').select('*').eq('id', id).single();
+  let { data: orden, error } = await supabase().from('ordenes_static').select('*').eq('id', id).single();
   if (error) {
     console.error('Error fetching Ordenes:', error.message);
     throw error;
   }
+  console.log({ orden });
+  if (orden?.codigos.length > 0) {
+    let index = 0;
+    for (const prod of orden.codigos) {
+      console.log('pasa');
+      const is_verified = await supabase()
+        .from('ordenes_static_verified')
+        .select('*')
+        .eq('order_id', id)
+        .eq('codigo', prod.code);
+      console.log({ id, prod });
+      orden.codigos[index].verified = (is_verified?.data?.length ?? 0) > 0;
+      index++;
+    }
+  }
+
   return orden;
 };
 
@@ -370,3 +386,32 @@ function getWeekNumber(d: any): number {
   // Return array of year and week number
   return weekNo;
 }
+
+export const verifyProds = async (order_id: number, products: any[]) => {
+  for (const prod of products) {
+    console.log({ prod });
+    const { data, error } = await supabase()
+      .from('ordenes_static_verified')
+      .upsert(
+        [
+          {
+            order_id,
+            codigo: prod.codigo
+          }
+        ],
+        { onConflict: 'order_id, codigo' }
+      );
+    if (error) {
+      console.log(error);
+      throw new Error('Error verificando productos');
+    }
+  }
+
+  const result: ApiResult = {
+    data: null,
+    message: 'Productos verificados',
+    status: true
+  };
+
+  return result;
+};

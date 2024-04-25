@@ -11,7 +11,8 @@ import {
   removeOrderProduct,
   OrderProductEdit,
   getProductsCodes,
-  generarOrdenDeCompraEstatica
+  generarOrdenDeCompraEstatica,
+  verifyProds
 } from './../utils/ordenes_compra';
 import type { CreateOrderDataModel, ProductAdd } from '@/types/ordenes_compra';
 
@@ -42,6 +43,20 @@ export const generateOrder = async (req: Request, res: Response) => {
     console.log({ Result });
     res.status(200).json(Result.data);
   } catch (error: any) {
+    console.log({ error });
+    res.status(500).json(error);
+  }
+};
+
+export const verifyProductsOrder = async (req: Request, res: Response) => {
+  console.log('llamao');
+  try {
+    const { order_id, piezas_verificadas } = req.body;
+    const Result = await verifyProds(parseInt(order_id), piezas_verificadas);
+    console.log('pasaaaa');
+    return res.status(200).json({ message: 'Productos verificados' });
+  } catch (error: any) {
+    console.log('entra error');
     console.log({ error });
     res.status(500).json(error);
   }

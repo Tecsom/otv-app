@@ -1,6 +1,7 @@
 export const fetchData = async (endpoint, method = 'GET', body) => {
   const BASE_URL = 'http://localhost:3000/api';
   console.log(BASE_URL + endpoint);
+  console.log({ method });
   const noBodyMethods = method === 'GET' || method === 'DELETE';
   try {
     const body_obj = noBodyMethods

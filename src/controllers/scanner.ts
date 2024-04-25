@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { Scanner } from '../utils/scanner';
 import io from 'socket.io';
+import { getOrdenByCodeProd } from '@/utils/ordenes_compra';
 
 declare global {
   var socket_io: io.Server;
@@ -35,7 +36,7 @@ export const initScanner = async () => {
     console.log('init');
     const port = '/dev/tty.usbmodem22177B12511';
     const scanner = new Scanner();
-
+    console.log(await Scanner.getPorts());
     await scanner.connect(port);
     await scanner.open();
 
@@ -48,6 +49,16 @@ export const initScanner = async () => {
 
 const onScanner = async (data: Buffer) => {
   const dataString = data.toString();
-  console.log({ dataString });
+
+  const current_url = globalThis.globalWindow?.webContents.getURL();
+  if (current_url.includes('verificador') && !current_url.includes('ordenes')) {
+    const orden_res = await getOrdenByCodeProd(data.toString());
+    const orden = orden_res && orden_res.length > 0 ? orden_res[0] : null;
+    console.log({ orden });
+    globalThis.globalWindow?.loadURL('http://localhost:3000/verificador/ordenes/' + orden.id);
+    return;
+  }
+  console.log('redirected to localhost:3000');
+
   global.socket_io.emit('scanner', dataString);
 };

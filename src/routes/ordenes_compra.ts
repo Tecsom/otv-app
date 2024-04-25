@@ -11,7 +11,8 @@ import {
   deleteOrden,
   deleteOrderProduct,
   editOrderProduct,
-  generateOrder
+  generateOrder,
+  verifyProductsOrder
 } from '../controllers/ordenes_compra';
 
 const router = express.Router();
@@ -24,6 +25,7 @@ router.delete('/ordenes/:id/delete', deleteOrden);
 router.post('/ordernes/addproduct', addProductToOrder);
 router.put('/ordenes/producto/edit/', editOrderProduct);
 router.delete('/ordenes/producto/delete/:product_id', deleteOrderProduct);
+router.post('/ordenes/verificar', verifyProductsOrder);
 router.get('/ordenes/:order_id/productos', getOrderProducts);
 router.post('/ordenes/:order_id/files', postFiles);
 router.get('/ordenes/:order_id/files', getFilesC);
