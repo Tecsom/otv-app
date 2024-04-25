@@ -32,51 +32,70 @@
   console.log({ ordenData });
 </script>
 
-<script src="public/scripts/verificador/ordenes/ordenes.js" type="module"></script>
+<script src="/public/scripts/verificador/ordenes/ordenes.js" type="module"></script>
 <!--/ Layout Demo -->
 
 <!-- MODAL ADD PIEZA -->
-<div class="modal fade modal_cliente" id="modal_create_pieza" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal_cliente" role="document">
+<div class="modal fade" id="modal_view_pieza" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title">Crear pieza</h5>
+        <h5 class="modal-title">[# PARTE]</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <form id="crear-pieza-form" class="row g-3">
-          <div class="col-md-12">
-            <label for="numero_parte" class="form-label required">Número de parte</label>
-            <input type="text" id="numero_parte" name="numero_parte" class="form-control" />
+        <div class="card-header pt-1">
+          <ul class="nav nav-tabs card-header-tabs" role="tablist">
+            <li class="nav-item" role="presentation">
+              <button
+                type="button"
+                class="nav-link active"
+                role="tab"
+                data-bs-toggle="tab"
+                data-bs-target="#navs_info"
+                aria-controls="navs_info"
+                aria-selected="true">
+                <i class="ti ti-box ti-xs me-1"></i>
+                Información
+              </button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button
+                type="button"
+                class="nav-link"
+                role="tab"
+                data-bs-toggle="tab"
+                data-bs-target="#navs_img"
+                aria-controls="navs_img"
+                aria-selected="false"
+                tabindex="-1">
+                <i class="ti ti-paperclip ti-xs me-1"></i>
+                Imágenes
+              </button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button
+                type="button"
+                class="nav-link"
+                role="tab"
+                data-bs-toggle="tab"
+                data-bs-target="#navs_files"
+                aria-controls="navs_files"
+                aria-selected="false"
+                tabindex="-1">
+                <i class="ti ti-file-barcode ti-xs me-1"></i>
+                Archivos
+              </button>
+            </li>
+          </ul>
+        </div>
+        <div class="card-body">
+          <div class="tab-content p-0 pt-3">
+            <div class="tab-pane fade show active" id="navs_info" role="tabpanel"></div>
+            <div class="tab-pane fade" id="navs_img" role="tabpanel"></div>
+            <div class="tab-pane fade" id="navs_files" role="tabpanel"></div>
           </div>
-          <div class="col-md-12">
-            <label for="descripcion" class="form-label required">Descripción de la pieza</label>
-            <input type="text" id="descripcion" name="descripcion" class="form-control" />
-          </div>
-          <div class="col-md-6">
-            <label for="costo_produccion" class="form-label required">Costo de producción</label>
-            <input type="text" id="costo_produccion" name="costo_produccion" class="form-control" />
-          </div>
-          <div class="col-md-6">
-            <label for="costo_venta" class="form-label required">Costo de venta</label>
-            <input type="number" min="0" id="costo_venta" name="costo_venta" class="form-control" />
-          </div>
-          <div class="col-md-12">
-            <label for="input-imgs" class="form-label required">Imágenes</label>
-            <div id="dpz-imgs" class="fallback dropzone">
-              <input id="input-imgs" type="file" multiple />
-            </div>
-          </div>
-          <div class="col-md-12">
-            <label for="input-files" class="form-label required">Archivos</label>
-            <div id="dpz-files" class="fallback dropzone">
-              <input id="input-files" type="file" multiple />
-            </div>
-          </div>
-        </form>
-      </div>
-      <div class="modal-footer">
-        <button id="confirm_new_pieza" type="submit" form="crear-pieza-form" class="btn btn-success">Guardar</button>
+        </div>
       </div>
     </div>
   </div>
