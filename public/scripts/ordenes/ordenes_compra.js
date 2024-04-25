@@ -766,6 +766,8 @@ $('#ordenes_table').on('click', 'tbody tr button', async function (e) {
 
     const revisiones = revisionesResponse.data;
 
+    $('#edit_product_revision').empty();
+
     revisiones.forEach(revision => {
       $('#edit_product_revision').append(
         $('<option>', {
