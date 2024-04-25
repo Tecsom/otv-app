@@ -590,7 +590,6 @@ async function loadProductos(id) {
   });
 
   $('#ordenes_table').DataTable().rows.add(productosTable).draw();
-  console.log({ codeProdsTable });
   codigos_table.rows.add(codeProdsTable).draw();
 }
 
