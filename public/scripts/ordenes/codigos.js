@@ -21,26 +21,38 @@ codigos_table = $('#codigos_table').DataTable({
       className: 'non-selectable',
       render: function (data, type, row) {
         const full_data = $('#container-reporte').data() ?? {};
-        const { code_string } = $('#container-reporte').data();
+        const { code_string } = full_data.clientes;
         const code = JSON.parse(code_string ?? '[]');
 
         let code_str = '';
         const { numero_parte } = row;
-        console.log({ row });
-        console.log(full_data);
         for (const { id: key, value } of code) {
           const key_obj = code_map.find(c => c.value === value)?.key;
           if (key === 'consecutivo') {
             const numero = consecutivo[numero_parte] || 1;
             consecutivo[numero_parte] = numero + 1;
-            const folio = `${numero_parte}${numero}`;
+            const folio = numero.toString()?.padStart(4, '0');
             code_str += folio;
             continue;
-          } else if (key === 'ano_4y') {
+          } else if (key === 'ano_YYYY') {
             const delivery_date = new Date(full_data.delivery_date);
             const year = delivery_date.getFullYear();
 
             code_str += year;
+
+            continue;
+          } else if (key === 'ano_YY') {
+            const delivery_date = new Date(full_data.delivery_date);
+            const year = delivery_date.getFullYear().toString().slice(-2);
+
+            code_str += year;
+
+            continue;
+          } else if (key === 'semana_ano') {
+            const delivery_date = new Date(full_data.delivery_date);
+            const [year, week] = getWeekNumber(delivery_date);
+
+            code_str += `${week.toString().padStart(2, '0')}`;
 
             continue;
           }
@@ -51,7 +63,6 @@ codigos_table = $('#codigos_table').DataTable({
           }
           code_str += row[key_obj];
         }
-        console.log({ code_str });
 
         return code_str;
       }
@@ -67,3 +78,17 @@ codigos_table = $('#codigos_table').DataTable({
 codigos_table.on('draw', function () {
   consecutivo = {};
 });
+
+function getWeekNumber(d) {
+  // Copy date so don't modify original
+  d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+  // Set to nearest Thursday: current date + 4 - current day number
+  // Make Sunday's day number 7
+  d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7));
+  // Get first day of year
+  var yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+  // Calculate full weeks to nearest Thursday
+  var weekNo = Math.ceil(((d - yearStart) / 86400000 + 1) / 7);
+  // Return array of year and week number
+  return [d.getUTCFullYear(), weekNo];
+}
