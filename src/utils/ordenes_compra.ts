@@ -46,7 +46,7 @@ export const generarOrdenDeCompraEstatica = async order_data => {
     throw error;
   }
 
-  await updateOrder({ id: order_id, estado: 'entregada' });
+  await updateOrder({ id: order_id });
 
   const result: ApiResult = {
     data: orden,
