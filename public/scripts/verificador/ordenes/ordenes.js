@@ -1,3 +1,5 @@
 $(document).ready(function () {
-  $('#modal_view_pieza').modal('show');
+  $('#startVerificacion').on('click', function () {
+    $('#start_verificacion').modal('show');
+  });
 });
