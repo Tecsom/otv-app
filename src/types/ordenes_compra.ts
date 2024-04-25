@@ -6,13 +6,13 @@ export interface CreateOrderDataModel {
 }
 
 export interface OrdenCompra {
-  folio_id: string;
-  client: Cliente;
-  delivery_date: string;
-  unique_folio: number;
+  folio_id?: string;
+  client?: Cliente;
+  delivery_date?: string;
+  unique_folio?: number;
   id: number;
-  last_update: string;
-  estado: 'preceso' | 'pendiente' | 'completada';
+  last_update?: string;
+  estado?: 'preceso' | 'pendiente' | 'completada';
 }
 
 export interface ProductAdd {

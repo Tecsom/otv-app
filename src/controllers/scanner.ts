@@ -48,5 +48,6 @@ export const initScanner = async () => {
 
 const onScanner = async (data: Buffer) => {
   const dataString = data.toString();
+  console.log({ dataString });
   global.socket_io.emit('scanner', dataString);
 };

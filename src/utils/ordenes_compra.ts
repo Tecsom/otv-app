@@ -30,7 +30,7 @@ export const getOrdenesCompra = async () => {
   return Ordenes;
 };
 
-export const generarOrdenDeCompraEstatica = async order_data => {
+export const generarOrdenDeCompraEstatica = async (order_data: any) => {
   const { order_id, ...static_data } = order_data;
 
   const { data: orden, error } = await supabase()
