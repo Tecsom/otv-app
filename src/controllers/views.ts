@@ -44,6 +44,7 @@ export const renderVerificadorOrdenes = async (req: Request, res: Response) => {
   const { order_id } = req.params;
 
   let ordenData = await getStaticOrden(parseInt(order_id));
+  console.log({ codigosdata: ordenData.codigos });
   const code_string = ordenData?.cliente?.code_string;
 
   ordenData.cliente.code_string = JSON.parse(code_string);

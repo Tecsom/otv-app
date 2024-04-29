@@ -121,7 +121,7 @@
           id="layout-navbar">
           <div class="container-fluid gap-3">
             <div class="top-nav-custom d-flex align-items-center gap-2">
-              <h4 class="mb-0">Fecha y hora</h4>
+              <h4 id="datetime" class="mb-0">Fecha y hora</h4>
             </div>
             <div class="text-center">
               <h4 class="mb-0">Verificador</h4>
@@ -131,7 +131,7 @@
               <ul class="navbar-nav flex-row align-items-center ms-auto">
                 <!-- User -->
                 <li class="nav-item navbar-dropdown dropdown-user dropdown">
-                  <button type="button" class="btn btn-label-danger">
+                  <button id="exit-checker" type="button" class="btn btn-label-danger">
                     <span class="tf-icons ti-xs ti ti-logout me-1"></span>Salir
                   </button>
                 </li>
@@ -208,6 +208,33 @@
     <script src="/public/assets/vendor/libs/tagify/tagify.js"></script>
     <script src="/public/assets/vendor/libs/select2/select2.js"></script>
     <script src="/public/assets/vendor/libs/flatpickr/flatpickr.js"></script>
+    <script src="/public/scripts/verificador/clock.js"></script>
+    <script src="/public/scripts/verificador/verificador.js" type="module"></script>
+
     <!-- Page JS -->
+    <!--! Modal editar cliente -->
+    <div class="modal fade" id="modal_quit_checker" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Editar cliente</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form id="quit-checker-form" class="row g-3">
+              <div class="col-md-12">
+                <label for="password" class="form-label">Contraseña</label>
+                <input type="password" class="form-control" id="password" name="password" required />
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button id="button_confirm_quit" type="submit" form="quit-checker-form" class="btn btn-success">
+              Salir
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   </body>
 </html>

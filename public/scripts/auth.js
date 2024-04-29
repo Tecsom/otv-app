@@ -18,7 +18,8 @@ $('#formLogin').on('submit', async function (event) {
     if (error) throw error;
     const { access_token } = data?.session ?? {};
     if (!access_token) return;
-    setCookie('accessToken', access_token, 1);
+    console.log({ access_token });
+    setCookie('accessToken', access_token, 1000);
 
     const redirect = new URLSearchParams(window.location.search).get('redirect');
 

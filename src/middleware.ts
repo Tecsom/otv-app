@@ -1,3 +1,4 @@
+import supabase from '@/config/supabase';
 import type { NextFunction, Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 
@@ -16,7 +17,27 @@ export default async function (req: Request, res: Response, next: NextFunction) 
     return next();
   }
   try {
-    jwt.verify(authToken, 'vc502qBBuj7Mp3O03gsb/DI6WI/pvosD8QtS8TkhMxwoa0PyhQ2DRTTnoAbfkUnXWdW+PoU4pEynkkxhZOC2YA==');
+    const decoded = jwt.verify(
+      authToken,
+      'vc502qBBuj7Mp3O03gsb/DI6WI/pvosD8QtS8TkhMxwoa0PyhQ2DRTTnoAbfkUnXWdW+PoU4pEynkkxhZOC2YA=='
+    );
+
+    if (decoded && decoded.sub) {
+      const { error: error_rol, data: rol } = await supabase()
+        .from('roles')
+        .select('rol')
+        .eq('user_id', decoded.sub)
+        .single();
+
+      if (error_rol) {
+        console.log({ error_rol });
+        return res.redirect('/login?redirect=/' + req.url.slice(1));
+      }
+      const rol_data = rol as { [key: string]: any };
+
+      res.cookie('rol', rol_data?.rol, { httpOnly: false, secure: true });
+    }
+    console.log({ decoded });
 
     if (req.url.includes('/login')) return res.redirect('/');
     next();

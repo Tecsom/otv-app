@@ -31,23 +31,19 @@ export const getOrdenesCompra = async () => {
 };
 
 export const getStaticOrden = async (id: number) => {
-  console.log({ id });
   let { data: orden, error } = await supabase().from('ordenes_static').select('*').eq('id', id).single();
   if (error) {
     console.error('Error fetching Ordenes:', error.message);
     throw error;
   }
-  console.log({ orden });
   if (orden?.codigos.length > 0) {
     let index = 0;
     for (const prod of orden.codigos) {
-      console.log('pasa');
       const is_verified = await supabase()
         .from('ordenes_static_verified')
         .select('*')
         .eq('order_id', id)
         .eq('codigo', prod.code);
-      console.log({ id, prod });
       orden.codigos[index].verified = (is_verified?.data?.length ?? 0) > 0;
       index++;
     }
@@ -71,7 +67,8 @@ export const generarOrdenDeCompraEstatica = async (order_data: any) => {
   const { data: orden, error } = await supabase()
     .from('ordenes_static')
     .insert({
-      ...static_data
+      ...static_data,
+      order_id
     })
     .select('*')
     .single();
@@ -79,6 +76,21 @@ export const generarOrdenDeCompraEstatica = async (order_data: any) => {
   if (error) {
     console.error('Error fetching Ordenes:', error.message);
     throw error;
+  }
+  //!aqui generar códigos
+
+  const products = await getProducts(order_id);
+  for (const product of products) {
+    console.log({ product });
+    await generateProductCodeDb(
+      {
+        ...product,
+        pieza_id: product.piezas.id,
+        revision: product.revisiones.id,
+        order_id: orden.id
+      },
+      product.quantity
+    );
   }
 
   await updateOrder({ id: order_id });
@@ -231,7 +243,6 @@ export const addOrderProduct = async (product: ProductAdd): Promise<boolean> => 
     throw new Error('Ocurrio un error al subir a supabase');
   }
 
-  await generateProductCodeDb(data as ProductCode, product.quantity);
   await updateOrder({ id: data.order_id, last_update: new Date().toISOString() });
 
   return true;
@@ -265,7 +276,6 @@ export const OrderProductEdit = async (payload: productEdit): Promise<boolean> =
     throw new Error('Error editando producto de orden');
   }
 
-  await generateProductCodeDb(data as ProductCode, payload.cantidad);
   await updateOrder({ id: data.order_id, last_update: new Date().toISOString() });
 
   return true;
@@ -283,31 +293,44 @@ const deleteCodesFromProduct = async (product_id: number): Promise<boolean> => {
 };
 
 const generateProductCodeDb = async (product: ProductCode, quantity: number): Promise<void> => {
-  //generate array of products depends on the quantity
-
   await deleteCodesFromProduct(product.id);
 
-  let codes = [];
-
   for (let i = 0; i < quantity; i++) {
-    const code = await generateCodesForProduct({ ...product }, i);
+    const { code_str: code, consecutivo } = await generateCodesForProduct({ ...product }, i);
     if (!code) {
       console.log('No se generó código para el producto');
       continue;
     }
-    codes.push({ code, product_id: product.id });
-  }
-
-  const { error } = await supabase().from('order_products_codes').insert(codes);
-  if (error) {
-    console.log(error);
-    throw new Error('Error generando códigos de productos');
+    const { error } = await supabase()
+      .from('order_products_codes')
+      .insert({ code, product_id: product.id, consecutivo });
+    if (error) {
+      console.log(error);
+      throw new Error('Error generando códigos de productos');
+    }
   }
 };
 
-const generateCodesForProduct = async (product: ProductCode, index: number): Promise<string> => {
+const generate_consecutivo_folio = async (producto_id: number) => {
+  //get biggest consecutivo
+  const { data: consecutivo, error } = await supabase()
+    .from('order_products_codes')
+    .select('consecutivo')
+    .order('consecutivo', { ascending: false })
+    .limit(1);
+
+  if (error) {
+    console.log(error);
+    throw new Error('Error generando consecutivo de producto');
+  }
+
+  return (consecutivo?.[0]?.consecutivo ?? 0) + 1;
+};
+
+const generateCodesForProduct = async (product: ProductCode, index: number): Promise<any> => {
   const pieza = await getPiezaWithCliente(product.pieza_id);
   const revision = await getRevisionById(product.revision);
+  let consecutivo = null;
 
   product.numero_parte = pieza?.numero_parte ?? '';
   product.revision_name = revision?.nombre ?? '';
@@ -325,8 +348,17 @@ const generateCodesForProduct = async (product: ProductCode, index: number): Pro
   for (const { id: key, value } of code) {
     const key_obj = code_map.find(c => c.value === value)?.key;
     if (key === 'consecutivo') {
-      const folio = index.toString()?.padStart(4, '0');
-      code_str += folio;
+      consecutivo = await generate_consecutivo_folio(product.id);
+
+      let cons = consecutivo;
+
+      let offset = 0;
+
+      offset = Math.floor(consecutivo / 100000);
+
+      cons = consecutivo - offset * 100000;
+
+      code_str += cons?.toString()?.padStart(4, '0');
       continue;
     } else if (key === 'ano_YYYY') {
       const delivery_date = new Date(product.created_at);
@@ -358,7 +390,10 @@ const generateCodesForProduct = async (product: ProductCode, index: number): Pro
     code_str += product[key_obj as keyof ProductCode] ?? '';
   }
 
-  return code_str;
+  return {
+    code_str,
+    consecutivo
+  };
 };
 
 const code_map = [

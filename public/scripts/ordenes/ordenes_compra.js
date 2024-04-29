@@ -473,13 +473,14 @@ $('#addProductsButton').on('click', async function () {
   }
 
   //dont add products that are already in the table
-  const notAddedProducts = products.filter(product => {
-    const tableProds = $('#ordenes_table').DataTable().rows().data().toArray();
-    return !tableProds.some(p => p.pieza_id === product.id);
-  });
+  // const notAddedProducts = products.filter(product => {
+  //   const tableProds = $('#ordenes_table').DataTable().rows().data().toArray();
+  //   console.log({ tableProds });
+  //   return !tableProds.some(p => p.revision_id === product.id);
+  // });
 
   //add products to select
-  for (const product of notAddedProducts) {
+  for (const product of products) {
     $products.append(
       $('<option>', {
         value: product.id,
@@ -517,7 +518,7 @@ $('#addProduct').on('submit', async function (e) {
   const $quantity = $('#add_product_quantity');
 
   if (!$quantity.val() || !$product.val() || !$revision.val()) {
-    toastr.error('Añade un producto y su cantidad');
+    toastr.error('Verifica que todos los campos estén completos');
     return;
   }
 
@@ -740,6 +741,10 @@ $('#add_product_select').on('change', async function () {
 
   $('#add_product_revision').empty();
   revisiones.forEach(revision => {
+    const tableProds = $('#ordenes_table').DataTable().rows().data().toArray();
+
+    if (tableProds.some(prod => prod.revision_id === revision.id)) return;
+
     $('#add_product_revision').append(
       $('<option>', {
         value: revision.id,

@@ -271,6 +271,13 @@
                   <label for="select2Basic" class="form-label">Identificador de proveedor</label>
                   <input type="text" class="form-control" name="proveedor_id" value="<%= clientData.proveedor_id %>" />
                 </div>
+                <div class="col-md-12">
+                  <label for="select2Basic" class="form-label">Moneda</label>
+                  <select name="currency" id="select2Basic" class="select2 form-select" data-allow-clear="true">
+                    <option value="MXN" <%= clientData.currency === "MXN" ? "selected":"" %>>MXN</option>
+                    <option value="USD" <%= clientData.currency === "USD" ? "selected":"" %>>USD</option>
+                  </select>
+                </div>
                 <div class="col-md-12 d-flex justify-content-end">
                   <button type="submit" class="btn btn-success">Guardar</button>
                 </div>

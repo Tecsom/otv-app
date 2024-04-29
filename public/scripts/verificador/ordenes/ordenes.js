@@ -1,10 +1,5 @@
 import { fetchData, loadingButton, isoDateToFormatted } from '/public/scripts/helpers.js';
 let verification_mode = false;
-// <th>#CODIGO</th>
-//             <th>No. de parte</th>
-//             <th>Revisión</th>
-//             <th>Descripción</th>
-//             <th>Opciones</th>
 
 const optiones_html = `
   <button class="btn btn-primary btn-sm btn-opciones-pieza">
@@ -44,7 +39,6 @@ $(document).ready(function () {
   for (const codigo of codigos) {
     const { code, numero_parte, verified } = codigo;
     const producto = productos.find(producto => producto.numero_parte === numero_parte);
-    console.log({ codigo });
     data_table_piezas.push({
       codigo: code,
       verified,
@@ -53,7 +47,6 @@ $(document).ready(function () {
       descripcion: producto.descripcion
     });
   }
-
   table_piezas.rows.add(data_table_piezas).draw();
   //if pieza is verified set background color to green
   const rows = table_piezas.rows().nodes().to$();
@@ -61,11 +54,9 @@ $(document).ready(function () {
     const cells = $(row).find('td');
     const codigo = $(cells[0]).text();
     const pieza = data_table_piezas.find(pieza => pieza.codigo === codigo);
-    console.log({ pieza });
     if (pieza.verified) {
-      $('#table_piezas_oc tr').removeClass('bg-label-success');
+      // $('#table_piezas_oc tr').removeClass('bg-label-success');
       $(row).addClass('bg-label-success');
-      //cells.css('color', 'white');
     }
   });
 });
