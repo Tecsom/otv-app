@@ -15,7 +15,8 @@ import {
   deletePiezaC,
   deleteRevisionC,
   getClientesPagingC,
-  updateProfilePhotoC
+  updateProfilePhotoC,
+  getProfilePhotoC
 } from '../controllers/clientes';
 
 const router = express.Router();
@@ -26,6 +27,7 @@ router.post('/clientes', createClienteC);
 router.delete('/clientes/:id', deleteClienteC);
 router.put('/clientes/:id', updateClienteC);
 router.put('/clientes/:id/update-photo', updateProfilePhotoC);
+router.get('/clientes/:id/profile-photo', getProfilePhotoC);
 
 // Piezas
 router.get('/clientes/:id/piezas', getPiezasByClienteC);

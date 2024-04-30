@@ -93,6 +93,7 @@ export const getOrdenesPagingC = async (req: Request, res: Response) => {
     res.status(500).json(error);
   }
 };
+
 export const newOrder = async (req: Request, res: Response) => {
   const payload: CreateOrderDataModel = req.body;
 

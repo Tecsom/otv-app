@@ -1,3 +1,4 @@
+import { isoDateToFormattedWithTime } from '/public/scripts/helpers.js';
 const tableActions = `<div class="d-inline-block text-nowrap">
                         <button class="btn btn-sm btn-icon barcode-icon" title="Editar" data-bs-toggle="tooltip" data-bs-placement="top"><i class="ti ti-barcode"></i></button>
                     </div>`;
@@ -6,6 +7,32 @@ codigos_table = $('#codigos_table').DataTable({
   columns: [
     //{ data: 'numero_parte', title: '# Parte', orderable: true, className: 'non-selectable' },
     { data: 'code', title: 'Código', orderable: false, className: 'non-selectable' },
+    {
+      title: 'Último escaneo',
+      orderable: false,
+      className: 'non-selectable',
+      render: function (data, type, row) {
+        const code = row.code;
+        const verificaciones = verificaciones_table.rows().data().toArray();
+
+        let last_verification = null;
+
+        for (let i = verificaciones.length - 1; i >= 0; i--) {
+          const verificacion = verificaciones[i];
+          const verification = verificacion.verifications.find(verification => verification.codigo == code);
+          if (verification) {
+            last_verification = verification;
+            break;
+          }
+        }
+
+        console.log({ last_verification });
+
+        return last_verification?.created_at
+          ? isoDateToFormattedWithTime(last_verification?.created_at)
+          : 'No escaneado';
+      }
+    },
     { title: '', defaultContent: tableActions, width: '30px' }
   ],
   dom: 'rtp',

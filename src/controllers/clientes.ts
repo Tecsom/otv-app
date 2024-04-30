@@ -290,3 +290,13 @@ export const updateProfilePhotoC = async (req: Request, res: Response) => {
     res.status(500).json(error);
   }
 };
+
+export const getProfilePhotoC = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  try {
+    const { signedUrl } = await getFilePublicURL('clientes', `${id}/logo.png`);
+    res.status(200).json(signedUrl);
+  } catch (error: any) {
+    res.status(500).json(error);
+  }
+};

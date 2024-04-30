@@ -182,6 +182,14 @@
                         ><i class="ti ti-trash-x ti-xs me-1"></i>Eliminar</a
                       >
                     </li>
+                    <li>
+                      <a
+                        id="cancelar_oc"
+                        class="dropdown-item d-flex align-items-center gap-2"
+                        href="javascript:void(0);"
+                        ><i class="ti ti-square-x ti-xs me-1"></i>Cancelar</a
+                      >
+                    </li>
                   </ul>
                 </div>
               </div>
@@ -196,14 +204,18 @@
                 <div class="d-flex justify-content-between flex-xl-row flex-md-column flex-sm-row flex-column">
                   <div class="d-flex align-items-center gap-3">
                     <div class="avatar avatar-lg">
-                      <img src="/public/assets/img/avatars/1.png" alt="Avatar" class="rounded-circle" />
+                      <img
+                        id="profile-pic"
+                        src="/public/assets/img/avatars/1.png"
+                        alt="Avatar"
+                        class="rounded-circle" />
                     </div>
                     <div>
                       <p class="mb-0">
                         <strong>Cliente: </strong><span id="data-client-data">[Nombre de cliente]</span>
                       </p>
-                      <p class="mb-0"><strong>ID: </strong><span>[Identificador del cliente]</span></p>
-                      <p class="mb-0"><strong>Moneda: </strong><span>[Moneda]</span></p>
+                      <p class="mb-0"><strong>ID: </strong><span id="client_id">[Identificador del cliente]</span></p>
+                      <p class="mb-0"><strong>Moneda: </strong><span id="client_currency">[Moneda]</span></p>
                     </div>
                   </div>
                   <div>
@@ -213,7 +225,7 @@
                     </div>
                     <div>
                       <strong>Estado: </strong>
-                      <span>[Indicar estado]</span>
+                      <span id="order_status">[Indicar estado]</span>
                     </div>
                   </div>
                 </div>

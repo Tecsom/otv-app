@@ -461,6 +461,27 @@ function addLeadingZeros(number, length) {
 $('#ordenes_compra_container').on('click', '.order_container_child', async function () {
   const $order = $(this);
   const data = $order.data().data; //ORDER DATA
+  const cliente_id = data?.clientes.id;
+  $('#client_id').text(data.folio_id);
+  $('#order_status').text(data.estado);
+  if (data.estado === 'pendiente') {
+    $('#generate_order').removeClass('d-none');
+    $('#edit_oc').removeClass('d-none');
+    $('#delete_oc').removeClass('d-none');
+    $('#cancelar_oc').addClass('d-none');
+  } else {
+    $('#generate_order').addClass('d-none');
+    $('#edit_oc').addClass('d-none');
+    $('#delete_oc').addClass('d-none');
+    $('#cancelar_oc').removeClass('d-none');
+  }
+  if (cliente_id) {
+    $('#client_currency').text(data.clientes.currency);
+    const profile_pic_res = await fetchData(`/clientes/${cliente_id}/profile-photo`);
+    if (profile_pic_res.status === true) {
+      $('#profile-pic').attr('src', profile_pic_res.data);
+    }
+  }
 
   const code_type = data?.clientes?.code_type ?? '';
 
