@@ -379,6 +379,14 @@ async function getOrdenes() {
 async function loadOrdenes() {
   const $container = $('#ordenes_compra_container');
 
+  const badgeType = {
+    pendiente: 'primary',
+    proceso: 'secondary',
+    embarque: 'info',
+    cancelada: 'danger',
+    completada: 'success'
+  };
+
   const ordenes = await getOrdenes();
   for (let orden of ordenes) {
     orden.verifications = orden?.verifications?.filter(elm => elm.id);
@@ -402,7 +410,7 @@ async function loadOrdenes() {
               <p class="mb-0 small"><strong>Cliente: </strong>${orden.clientes?.nombre ?? '<span style="color:Red">Sin cliente relacionado</span>'}</p>
               <p class="mb-0 small"><strong>Folio de cliente: </strong>${orden.folio_id}</p>
               <p class="mb-0 small"><strong>Fecha de entrega: </strong>${isoDateToFormatted(orden.delivery_date)}</p>
-              <p class="mb-0 small"><strong>Estado: </strong><span class="text-capitalize">${orden.estado}</span></p>              
+              <p class="mb-0 small"><span class="text-capitalize badge bg-${badgeType[orden.estado]}">${orden.estado}</span></p>              
             </div>
           </div>
         </div>
