@@ -16,10 +16,11 @@ const previewTemplate = `<div class="dz-preview dz-file-preview">
 
 const dropzoneCliente = new Dropzone('#dpz-cliente', {
   previewTemplate: previewTemplate,
-  parallelUploads: 1,
-  maxFilesize: 5,
+  maxFilesize: 1,
   addRemoveLinks: true,
-  url: '/',
+  autoProcessQueue: true,
+  url: '/api/clientes/' + clientData.id + '/update-photo',
+  method: 'PUT',
   acceptedFiles: 'image/*',
   dictDefaultMessage: 'Añadir logo de cliente',
   dictFallbackMessage: 'Tu navegador no soporta la carga de archivos por arrastrar y soltar.',
@@ -32,10 +33,7 @@ const dropzoneCliente = new Dropzone('#dpz-cliente', {
   dictCancelUploadConfirmation: '¿Estás seguro de que quieres cancelar esta carga?',
   dictRemoveFile: 'Eliminar archivo',
   dictMaxFilesExceeded: 'No puedes subir más archivos.',
-  acceptedFiles: 'image/*',
-  accept: function (file, done) {
-    // done();
-  }
+  acceptedFiles: 'image/*'
 });
 
 $('#edit-client-form').on('submit', async function (e) {

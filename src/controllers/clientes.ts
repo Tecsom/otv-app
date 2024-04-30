@@ -12,8 +12,8 @@ import {
   updatePieza,
   uploadRevisionFiles
 } from '@/utils/piezas';
-import { deleteFolder, getFilePublicURL, getFilesByPath } from '@/utils/storage';
-import { QueryTable } from '@/types/types';
+import { deleteFolder, getFilePublicURL, getFilesByPath, uploadFile } from '@/utils/storage';
+import { FileUpld, QueryTable } from '@/types/types';
 import supabase from '@/config/supabase';
 
 export const getClientesC = async (req: Request, res: Response) => {
@@ -274,6 +274,24 @@ export const deleteRevisionC = async (req: Request, res: Response) => {
     await deleteRevision(parseInt(revision_id));
     await res.status(200).json({});
   } catch (error: any) {
+    res.status(500).json(error);
+  }
+};
+
+export const updateProfilePhotoC = async (req: Request, res: Response) => {
+  console.log('entra updateProfilePhotoC');
+  const { id } = req.params;
+  const { photo }: { photo: FileUpld } = req.body;
+  try {
+    const file_path = `${id}/${photo.name}`;
+    console.log({ file_path, photo });
+    await uploadFile('clientes', file_path, photo.data, {
+      contentType: photo.type
+    });
+
+    res.status(200).json({ message: 'Foto de perfil actualizada', status: true });
+  } catch (error: any) {
+    console.log({ error });
     res.status(500).json(error);
   }
 };
