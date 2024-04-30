@@ -53,12 +53,14 @@ const onScanner = async (data: Buffer) => {
   const current_url = globalThis.globalWindow?.webContents.getURL();
   if (current_url.includes('verificador') && !current_url.includes('ordenes')) {
     const orden_res = await getOrdenByCodeProd(data.toString());
+    console.log({ orden_res });
     const orden = orden_res && orden_res.length > 0 ? orden_res[0] : null;
     if (!orden?.id) {
       console.log('Orden no encontrada');
       return;
     }
-    globalThis.globalWindow?.loadURL('http://localhost:3000/verificador/ordenes/' + orden.id);
+
+    globalThis.globalWindow?.loadURL('http://localhost:3000/verificador/ordenes/' + orden.order_id);
     return;
   }
   console.log('redirected to localhost:3000');

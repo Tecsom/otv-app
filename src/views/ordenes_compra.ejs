@@ -316,7 +316,9 @@
                     </div>
                     <table id="codigos_table" class="table m-0 w-100 border-top mt-3 table-sm"></table>
                   </div>
-                  <div class="tab-pane fade" id="navs_verificaciones" role="tabpanel">Historial de verificaciones</div>
+                  <div class="tab-pane fade" id="navs_verificaciones" role="tabpanel">
+                    <table id="verificaciones_table" class="table m-0 w-100 border-top mt-3 table-sm"></table>
+                  </div>
                   <div class="tab-pane fade" id="navs_embarques" role="tabpanel">Embarques asignados</div>
                   <div class="tab-pane fade" id="navs_inventario" role="tabpanel">
                     Movimientos de inventario asignados
@@ -513,11 +515,26 @@
       </div>
     </div>
   </div>
+  <!--MODAL LISTA DE VERIFICACIONES-->
+  <div class="modal fade" id="view_verifications_modal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel1">Verificaciones</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div id="list-verifications" class="list-group"></div>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <script>
     var dropzoneFiles;
     var loadFiles;
     var codigos_table;
+    var verificaciones_table;
     var loadProductos = () => {};
   </script>
 
@@ -525,4 +542,5 @@
   <script src="/public/scripts/ordenes/archivos.js" type="module"></script>
   <script src="/public/scripts/ordenes/codigos.js" type="module"></script>
   <script src="/public/scripts/ordenes/orden_compra.js" type="module"></script>
+  <script src="/public/scripts/ordenes/verifications.js" type="module"></script>
 </div>

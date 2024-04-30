@@ -63,6 +63,7 @@ export const getOrdenByCodeProd = async (code: string) => {
 
 export const generarOrdenDeCompraEstatica = async (order_data: any) => {
   const { order_id, ...static_data } = order_data;
+  const productos = order_data.productos;
 
   const { data: orden, error } = await supabase()
     .from('ordenes_static')
@@ -78,11 +79,14 @@ export const generarOrdenDeCompraEstatica = async (order_data: any) => {
     throw error;
   }
   //!aqui generar códigos
-
+  // { code, numero_parte, verified }
   const products = await getProducts(order_id);
+  let products_codes = [];
+  const full_codigos = [];
   for (const product of products) {
-    console.log({ product });
-    await generateProductCodeDb(
+    let product_db = productos.find((p: any) => p.id === product.id);
+
+    const codigos = await generateProductCodeDb(
       {
         ...product,
         pieza_id: product.piezas.id,
@@ -91,9 +95,28 @@ export const generarOrdenDeCompraEstatica = async (order_data: any) => {
       },
       product.quantity
     );
+    product_db.codigos = codigos;
+    products_codes.push(product_db);
+    full_codigos.push(
+      ...(codigos.map((c: any) => ({
+        code: c,
+        verified: false,
+        numero_parte: product.piezas.numero_parte
+      })) ?? [])
+    );
   }
 
   await updateOrder({ id: order_id });
+
+  const { error: error_upd } = await supabase()
+    .from('ordenes_static')
+    .update({ productos: products_codes, codigos: full_codigos })
+    .eq('id', orden.id);
+
+  if (error_upd) {
+    console.error('Error updating order:', error_upd.message);
+    throw error_upd;
+  }
 
   const result: ApiResult = {
     data: orden,
@@ -292,9 +315,9 @@ const deleteCodesFromProduct = async (product_id: number): Promise<boolean> => {
   return true;
 };
 
-const generateProductCodeDb = async (product: ProductCode, quantity: number): Promise<void> => {
+const generateProductCodeDb = async (product: ProductCode, quantity: number): Promise<any> => {
   await deleteCodesFromProduct(product.id);
-
+  let codes = [];
   for (let i = 0; i < quantity; i++) {
     const { code_str: code, consecutivo } = await generateCodesForProduct({ ...product }, i);
     if (!code) {
@@ -304,11 +327,16 @@ const generateProductCodeDb = async (product: ProductCode, quantity: number): Pr
     const { error } = await supabase()
       .from('order_products_codes')
       .insert({ code, product_id: product.id, consecutivo });
+
+    codes.push(code);
+
     if (error) {
       console.log(error);
       throw new Error('Error generando códigos de productos');
     }
   }
+
+  return codes;
 };
 
 const generate_consecutivo_folio = async (producto_id: number) => {
@@ -423,19 +451,15 @@ function getWeekNumber(d: any): number {
 }
 
 export const verifyProds = async (order_id: number, products: any[]) => {
+  const created_at = new Date().toISOString();
   for (const prod of products) {
-    console.log({ prod });
-    const { data, error } = await supabase()
-      .from('ordenes_static_verified')
-      .upsert(
-        [
-          {
-            order_id,
-            codigo: prod.codigo
-          }
-        ],
-        { onConflict: 'order_id, codigo' }
-      );
+    const is_verified = await checkIfVerified(order_id, prod.codigo);
+    if (is_verified) continue;
+    const { data, error } = await supabase().from('ordenes_static_verified').insert({
+      order_id,
+      codigo: prod.codigo,
+      created_at
+    });
     if (error) {
       console.log(error);
       throw new Error('Error verificando productos');
@@ -449,4 +473,30 @@ export const verifyProds = async (order_id: number, products: any[]) => {
   };
 
   return result;
+};
+
+const checkIfVerified = async (order_id: number, code: string): Promise<boolean> => {
+  const { data, error } = await supabase()
+    .from('ordenes_static_verified')
+    .select('*')
+    .eq('order_id', order_id)
+    .eq('codigo', code);
+
+  if (error) {
+    console.log(error);
+    throw new Error('Error verificando productos');
+  }
+
+  return data.length > 0;
+};
+
+export const getStaticOrderProducts = async (order_id: number) => {
+  const { data, error } = await supabase().from('order_products').select('*').eq('order_id', order_id);
+
+  if (error) {
+    console.log(error);
+    throw new Error('Error obteniendo productos de orden');
+  }
+
+  return data;
 };

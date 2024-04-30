@@ -1,4 +1,4 @@
-import { fetchData, loadingButton, isoDateToFormatted } from '/public/scripts/helpers.js';
+import { fetchData, loadingButton } from '/public/scripts/helpers.js';
 
 $('#generate_order').on('click', async function () {
   const table_data = $('#ordenes_table').data();
@@ -40,8 +40,6 @@ const generateOrder = async () => {
   const table_data = $('#ordenes_table').data();
   const cliente = table_data.clientes;
   const productos = $('#ordenes_table').DataTable().rows().data().toArray();
-  const codigos = $('#codigos_table').DataTable().rows().data().toArray();
-  const folio_unico = '';
   const folio_cliente = table_data.folio_id;
   const fecha_entrega = table_data.delivery_date;
   const order_id = table_data.id;
@@ -49,8 +47,6 @@ const generateOrder = async () => {
   const data = {
     cliente,
     productos,
-    codigos,
-
     folio_cliente,
     fecha_entrega,
     order_id

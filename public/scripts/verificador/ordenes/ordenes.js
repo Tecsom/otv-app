@@ -39,6 +39,7 @@ $(document).ready(function () {
   for (const codigo of codigos) {
     const { code, numero_parte, verified } = codigo;
     const producto = productos.find(producto => producto.numero_parte === numero_parte);
+    console.log({ productos, numero_parte });
     data_table_piezas.push({
       codigo: code,
       verified,

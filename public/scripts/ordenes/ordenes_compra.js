@@ -1,5 +1,5 @@
 //ordenes_table
-import { fetchData, loadingButton, isoDateToFormatted } from '/public/scripts/helpers.js';
+import { fetchData, loadingButton, isoDateToFormatted, isoDateToFormattedWithTime } from '/public/scripts/helpers.js';
 
 const tableActions = `<div class="d-inline-block text-nowrap">
                     <button class="btn btn-sm btn-icon edit-icon" title="Editar" data-bs-toggle="tooltip" data-bs-placement="top"><i class="ti ti-edit"></i></button>
@@ -252,7 +252,8 @@ async function loadOrdenes() {
   const $container = $('#ordenes_compra_container');
 
   const ordenes = await getOrdenes();
-  for (const orden of ordenes) {
+  for (let orden of ordenes) {
+    orden.verifications = orden?.verifications?.filter(elm => elm.id);
     const uniqueFolio = orden.unique_folio ? addLeadingZeros(orden.unique_folio, 6) : 'Sin Folio';
     const $newdiv1 = $(`
         <div class="order_container_child card-body border-bottom" order_id="${orden.id}" id="order_${orden.unique_folio}">
@@ -343,6 +344,27 @@ $('#ordenes_compra_container').on('click', '.order_container_child', async funct
   const $clientData = $('#data-client-data');
   const uniqueFolio = data.unique_folio ? addLeadingZeros(data.unique_folio, 6) : 'Sin Folio';
 
+  const verifications = data.verifications.reduce((acc, verification) => {
+    const key = verification.created_at;
+
+    if (!acc[key]) {
+      acc[key] = [];
+    }
+    acc[key].push(verification);
+    return acc;
+  }, {});
+
+  const dates = Object.keys(verifications).map(date => {
+    return {
+      fecha: isoDateToFormattedWithTime(date),
+      total_verificaciones: verifications[date].length,
+      verifications: verifications[date]
+    };
+  });
+
+  verificaciones_table.clear().draw();
+
+  verificaciones_table.rows.add(dates).draw();
   $folio.text(uniqueFolio);
   $fechaEntrega.text(isoDateToFormatted(data.delivery_date));
   $clientData.text(data.clientes?.nombre ?? 'Sin cliente relacionado');
@@ -580,10 +602,11 @@ loadProductos = async id => {
   });
 
   let codeProdsTable = [];
-
+  let total_codes = 0;
   for (const product of productos) {
     const codes = product.codes;
     for (const code of codes) {
+      total_codes += 1;
       codeProdsTable.push({
         code: code.code,
         numero_parte: product.piezas.numero_parte,
@@ -595,6 +618,18 @@ loadProductos = async id => {
   $('#ordenes_table').DataTable().rows.add(productosTable).draw();
   $('#code_total').text(codeProdsTable.length);
   codigos_table.rows.add(codeProdsTable).draw();
+
+  //append total products length to verifications table
+
+  verificaciones_table
+    .column(1)
+    .nodes()
+    .each((node, index) => {
+      const total = verificaciones_table.row(index).data().total_verificaciones;
+      console.log({ productos });
+      const str = total + ' de ' + total_codes;
+      $(node).text(str);
+    });
 };
 function getLastCreated(array) {
   if (array.length === 0) {
