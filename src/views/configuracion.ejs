@@ -1,1 +1,127 @@
-Configuración!
+<div class="container-xxl flex-grow-1 container-p-y">
+  <div class="d-flex justify-content-between align-items-center pb-2 border-bottom">
+    <div class="d-flex align-items-center gap-2">
+      <h4 class="mb-0">Configuración</h4>
+    </div>
+  </div>
+  <div class="row pt-3">
+    <div class="col-md-12">
+      <div class="nav-tabs-shadow nav-align-top">
+        <ul class="nav nav-tabs" role="tablist">
+          <li class="nav-item">
+            <button
+              type="button"
+              class="nav-link active"
+              role="tab"
+              data-bs-toggle="tab"
+              data-bs-target="#navs-local"
+              aria-controls="navs-local"
+              aria-selected="true">
+              <i class="ti ti-device-imac ti-xs me-1"></i>
+              Local
+            </button>
+          </li>
+          <li class="nav-item">
+            <button
+              type="button"
+              class="nav-link"
+              role="tab"
+              data-bs-toggle="tab"
+              data-bs-target="#navs-account"
+              aria-controls="navs-account"
+              aria-selected="false">
+              <i class="ti ti-home-cog ti-xs me-1"></i>
+              Cuenta
+            </button>
+          </li>
+          <li class="nav-item">
+            <button
+              type="button"
+              class="nav-link"
+              role="tab"
+              data-bs-toggle="tab"
+              data-bs-target="#navs-users"
+              aria-controls="navs-users"
+              aria-selected="false">
+              <i class="ti ti-user-circle ti-xs me-1"></i>
+              Usuarios
+            </button>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane fade show active" id="navs-local" role="tabpanel">
+            <div class="row">
+              <div class="col-md-12">
+                <div class="d-flex justify-content-between align-items-center">
+                  <div>
+                    <p class="mb-0">Modo oscuro</p>
+                    <small class="text-muted">Activa el modo oscuro para tu panel.</small>
+                  </div>
+                  <div>Switch</div>
+                </div>
+                <hr />
+              </div>
+              <div class="col-md-12">
+                <div class="d-flex justify-content-between align-items-center">
+                  <div>
+                    <p class="mb-0">Puerto serie escáner</p>
+                    <small class="text-muted">Estable el puerto serie que utilizará el escáner conectado.</small>
+                  </div>
+                  <div>Select</div>
+                </div>
+                <hr />
+              </div>
+              <div class="col-md-12">
+                <div class="col-md-12 d-flex justify-content-end">
+                  <button type="submit" class="btn btn-success waves-effect waves-light">Guardar</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="tab-pane fade" id="navs-account" role="tabpanel">
+            <div class="row">
+              <div class="col-md-12">
+                <div class="d-flex justify-content-between align-items-center">
+                  <div>
+                    <p class="mb-0">Contraseña verificador</p>
+                    <small class="text-muted">Establece una contraseña para salir del modo verificador.</small>
+                  </div>
+                  <div>Input</div>
+                </div>
+                <hr />
+              </div>
+              <div class="col-md-12">
+                <div class="col-md-12 d-flex justify-content-end">
+                  <button type="submit" class="btn btn-success waves-effect waves-light">Guardar</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="tab-pane fade" id="navs-users" role="tabpanel">
+            <div class="d-flex justify-content-end align-items-center border-bottom pb-3">
+              <button
+                type="button"
+                class="btn btn-label-success waves-effect waves-light"
+                data-bs-toggle="modal"
+                data-bs-target="#modal_create_pieza">
+                <span class="tf-icons ti-xs ti ti-plus me-1"></span>Nuevo
+              </button>
+            </div>
+            <div class="table-responsive text-nowrap">
+              <table class="table table-striped w-100 table-hover table-sm">
+                <thead>
+                  <tr>
+                    <th>Nombre</th>
+                    <th>Correo</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                  </tr>
+                </thead>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

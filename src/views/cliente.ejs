@@ -89,6 +89,10 @@
     margin: 0;
 
   }
+
+  #offcanvas-images-list{
+    overflow: hidden;
+  }
   
 </style>
 <link rel="stylesheet" href="/public/assets/vendor/css/pages/app-chat.css" />
@@ -277,9 +281,9 @@
                     <div class="flex-grow-1">
                       <input id="search_equipment" class="form-control" type="search" placeholder="Buscar pieza ..." />
                     </div>
-                    <button type="button" class="btn btn-icon me-2 btn-label-primary waves-effect">
+                    <!--<button type="button" class="btn btn-icon me-2 btn-label-primary waves-effect">
                       <span class="ti ti-filter"></span>
-                    </button>
+                    </button>-->
                   </div>
                 </div>
                 <div class="col-md-6">
@@ -302,7 +306,8 @@
               </div>
             </div>
             <div class="tab-pane fade" id="navs_historial" role="tabpanel">
-              <ul class="timeline mb-0 pt-2">
+              Historial de órdenes de compra
+              <!--<ul class="timeline mb-0 pt-2">
                 <li class="timeline-item timeline-item-transparent">
                   <span class="timeline-point timeline-point-primary"></span>
                   <div class="timeline-event">
@@ -335,7 +340,7 @@
                     </div>
                   </div>
                 </li>
-              </ul>
+              </ul>-->
             </div>
             <div class="tab-pane fade" id="navs_stats" role="tabpanel">Estadísticas</div>
             <div class="tab-pane fade" id="navs_settings" role="tabpanel">
@@ -350,18 +355,18 @@
                     value="<%= clientData.code_string %>"
                      />
                 </div>
-                <div class="col-md-12">
+                <div class="col-md-4">
                   <label for="select2Basic" class="form-label">Tipo de código</label>
                   <select name="code_type" id="select2Basic" class="select2 form-select" data-allow-clear="true">
                     <option value="QR" <%= clientData.code_type === "QR" ? "selected":"" %>>Código QR</option>
                     <option value="DM" <%= clientData.code_type === "DM" ? "selected":"" %>>Código DataMatrix</option>
                   </select>
                 </div>
-                <div class="col-md-12">
+                <div class="col-md-4">
                   <label for="select2Basic" class="form-label">Identificador de proveedor</label>
                   <input type="text" class="form-control" name="proveedor_id" value="<%= clientData.proveedor_id %>" />
                 </div>
-                <div class="col-md-12">
+                <div class="col-md-4">
                   <label for="select2Basic" class="form-label">Moneda</label>
                   <select name="currency" id="select2Basic" class="select2 form-select" data-allow-clear="true">
                     <option value="MXN" <%= clientData.currency === "MXN" ? "selected":"" %>>MXN</option>
