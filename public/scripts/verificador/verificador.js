@@ -20,9 +20,9 @@ $('#quit-checker-form').on('submit', async function (e) {
 
   if (res.status === true) {
     toastr.success('Contraseña correcta');
-    setTimeout(() => {
-      window.location.href = '/';
-    }, 1000);
+    localStorage.removeItem('checker');
+    window.location.href = '/';
+
     return;
   }
   button.stop();

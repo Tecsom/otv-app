@@ -9,7 +9,7 @@ import expressLayouts from 'express-ejs-layouts';
 import middleware from './middleware';
 import { viewsRoutes, apiRoutes } from './routes/index';
 import { initScanner } from './controllers/scanner';
-import { BrowserWindow, app } from 'electron';
+import { BrowserWindow, app, session } from 'electron';
 
 declare global {
   var globalWindow: BrowserWindow;
@@ -60,11 +60,6 @@ if (process.env.NODE_ENV !== 'test') {
     });
 
     const { port } = server.address() as AddressInfo;
-    //get localstorage value "checker"
-
-    mainWindow.webContents.executeJavaScript('localStorage.getItem("checker");', true).then(result => {
-      console.log({ result });
-    });
 
     const url = `http://localhost:${port}/`;
 
