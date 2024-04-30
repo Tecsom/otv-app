@@ -3,6 +3,7 @@ import { getClientById, getClientes } from './../utils/clientes';
 import { Request, Response } from 'express';
 import path from 'path';
 import { getStaticOrden } from '@/utils/ordenes_compra';
+import { getFilePublicURL } from '@/utils/storage';
 
 export const renderHomePage = (_: Request, res: Response) => res.render('Home.ejs');
 export const renderUnidadesMedida = (_: Request, res: Response) => res.render('unidadesMedida.ejs');
@@ -18,11 +19,19 @@ export const renderClientsPage = async (_: Request, res: Response) => {
 export const renderClientPage = async (req: Request, res: Response) => {
   const { id } = req.params;
   const cliente_id = parseInt(id);
+  let profile_picture;
+
+  try {
+    profile_picture = await getFilePublicURL('clientes', `${cliente_id}/logo.png`);
+  } catch (error) {}
+
   try {
     const clientData = await getClientById(id);
     const piezasData = await getPiezas(cliente_id);
 
-    res.render('cliente.ejs', { clientData, piezasData });
+    console.log({ profile_picture });
+
+    res.render('cliente.ejs', { clientData, piezasData, profile_picture });
   } catch (error) {
     res.status(404).render('404.ejs');
   }

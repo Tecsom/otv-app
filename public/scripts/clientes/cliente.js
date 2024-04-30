@@ -16,11 +16,11 @@ const previewTemplate = `<div class="dz-preview dz-file-preview">
 
 const dropzoneCliente = new Dropzone('#dpz-cliente', {
   previewTemplate: previewTemplate,
-  maxFilesize: 1,
-  addRemoveLinks: true,
+  maxFilesize: 2,
+  url: 'api/clientes/52/update-photo',
+  method: 'PUT ',
+  autoQueue: true,
   autoProcessQueue: true,
-  url: '/api/clientes/' + clientData.id + '/update-photo',
-  method: 'PUT',
   acceptedFiles: 'image/*',
   dictDefaultMessage: 'Añadir logo de cliente',
   dictFallbackMessage: 'Tu navegador no soporta la carga de archivos por arrastrar y soltar.',
@@ -33,8 +33,43 @@ const dropzoneCliente = new Dropzone('#dpz-cliente', {
   dictCancelUploadConfirmation: '¿Estás seguro de que quieres cancelar esta carga?',
   dictRemoveFile: 'Eliminar archivo',
   dictMaxFilesExceeded: 'No puedes subir más archivos.',
-  acceptedFiles: 'image/*'
+  accept: async function (file, done) {
+    const data = await processFile(file);
+    const client_id = clientData.id;
+    console.log({ data });
+    const res = await fetchData('/clientes/' + client_id + '/update-photo', 'PUT', {
+      photo: {
+        data: data?.split('base64,')[1] ?? data,
+        name: 'logo' + file.type.replace('image/', '.'),
+        type: file.type
+      }
+    });
+
+    if (res.status === true) {
+      toastr.success(res.message, 'Foto actualizada');
+      $('#container-upload-pp').addClass('d-none');
+      $('#container-pp').removeClass('d-none');
+      $('#img-pp').attr('src', data);
+      return done();
+    }
+  }
 });
+
+$('#change_profile_btn').on('click', function () {
+  $('#container-upload-pp').removeClass('d-none');
+  $('#container-pp').addClass('d-none');
+  dropzoneCliente.removeAllFiles();
+});
+
+const processFile = file => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = function (event) {
+      resolve(event.target.result);
+    };
+    reader.readAsDataURL(file);
+  });
+};
 
 $('#edit-client-form').on('submit', async function (e) {
   e.preventDefault();

@@ -37,7 +37,6 @@ export default async function (req: Request, res: Response, next: NextFunction) 
 
       res.cookie('rol', rol_data?.rol, { httpOnly: false, secure: true });
     }
-    console.log({ decoded });
 
     if (req.url.includes('/login')) return res.redirect('/');
     next();

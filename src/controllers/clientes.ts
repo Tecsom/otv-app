@@ -12,7 +12,7 @@ import {
   updatePieza,
   uploadRevisionFiles
 } from '@/utils/piezas';
-import { deleteFolder, getFilePublicURL, getFilesByPath, uploadFile } from '@/utils/storage';
+import { deleteFile, deleteFolder, getFilePublicURL, getFilesByPath, uploadFile } from '@/utils/storage';
 import { FileUpld, QueryTable } from '@/types/types';
 import supabase from '@/config/supabase';
 
@@ -34,8 +34,6 @@ export const getClientesPagingC = async (req: Request, res: Response) => {
     page: parseInt(start ?? '0') / parseInt(length ?? '10') + 1,
     limitperpage: parseInt(length ?? '10')
   });
-
-  console.log({ data, error });
 
   const { error: error_totals, data: data_totals } = await supabase().rpc('searchclientes_totals', {
     search: search?.value ?? search ?? '',
@@ -200,7 +198,6 @@ export const updateRevisionC = async (req: Request, res: Response) => {
   const { cliente_id, pieza_id, revision_id } = req.params;
   const { archivos, imagenes } = req.body;
   try {
-    console.log({ cliente_id, pieza_id, revision_id });
     await deleteFolder('clientes', `${cliente_id}/${pieza_id}/${revision_id}`);
     await uploadRevisionFiles(parseInt(cliente_id), parseInt(pieza_id), parseInt(revision_id), archivos);
     await uploadRevisionFiles(parseInt(cliente_id), parseInt(pieza_id), parseInt(revision_id), imagenes);
@@ -247,8 +244,6 @@ export const getPiezasTableC = async (req: Request, res: Response) => {
     client: parseInt(client_id as string)
   });
 
-  console.log({ error, data });
-
   res.status(200).json({
     draw,
     recordsTotal: data_totals[0].total_records,
@@ -284,8 +279,8 @@ export const updateProfilePhotoC = async (req: Request, res: Response) => {
   const { photo }: { photo: FileUpld } = req.body;
   try {
     const file_path = `${id}/${photo.name}`;
-    console.log({ file_path, photo });
-    await uploadFile('clientes', file_path, photo.data, {
+    await deleteFile(file_path, 'clientes');
+    await uploadFile(file_path, 'clientes', photo.data, {
       contentType: photo.type
     });
 
