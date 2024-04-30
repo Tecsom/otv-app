@@ -18,7 +18,7 @@ const renderListFile = (name, url, filename) => {
 };
 
 const optiones_html = `
-  <button class="btn btn-primary btn-sm btn-opciones-pieza">
+  <button class="btn btn-sm btn-opciones-pieza">
     <i class="ti ti-eye"></i>
   </button>
   `;
