@@ -22,7 +22,7 @@ const dropzoneCliente = new Dropzone('#dpz-cliente', {
   addRemoveLinks: true,
   url: '/',
   acceptedFiles: 'image/*',
-  dictDefaultMessage: 'Arrastra aquí las imágenes de la pieza',
+  dictDefaultMessage: 'Añadir logo de cliente',
   dictFallbackMessage: 'Tu navegador no soporta la carga de archivos por arrastrar y soltar.',
   dictFallbackText:
     'Por favor, utiliza el formulario alternativo a continuación para cargar tus archivos como en los viejos tiempos.',
