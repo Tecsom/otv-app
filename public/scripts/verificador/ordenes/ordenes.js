@@ -7,7 +7,7 @@ const optiones_html = `
   </button>
   `;
 
-const table_piezas = $('#table_piezas_oc').DataTable({
+table_piezas = $('#table_piezas_oc').DataTable({
   language: {
     url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/es-ES.json'
   },

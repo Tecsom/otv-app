@@ -12,6 +12,7 @@ const initClock = () => {
       hour12: true
     });
   };
+  updateClock();
   setInterval(updateClock, 1000);
 };
 

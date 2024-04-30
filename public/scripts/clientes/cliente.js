@@ -62,6 +62,7 @@ const updateClientData = data => {
   $('#details_client_adress').text(data.domicilio);
   $('#details_client_city').text(data.ciudad);
   $('#details_client_state').text(data.estado);
+  $('#client_name_title').text(data.nombre);
 };
 const updateFieldsEdit = cliente => {
   $('#nombre_cliente').val(cliente.nombre);

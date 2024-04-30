@@ -274,7 +274,7 @@ async function loadOrdenes() {
               <p class="mb-0 small"><strong>Cliente: </strong>${orden.clientes?.nombre ?? '<span style="color:Red">Sin cliente relacionado</span>'}</p>
               <p class="mb-0 small"><strong>Folio de cliente: </strong>${orden.folio_id}</p>
               <p class="mb-0 small"><strong>Fecha de entrega: </strong>${isoDateToFormatted(orden.delivery_date)}</p>
-              <p class="mb-0 small"><strong>Estado: </strong>[En proceso, pendiente, entregada]</p>              
+              <p class="mb-0 small"><strong>Estado: </strong><span class="text-capitalize">${orden.estado}</span></p>              
             </div>
           </div>
         </div>

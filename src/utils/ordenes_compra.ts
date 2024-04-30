@@ -31,7 +31,11 @@ export const getOrdenesCompra = async () => {
 };
 
 export const getStaticOrden = async (id: number) => {
-  let { data: orden, error } = await supabase().from('ordenes_static').select('*').eq('id', id).single();
+  let { data: orden, error } = await supabase()
+    .from('ordenes_static')
+    .select('*, ordenes_static_verified(order_id, id, created_at, codigo)')
+    .eq('id', id)
+    .single();
   if (error) {
     console.error('Error fetching Ordenes:', error.message);
     throw error;
@@ -106,7 +110,7 @@ export const generarOrdenDeCompraEstatica = async (order_data: any) => {
     );
   }
 
-  await updateOrder({ id: order_id });
+  await updateOrder({ id: order_id, unique_folio: orden.folio_unico });
 
   const { error: error_upd } = await supabase()
     .from('ordenes_static')

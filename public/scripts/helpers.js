@@ -90,7 +90,7 @@ export function isoDateToFormattedWithTime(fechaISO) {
   const segundos = fecha.getSeconds();
 
   // Formatear la fecha como dd/mm/yyyy
-  const fechaFormateada = `${dia.toString().padStart(2, '0')}/${mes.toString().padStart(2, '0')}/${anio} ${hora}:${minutos}:${segundos}`;
+  const fechaFormateada = `${dia.toString().padStart(2, '0')}/${mes.toString().padStart(2, '0')}/${anio} ${hora.toString().padStart(2, '0')}:${minutos.toString().padStart(2, '0')}:${segundos.toString().padStart(2, '0')}`;
 
   return fechaFormateada;
 }
