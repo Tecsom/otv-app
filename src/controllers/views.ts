@@ -65,3 +65,4 @@ export const renderVerificadorOrdenes = async (req: Request, res: Response) => {
   });
 };
 export const renderConfiguracion = async (_: Request, res: Response) => res.render('configuracion.ejs');
+export const renderUsuarios = async (_: Request, res: Response) => res.render('usuarios.ejs');
