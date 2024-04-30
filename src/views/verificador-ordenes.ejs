@@ -43,7 +43,7 @@
   <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title">[# PARTE]</h5>
+        <h5 class="modal-title" id="pieza_numero_parte_title">[# PARTE]</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
@@ -95,37 +95,60 @@
         <div class="card-body">
           <div class="tab-content p-0 pt-3">
             <div class="tab-pane fade show active" id="navs_info" role="tabpanel">
-              Información de la pieza [no. parte, descripcion, codigo, revisión
+              <div class="row">
+                <div class="col-12">
+                  <div class="row">
+                    <div class="col-6">
+                      <div class="row">
+                        <div class="col-6">
+                          <p class="mb-1">Número de parte:</p>
+                          <p class="mb-1">Revisión:</p>
+                          <p class="mb-1">Descripción:</p>
+                          <p class="mb-1">Cantidad:</p>
+                        </div>
+                        <div class="col-6">
+                          <p class="mb-1" id="pieza_numero_parte">[Número de parte]</p>
+                          <p class="mb-1" id="pieza_revision">[Revisión]</p>
+                          <p class="mb-1" id="pieza_descripcion">[Descripción]</p>
+                          <p class="mb-1" id="pieza_cantidad">[Cantidad]</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
             <div class="tab-pane fade" id="navs_img" role="tabpanel">
-              Imágenes de la pieza [lista y con clic ver imágenes]
+              <div id="pieza_images_list" class="list-group mt-2"></div>
             </div>
-            <div class="tab-pane fade" id="navs_files" role="tabpanel">Archivos [lista para descarga]</div>
+            <div class="tab-pane fade" id="navs_files" role="tabpanel">
+              <div id="pieza_files_list" class="list-group mt-2"></div>
+            </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
-</div>
 
-<!--! MODAL INICIAR VERIFICACIÓN -->
-<div class="modal fade" id="start_verificacion" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-sm" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel1">Iniciar verificación</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <div class="row">
-          <div class="col-12">
-            <p>Al iniciar, deberás escanear todos los códigos disponibles para marcarlos como listos.</p>
+    <!--! MODAL INICIAR VERIFICACIÓN -->
+    <div class="modal fade" id="start_verificacion" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-sm" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel1">Iniciar verificación</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
-        </div>
-      </div>
-      <div class="modal-footer d-block">
-        <div class="d-flex justify-content-end">
-          <button id="start_verificacion_btn" class="btn btn-success">Iniciar</button>
+          <div class="modal-body">
+            <div class="row">
+              <div class="col-12">
+                <p>Al iniciar, deberás escanear todos los códigos disponibles para marcarlos como listos.</p>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer d-block">
+            <div class="d-flex justify-content-end">
+              <button id="start_verificacion_btn" class="btn btn-success">Iniciar</button>
+            </div>
+          </div>
         </div>
       </div>
     </div>

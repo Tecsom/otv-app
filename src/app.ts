@@ -60,6 +60,12 @@ if (process.env.NODE_ENV !== 'test') {
     });
 
     const { port } = server.address() as AddressInfo;
+    //get localstorage value "checker"
+
+    mainWindow.webContents.executeJavaScript('localStorage.getItem("checker");', true).then(result => {
+      console.log({ result });
+    });
+
     const url = `http://localhost:${port}/`;
 
     mainWindow.loadURL(url);

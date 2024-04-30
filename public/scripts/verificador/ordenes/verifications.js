@@ -1,3 +1,5 @@
+import { isoDateToFormattedWithTime } from '/public/scripts/helpers.js';
+
 const select_verifications = $('#select_verificaciones').select2({
   placeholder: 'Selecciona una verificación',
   allowClear: true
@@ -43,7 +45,7 @@ $(document).ready(async function () {
   }, {});
 
   for (const key in verifications) {
-    select_verifications.append(new Option(key, key, false, false));
+    select_verifications.append(new Option(isoDateToFormattedWithTime(key), key, false, false));
   }
 
   select_verifications.val(null).trigger('change');
