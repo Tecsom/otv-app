@@ -1,4 +1,39 @@
 import { fetchData, loadingButton } from '/public/scripts/helpers.js';
+const previewTemplate = `<div class="dz-preview dz-file-preview">
+<div class="dz-details">
+  <div class="dz-thumbnail">
+    <img data-dz-thumbnail>
+    <span class="dz-nopreview">No preview</span>
+    <div class="dz-success-mark"></div>
+    <div class="dz-error-mark"></div>
+    <div class="dz-error-message"><span data-dz-errormessage></span></div>
+    <div class="progress">
+      <div class="progress-bar progress-bar-primary" role="progressbar" aria-valuemin="0" aria-valuemax="100" data-dz-uploadprogress></div>
+    </div>
+  </div>
+  <div class="dz-filename" data-dz-name></div>
+  <div class="dz-size" data-dz-size></div>
+</div>
+</div>`;
+const dropzoneCliente = new Dropzone('#dpz-cliente', {
+  previewTemplate: previewTemplate,
+  parallelUploads: 1,
+  maxFilesize: 5,
+  addRemoveLinks: true,
+  url: '/',
+  acceptedFiles: 'image/*',
+  dictDefaultMessage: 'Arrastra aquí las imágenes de la pieza',
+  dictFallbackMessage: 'Tu navegador no soporta la carga de archivos por arrastrar y soltar.',
+  dictFallbackText:
+    'Por favor, utiliza el formulario alternativo a continuación para cargar tus archivos como en los viejos tiempos.',
+  dictFileTooBig: 'El archivo es demasiado grande ({{filesize}}MiB). Tamaño máximo de archivo: {{maxFilesize}}MiB.',
+  dictInvalidFileType: 'No puedes subir archivos de este tipo.',
+  dictResponseError: 'El servidor respondió con código {{statusCode}}.',
+  dictCancelUpload: 'Cancelar carga',
+  dictCancelUploadConfirmation: '¿Estás seguro de que quieres cancelar esta carga?',
+  dictRemoveFile: 'Eliminar archivo',
+  dictMaxFilesExceeded: 'No puedes subir más archivos.'
+});
 
 $('#edit-client-form').on('submit', async function (e) {
   e.preventDefault();
