@@ -26,7 +26,7 @@ const dropzoneCliente = new Dropzone('#dpz-cliente', {
   dictMaxFilesExceeded: 'No puedes subir más archivos.',
   acceptedFiles: 'image/*',
   accept: function (file, done) {
-    done();
+    // done();
   }
 });
 
