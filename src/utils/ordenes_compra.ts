@@ -130,11 +130,21 @@ export const generarOrdenDeCompraEstatica = async (order_data: any) => {
   return result;
 };
 
-export const getOrdenesCompraPaging = async (page: number, pageSize: number, search: string | null) => {
+export const getOrdenesCompraPaging = async (
+  page: number,
+  pageSize: number,
+  search: string | null,
+  estatus: string[],
+  createdAtFilter: any[],
+  deliveryDateFilter: any[]
+) => {
   const { data: Ordenes, error } = await supabase().rpc('search_ordenes_compra', {
     search: search ?? '',
     page,
-    limitperpage: pageSize
+    limitperpage: pageSize,
+    estatus,
+    created_at_array: createdAtFilter,
+    delivery_date_array: deliveryDateFilter
   });
   console.log({ Ordenes, error });
 

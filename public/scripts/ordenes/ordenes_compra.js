@@ -6,6 +6,36 @@ const tableActions = `<div class="d-inline-block text-nowrap">
                     <button class="btn btn-sm btn-icon delete-icon" title="Eliminar" data-bs-toggle="tooltip" data-bs-placement="top"><i class="ti ti-trash-x"></i></button>
                 </div>`;
 
+const flatpickOptions = {
+  dateFormat: 'd/m/Y',
+  maxDate: 'today',
+  mode: 'range',
+  locale: {
+    firstDayOfWeek: 1,
+    weekdays: {
+      shorthand: ['Do', 'Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sa'],
+      longhand: ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado']
+    },
+    months: {
+      shorthand: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Оct', 'Nov', 'Dic'],
+      longhand: [
+        'Enero',
+        'Febrero',
+        'Мarzo',
+        'Abril',
+        'Mayo',
+        'Junio',
+        'Julio',
+        'Agosto',
+        'Septiembre',
+        'Octubre',
+        'Noviembre',
+        'Diciembre'
+      ]
+    }
+  }
+};
+
 let is_loading = false;
 let flatpickr_edit;
 $('#ordenes_table').DataTable({
@@ -30,6 +60,48 @@ let page = 1;
 const limit = 10;
 let loadMore = true;
 let isLoading = false;
+let estatusFilters = ['pendiente', 'proceso', 'embarque'];
+let search = '';
+let timeout_debounce;
+let createdAtFilter = null;
+let deliveryDateFilter = null;
+
+const flatpckr_created = $('#range_filter').flatpickr({
+  onChange: function (selectedDates, dateStr) {
+    if (selectedDates.length < 2) return;
+
+    const startDate = new Date(selectedDates[0]).toISOString();
+    //end date at the end of the day
+
+    const endDate = new Date(new Date(selectedDates[1]).getTime() + 23 * 60 * 60 * 1000).toISOString();
+
+    createdAtFilter = [startDate, endDate];
+    page = 1;
+    loadMore = true;
+    $('#ordenes_compra_container').empty();
+    loadOrdenes();
+  },
+  ...flatpickOptions
+});
+
+const flatpckr_delivery = $('#range_entrega_filter').flatpickr({
+  onChange: function (selectedDates, dateStr) {
+    if (selectedDates.length < 2) return;
+
+    const startDate = new Date(selectedDates[0]).toISOString();
+
+    //end date at the end of the day
+    const endDate = new Date(new Date(selectedDates[1]).getTime() + 23 * 60 * 60 * 1000).toISOString();
+
+    deliveryDateFilter = [startDate, endDate];
+
+    page = 1;
+    loadMore = true;
+    $('#ordenes_compra_container').empty();
+    loadOrdenes();
+  },
+  ...flatpickOptions
+});
 
 const $clients = $('#select_client').select2({
   language: {
@@ -183,6 +255,36 @@ async function init() {
   });
 }
 
+$('.filter-checkbox').on('change', function () {
+  const checked = $(this).prop('checked');
+  const value = $(this).val();
+
+  if (checked) {
+    estatusFilters.push(value);
+  } else {
+    estatusFilters = estatusFilters.filter(elm => elm !== value);
+  }
+
+  page = 1;
+  loadMore = true;
+  $('#ordenes_compra_container').empty();
+  loadOrdenes();
+});
+
+$('#search-report-filter').on('input', function () {
+  //debounce 1 sec
+  if (timeout_debounce) clearTimeout(timeout_debounce);
+  timeout_debounce = setTimeout(() => {
+    search = $(this).val();
+    page = 1;
+    loadMore = true;
+    $('#ordenes_compra_container').empty();
+    loadOrdenes();
+    clearTimeout(timeout_debounce);
+    timeout_debounce = null;
+  }, 1000);
+});
+
 $('#create_order').on('submit', async function (e) {
   e.preventDefault();
   const $folio = $('#folio_id');
@@ -227,10 +329,36 @@ $('#create_order').on('submit', async function (e) {
   await loadOrdenes();
 });
 
+$('#remove-filters-btn').on('click', function () {
+  $('#search-report-filter').val('');
+
+  flatpckr_created.clear();
+  flatpckr_delivery.clear();
+
+  estatusFilters = ['pendiente', 'proceso', 'embarque'];
+
+  $('#check_pendiente').prop('checked', true);
+  $('#check_proceso').prop('checked', true);
+  $('#check_embarque').prop('checked', true);
+  $('#check_cancelada').prop('checked', false);
+  $('#check_completada').prop('checked', false);
+
+  search = '';
+  createdAtFilter = null;
+  deliveryDateFilter = null;
+
+  page = 1;
+  loadMore = true;
+  $('#ordenes_compra_container').empty();
+  loadOrdenes();
+});
+
 async function getOrdenes() {
   // page, pageSize, search
   if (!loadMore) return [];
-  const query = `?page=${page}&pageSize=${limit}`;
+  const createdAtFilterString = createdAtFilter?.join(',') ?? '';
+  const deliveryDateFilterString = deliveryDateFilter?.join(',') ?? '';
+  const query = `?page=${page}&pageSize=${limit}&estatusFiltersStr=${estatusFilters.join(',')}&search=${search}&createdAtFilterString=${createdAtFilterString}&deliveryDateFilterString=${deliveryDateFilterString}`;
   isLoading = true;
   const ordenes = await fetchData('/ordenes/paging' + query, 'GET'); //api/ordenes
   isLoading = false;

@@ -74,11 +74,19 @@ export const putOrder = async (req: Request, res: Response) => {
 
 export const getOrdenesPagingC = async (req: Request, res: Response) => {
   try {
-    const { page, pageSize, search } = req.query;
+    const { page, pageSize, search, estatusFiltersStr, createdAtFilterString, deliveryDateFilterString } = req.query;
+
+    const estatusFilters = estatusFiltersStr ? (estatusFiltersStr as string).split(',') : [];
+    const createdAtFilter = createdAtFilterString ? (createdAtFilterString as string).split(',') : null;
+    const deliveryDateFilter = deliveryDateFilterString ? (deliveryDateFilterString as string).split(',') : null;
+
     const ordenes = await getOrdenesCompraPaging(
       parseInt(page as string),
       parseInt(pageSize as string),
-      search as string
+      search as string,
+      estatusFilters as string[],
+      createdAtFilter as any[],
+      deliveryDateFilter as any[]
     );
     res.status(200).json(ordenes);
   } catch (error: any) {
