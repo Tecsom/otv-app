@@ -397,10 +397,7 @@ async function loadOrdenes() {
             <div class="col-md-12">
               <div class="d-flex align-items-center justify-content-between">
                 <span class="badge bg-label-dark">${uniqueFolio}</span>
-                <div class="d-flex align-items-center gap-1 text-muted">
-                  <i class="ti ti-calendar-event ti-xs me-1"></i>
-                  <small>${isoDateToFormatted(orden.created_at)}</small>
-                </div>
+                <span class="text-capitalize badge bg-${badgeType[orden.estado]}">${orden.estado}</span>
               </div>
             </div>
             <div class="col-md-12">
@@ -410,7 +407,7 @@ async function loadOrdenes() {
               <p class="mb-0 small"><strong>Cliente: </strong>${orden.clientes?.nombre ?? '<span style="color:Red">Sin cliente relacionado</span>'}</p>
               <p class="mb-0 small"><strong>Folio de cliente: </strong>${orden.folio_id}</p>
               <p class="mb-0 small"><strong>Fecha de entrega: </strong>${isoDateToFormatted(orden.delivery_date)}</p>
-              <p class="mb-0 small"><span class="text-capitalize badge bg-${badgeType[orden.estado]}">${orden.estado}</span></p>              
+              <p class="mb-0 small"><strong>Fecha de creación: </strong>${isoDateToFormatted(orden.created_at)}</p>              
             </div>
           </div>
         </div>
