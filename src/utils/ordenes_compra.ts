@@ -453,8 +453,6 @@ function getWeekNumber(d: any): number {
 export const verifyProds = async (order_id: number, products: any[]) => {
   const created_at = new Date().toISOString();
   for (const prod of products) {
-    const is_verified = await checkIfVerified(order_id, prod.codigo);
-    if (is_verified) continue;
     const { data, error } = await supabase().from('ordenes_static_verified').insert({
       order_id,
       codigo: prod.codigo,

@@ -28,8 +28,6 @@ const table_piezas = $('#table_piezas_oc').DataTable({
 });
 
 $(document).ready(function () {
-  // $('#modal_view_pieza').modal('show');
-
   $('#folio_oc').text(ordenData.folio_unico);
   $('#fecha_entrega_oc').text(isoDateToFormatted(ordenData.fecha_entrega));
   console.log(ordenData);
@@ -39,10 +37,9 @@ $(document).ready(function () {
   for (const codigo of codigos) {
     const { code, numero_parte, verified } = codigo;
     const producto = productos.find(producto => producto.numero_parte === numero_parte);
-    console.log({ productos, numero_parte });
     data_table_piezas.push({
       codigo: code,
-      verified,
+      verified: false,
       numero_parte: producto.numero_parte,
       revision: producto.revisiones.nombre,
       descripcion: producto.descripcion
@@ -50,16 +47,16 @@ $(document).ready(function () {
   }
   table_piezas.rows.add(data_table_piezas).draw();
   //if pieza is verified set background color to green
-  const rows = table_piezas.rows().nodes().to$();
-  rows.each((index, row) => {
-    const cells = $(row).find('td');
-    const codigo = $(cells[0]).text();
-    const pieza = data_table_piezas.find(pieza => pieza.codigo === codigo);
-    if (pieza.verified) {
-      // $('#table_piezas_oc tr').removeClass('bg-label-success');
-      $(row).addClass('bg-label-success');
-    }
-  });
+  // const rows = table_piezas.rows().nodes().to$();
+  // rows.each((index, row) => {
+  //   const cells = $(row).find('td');
+  //   const codigo = $(cells[0]).text();
+  //   const pieza = data_table_piezas.find(pieza => pieza.codigo === codigo);
+  //   if (pieza.verified) {
+  //     // $('#table_piezas_oc tr').removeClass('bg-label-success');
+  //     $(row).addClass('bg-label-success');
+  //   }
+  // });
 });
 
 $('#startVerificacion').on('click', function () {
