@@ -50,36 +50,54 @@
             </button>
           </div>
           <div class="border-1 border-top mt-2 pt-2 collapse" id="collapse-filters">
-            <!--<div class="form-check mt-2">
-              <input class="form-check-input" type="checkbox" value="" id="exact-match-cb" />
-              <label class="form-check-label" for="exact-match-cb"> Coincidencia exacta de texto </label>
+            <div class="row g-3">
+              <div class="col-md-12">
+                <label for="range_filter" class="form-label">Estado de la orden</label>
+                <div class="form-check mt-2">
+                  <input class="form-check-input" type="checkbox" value="" id="check_pendiente" checked />
+                  <label class="form-check-label" for="check_pendiente">Pendiente </label>
+                </div>
+                <div class="form-check mt-2">
+                  <input class="form-check-input" type="checkbox" value="" id="check_proceso" checked />
+                  <label class="form-check-label" for="check_proceso">Proceso</label>
+                </div>
+                <div class="form-check mt-2">
+                  <input class="form-check-input" type="checkbox" value="" id="check_embarque" checked />
+                  <label class="form-check-label" for="check_embarque">Embarque</label>
+                </div>
+                <div class="form-check mt-2">
+                  <input class="form-check-input" type="checkbox" value="" id="check_completada" />
+                  <label class="form-check-label" for="check_completada">Completada</label>
+                </div>
+                <div class="form-check mt-2">
+                  <input class="form-check-input" type="checkbox" value="" id="check_cancelada" />
+                  <label class="form-check-label" for="check_cancelada">Cancelada</label>
+                </div>
+              </div>
+              <div class="col-md-12">
+                <label for="range_filter" class="form-label">Fecha de creación</label>
+                <input
+                  class="form-control datetimepicker flatpickr-input"
+                  id="range_filter"
+                  type="text"
+                  placeholder="Selecciona un rango de fecha"
+                  readonly="readonly" />
+              </div>
+              <div class="col-md-12">
+                <label for="range_entrega_filter" class="form-label">Fecha de entrega</label>
+                <input
+                  class="form-control datetimepicker flatpickr-input"
+                  id="range_entrega_filter"
+                  type="text"
+                  placeholder="Selecciona un rango de fecha"
+                  readonly="readonly" />
+              </div>
+              <div class="col-md-12">
+                <div style="text-align: right" class="text-right cursor-pointer">
+                  <span class="text-muted" id="remove-filters-btn"><small>Eliminar filtros</small></span>
+                </div>
+              </div>
             </div>
-            <div class="mt-2">
-              <label for="range_filter" class="form-label">Fecha</label>
-              <input
-                class="form-control datetimepicker flatpickr-input"
-                id="range_filter"
-                type="text"
-                placeholder="Selecciona un rango de fecha"
-                readonly="readonly" />
-            </div>
-            <div class="mt-2">
-              <label for="proveedor_filter" class="form-label">Proveedor</label>
-              <select aria-placeholder="Selecciona un proveedor" class="form-select" id="proveedor_filter">
-                <option></option>
-                <option value="Sel">SEL</option>
-                <option value="Teysa">TEYSA</option>
-              </select>
-            </div>
-            <div class="mt-2">
-              <label for="ingeniero_filter" class="form-label">Ingeniero</label>
-              <select aria-placeholder="Selecciona un ingeniero" class="form-select" id="ingeniero_filter">
-                <option></option>
-              </select>
-            </div>
-            <div class="mt-3 text-right cursor-pointer">
-              <span class="text-muted" id="remove-filters-btn"><small>Eliminar filtros</small></span>
-            </div>-->
           </div>
           <i
             class="ti ti-x cursor-pointer d-lg-none d-block position-absolute mt-2 me-1 top-0 end-0"
@@ -153,13 +171,25 @@
             <div class="card d-none" id="container-data">
               <div class="card-body">
                 <div class="d-flex justify-content-between flex-xl-row flex-md-column flex-sm-row flex-column">
-                  <div>
-                    <p class="mb-0"><span id="data-client-data">[Datos del cliente]</span></p>
+                  <div class="d-flex align-items-center gap-3">
+                    <div class="avatar">
+                      <img src="/public/assets/img/avatars/1.png" alt="Avatar" class="rounded-circle" />
+                    </div>
+                    <div>
+                      <p class="mb-0">
+                        <strong>Cliente: </strong><span id="data-client-data">[Nombre de cliente]</span>
+                      </p>
+                      <p class="mb-0"><strong>ID: </strong><span>[Identificador del cliente]</span></p>
+                    </div>
                   </div>
                   <div>
                     <div>
                       <strong>Fecha de entrega: </strong>
                       <span id="data-fecha-entrega">[Fecha de entrega]</span>
+                    </div>
+                    <div>
+                      <strong>Estado: </strong>
+                      <span>[Indicar estado]</span>
                     </div>
                   </div>
                 </div>

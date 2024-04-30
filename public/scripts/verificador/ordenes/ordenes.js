@@ -25,7 +25,7 @@ const optiones_html = `
 
 table_piezas = $('#table_piezas_oc').DataTable({
   language: {
-    url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/es-ES.json'
+    url: 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/es-ES.json'
   },
   columns: [
     { data: 'codigo', title: '#CODIGO' },
