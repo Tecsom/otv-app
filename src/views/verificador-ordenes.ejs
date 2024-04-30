@@ -4,12 +4,7 @@
   </div>
   <div class="d-flex gap-3 align-items-center">
     <select id="select_verificaciones" class="form-select"></select>
-    <button
-      id="startVerificacion"
-      type="button"
-      class="btn btn-success px-5 py-0 h-100"
-      data-bs-toggle="modal"
-      data-bs-target="#create-client-modal">
+    <button id="startVerificacion" type="button" class="btn btn-success px-5 py-0 h-100">
       <span class="tf-icons ti-xs ti ti-barcode me-1"> </span>Iniciar Verificación
     </button>
     <button id="save_verification_btn" type="button" class="btn btn-success d-none">
@@ -128,27 +123,26 @@
         </div>
       </div>
     </div>
-
-    <!--! MODAL INICIAR VERIFICACIÓN -->
-    <div class="modal fade" id="start_verificacion" tabindex="-1" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-sm" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLabel1">Iniciar verificación</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+  </div>
+</div>
+<!--! MODAL INICIAR VERIFICACIÓN -->
+<div class="modal fade" id="start_verificacion" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-sm" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel1">Iniciar verificación</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-12">
+            <p>Al iniciar, deberás escanear todos los códigos disponibles para marcarlos como listos.</p>
           </div>
-          <div class="modal-body">
-            <div class="row">
-              <div class="col-12">
-                <p>Al iniciar, deberás escanear todos los códigos disponibles para marcarlos como listos.</p>
-              </div>
-            </div>
-          </div>
-          <div class="modal-footer d-block">
-            <div class="d-flex justify-content-end">
-              <button id="start_verificacion_btn" class="btn btn-success">Iniciar</button>
-            </div>
-          </div>
+        </div>
+      </div>
+      <div class="modal-footer d-block">
+        <div class="d-flex justify-content-end">
+          <button id="start_verificacion_btn" class="btn btn-success">Iniciar</button>
         </div>
       </div>
     </div>

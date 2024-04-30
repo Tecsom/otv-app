@@ -32,6 +32,28 @@
     text-align: center;
   }
 
+  #dpz-cliente .dz-remove{
+    display: none;
+  }
+
+  #dpz-cliente .dz-preview{
+    position: relative;
+    top: -20px;
+    left: -30px;
+    background: none;
+    box-shadow: none;
+  }
+  #dpz-cliente .dz-thumbnail{
+    background: none;
+    border-bottom: none;
+    height: 100%;
+  }
+  #dpz-cliente .dz-thumbnail > img{
+    border-radius: 50%;
+    width: 85%;
+    height: 85%;
+  }
+
   #dpz-cliente .dz-default.dz-message::before{
     position: initial;
   }
@@ -116,7 +138,7 @@
               <input id="input-img-cliente" type="file" multiple />
             </div>
           </div>
-          <div class="d-flex justify-content-center">
+          <div class="d-flex justify-content-center d-none">
             <div id="profile-img" class="bg-label-dark position-relative">
               <button id="change_profile_btn" type="button" class="btn btn-icon btn-label-primary">
                 <span class="ti ti-edit"></span>
