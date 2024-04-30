@@ -6,6 +6,14 @@ const tableActions = `<div class="d-inline-block text-nowrap">
                     <button class="btn btn-sm btn-icon delete-icon" title="Eliminar" data-bs-toggle="tooltip" data-bs-placement="top"><i class="ti ti-trash-x"></i></button>
                 </div>`;
 
+const badgeType = {
+  pendiente: 'primary',
+  proceso: 'secondary',
+  embarque: 'info',
+  cancelada: 'danger',
+  completada: 'success'
+};
+
 const flatpickOptions = {
   dateFormat: 'd/m/Y',
   maxDate: 'today',
@@ -379,14 +387,6 @@ async function getOrdenes() {
 async function loadOrdenes() {
   const $container = $('#ordenes_compra_container');
 
-  const badgeType = {
-    pendiente: 'primary',
-    proceso: 'secondary',
-    embarque: 'info',
-    cancelada: 'danger',
-    completada: 'success'
-  };
-
   const ordenes = await getOrdenes();
   for (let orden of ordenes) {
     orden.verifications = orden?.verifications?.filter(elm => elm.id);
@@ -463,7 +463,9 @@ $('#ordenes_compra_container').on('click', '.order_container_child', async funct
   const data = $order.data().data; //ORDER DATA
   const cliente_id = data?.clientes.id;
   $('#client_id').text(data.folio_id);
+  // <span class="text-capitalize badge bg-${badgeType[orden.estado]}">${orden.estado}</span>
   $('#order_status').text(data.estado);
+  $('#order_status').removeClass().addClass(`text-capitalize badge bg-${badgeType[data.estado]}`);
   if (data.estado === 'pendiente') {
     $('#generate_order').removeClass('d-none');
     $('#edit_oc').removeClass('d-none');
