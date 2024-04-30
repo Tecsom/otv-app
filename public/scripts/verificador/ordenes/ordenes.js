@@ -1,6 +1,8 @@
 import { fetchData, loadingButton, isoDateToFormatted } from '/public/scripts/helpers.js';
 let verification_mode = false;
 
+let verificadas_array = [];
+
 const renderListImage = (name, url) => {
   return `<a ${url && 'signed-url=' + url} href="javascript:void(0);" class="list-group-item list-group-item-action">${name}</a>`;
 };
@@ -46,7 +48,7 @@ table_piezas = $('#table_piezas_oc').DataTable({
 $(document).ready(function () {
   $('#folio_oc').text(ordenData.folio_unico);
   $('#fecha_entrega_oc').text(isoDateToFormatted(ordenData.fecha_entrega));
-  console.log(ordenData);
+
   const data_table_piezas = [];
   const { productos, codigos } = ordenData;
 
@@ -63,6 +65,7 @@ $(document).ready(function () {
     });
   }
   table_piezas.rows.add(data_table_piezas).draw();
+  updateGeneralProgress();
   //if pieza is verified set background color to green
   // const rows = table_piezas.rows().nodes().to$();
   // rows.each((index, row) => {
@@ -134,6 +137,12 @@ $('#start_verificacion_btn').on('click', function () {
   $('#start_verificacion').modal('hide');
   $('#save_verification_btn').removeClass('d-none');
   $('#startVerificacion').addClass('d-none');
+
+  $('#progress_verificacion').css('width', '0%');
+  $('#progress_verificacion').text('Progreso de verificación (0%)');
+
+  $('#container_general').addClass('d-none');
+  $('#container_verificacion').removeClass('d-none');
 });
 
 const socket = io.connect();
@@ -165,6 +174,18 @@ const verificarPieza = async codigo => {
   //set datatable row data to verified
   pieza.verified = true;
   table_piezas.rows().invalidate().draw();
+
+  if (!verificadas_array.includes(codigo)) {
+    verificadas_array.push(codigo);
+
+    const piezas_verificadas = verificadas_array.length;
+    const piezas_totales = table_data.length;
+
+    const progress = (piezas_verificadas / piezas_totales) * 100;
+
+    $('#progress_verificacion').css('width', `${progress}%`);
+    $('#progress_verificacion').text(`Progreso de verificación (${progress.toFixed(2)}%)`);
+  }
 };
 
 $('#save_verification_btn').on('click', async function () {
@@ -201,7 +222,30 @@ $('#save_verification_btn').on('click', async function () {
     $('#save_verification_btn').addClass('d-none');
     $('#startVerificacion').removeClass('d-none');
     $('#start_verificacion').modal('hide');
+
+    $('#container_general').removeClass('d-none');
+    $('#container_verificacion').addClass('d-none');
+
+    verificadas_array = [];
+    ordenData.codigos = ordenData.codigos.map(pieza => {
+      if (piezas_verificadas.find(pieza_verificada => pieza_verificada.codigo === pieza.code)) {
+        pieza.verified = true;
+      }
+      return pieza;
+    });
+
+    updateGeneralProgress();
   } else {
     toastr.error('Error al verificar piezas');
   }
 });
+
+const updateGeneralProgress = () => {
+  const order_data = ordenData;
+  const piezas = order_data.codigos.length;
+  const piezas_verificadas = order_data.codigos.filter(pieza => pieza.verified === true).length;
+
+  const progress = (piezas_verificadas / piezas) * 100;
+  $('#progress_general').css('width', `${progress}%`);
+  $('#progress_general').text(`Progreso general (${progress.toFixed(2)}%)`);
+};
