@@ -49,10 +49,10 @@ function getPortName(portPath){
 
 $('#localConfigForm').on('submit',function(e){
     e.preventDefault()
-    console.log("submit")
 
     const $isDarkMode = $('#isDarkMode')
-    const isDarkMode = $isDarkMode.val()
+    const isDarkMode = $isDarkMode.prop('checked')
+    console.log({isDarkMode})
 
     const $ports = $('#portSelect')
     const portValue = $ports.val()
@@ -66,7 +66,6 @@ $('#localConfigForm').on('submit',function(e){
     setCookie(cookiePortName,portValue,expiration)
 
     toastr.success(`Aplicando cambios`)
-
     if(isDarkMode){
         window.templateCustomizer.setStyle('dark');
     }else{
