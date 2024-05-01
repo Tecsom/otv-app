@@ -160,7 +160,8 @@ export const createNewOrder = async (payload: CreateOrderDataModel): Promise<Api
     unique_folio: null,
     folio_id: payload.folio_id,
     client_id: payload.client_id,
-    delivery_date: payload.delivery_date
+    delivery_date: payload.delivery_date,
+    usuario_creador: payload.usuario_creador
   };
 
   const { error: uploadError, data } = await supabase().from('ordenes').insert(newOrden).select('*').single();

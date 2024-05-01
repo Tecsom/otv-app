@@ -15,12 +15,19 @@ $('#formLogin').on('submit', async function (event) {
       password
     });
 
+    const { data: user_data, error: user_error } = await client
+      .from('usuarios')
+      .select('*')
+      .eq('id', data.user.id)
+      .single();
+
     if (error) throw error;
     const { access_token } = data?.session ?? {};
     if (!access_token) return;
     console.log({ access_token });
     setCookie('accessToken', access_token, 1000);
-    localStorage.setItem('user_data', JSON.stringify(data.user));
+    console.log({ user_data, user_error, data });
+    localStorage.setItem('user_data', JSON.stringify({ ...data.user, ...user_data }));
     const redirect = new URLSearchParams(window.location.search).get('redirect');
 
     if (redirect && redirect !== '/login') {

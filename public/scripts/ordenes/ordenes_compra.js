@@ -300,6 +300,7 @@ $('#create_order').on('submit', async function (e) {
   const folio = $folio.val().trim();
   const dateval = $date.data().value;
   const client_id = $client.val();
+  const usuario_creador = JSON.parse(localStorage.getItem('user_data'))?.name ?? '';
 
   if (!client_id || !dateval || !folio) {
     toastr.error('Completa los campos para crear orden', 'Formulario incompleto');
@@ -313,7 +314,8 @@ $('#create_order').on('submit', async function (e) {
   const result = await fetchData('/ordenes/create', 'POST', {
     folio_id: folio,
     delivery_date: isoStringDate,
-    client_id: client_id
+    client_id: client_id,
+    usuario_creador
   });
 
   const apiResult = result.data;

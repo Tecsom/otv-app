@@ -3,6 +3,7 @@ export interface CreateOrderDataModel {
   folio_id: string;
   client_id: string;
   delivery_date: string;
+  usuario_creador: string;
 }
 
 export interface OrdenCompra {
