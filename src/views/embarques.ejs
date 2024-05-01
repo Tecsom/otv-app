@@ -48,8 +48,8 @@
                 type="text"
                 id="search-report-filter"
                 class="form-control chat-search-input"
-                placeholder="Buscar orden de compra"
-                aria-label="Buscar orden de compra"
+                placeholder="Buscar embarque"
+                aria-label="Buscar embarque"
                 aria-describedby="basic-addon-search31" />
             </div>
             <button
@@ -63,7 +63,7 @@
             </button>
           </div>
           <div class="border-1 border-top mt-2 pt-2 collapse" id="collapse-filters">
-            <div class="row g-3">
+            <!--<div class="row g-3">
               <div class="col-md-12">
                 <label for="range_filter" class="form-label">Estado de la orden</label>
                 <div class="form-check mt-2">
@@ -133,7 +133,7 @@
                   <span class="text-muted" id="remove-filters-btn"><small>Eliminar filtros</small></span>
                 </div>
               </div>
-            </div>
+            </div>-->
           </div>
           <i
             class="ti ti-x cursor-pointer d-lg-none d-block position-absolute mt-2 me-1 top-0 end-0"
@@ -141,7 +141,7 @@
             data-bs-toggle="sidebar"
             data-target="#app-chat-contacts"></i>
         </div>
-        <div id="ordenes_compra_container" class="sidebar-body" style="overflow-y: scroll"></div>
+        <div id="embarques_container" class="sidebar-body" style="overflow-y: scroll"></div>
       </div>
       <div class="col app-chat-history" id="container-reporte">
         <div class="chat-history-wrapper d-flex flex-column h-100">
@@ -159,7 +159,7 @@
                 </div>
               </div>
               <div class="d-flex align-items-center gap-2">
-                <button type="button" class="btn btn-label-success" id="generate_order">
+                <!--<button type="button" class="btn btn-label-success" id="generate_order">
                   <span class="tf-icons ti-xs ti ti-lock me-1"> </span>Generar
                 </button>
                 <div class="btn-group">
@@ -201,15 +201,15 @@
                       >
                     </li>
                   </ul>
-                </div>
+                </div>-->
               </div>
             </div>
           </div>
           <div style="background: white !important" class="chat-history-body flex-grow-1 p-0">
-            <div class="w-100 h-100 d-flex justify-content-center align-items-center" id="container-no-data">
+            <!--<div class="w-100 h-100 d-flex justify-content-center align-items-center" id="container-no-data">
               Selecciona una orden de compra
-            </div>
-            <div class="d-none" id="container-data">
+            </div>-->
+            <div class="" id="container-data">
               <div class="card-body">
                 <div class="d-flex justify-content-between flex-xl-row flex-md-column flex-sm-row flex-column">
                   <div class="d-flex align-items-center gap-3">
@@ -257,7 +257,7 @@
                       aria-controls="navs_productos"
                       aria-selected="true">
                       <i class="ti ti-box ti-xs me-1"></i>
-                      Productos
+                      Destino
                     </button>
                   </li>
                   <li class="nav-item" role="presentation">
@@ -271,7 +271,7 @@
                       aria-selected="false"
                       tabindex="-1">
                       <i class="ti ti-paperclip ti-xs me-1"></i>
-                      Archivos
+                      Contenedores
                     </button>
                   </li>
                   <li class="nav-item" role="presentation">
@@ -668,9 +668,5 @@
     var loadProductos = () => {};
   </script>
 
-  <script src="/public/scripts/ordenes/ordenes_compra.js" type="module"></script>
-  <script src="/public/scripts/ordenes/archivos.js" type="module"></script>
-  <script src="/public/scripts/ordenes/codigos.js" type="module"></script>
-  <script src="/public/scripts/ordenes/orden_compra.js" type="module"></script>
-  <script src="/public/scripts/ordenes/verifications.js" type="module"></script>
+  <script src="/public/scripts/embarques/embarques.js" type="module"></script>
 </div>
