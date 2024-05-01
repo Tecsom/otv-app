@@ -52,7 +52,7 @@ $('#ordenes_table').DataTable({
     { data: 'currency_costo_produccion', title: 'Costo', orderable: false, className: 'non-selectable' },
     { data: 'quantity', title: 'Cant.', orderable: false, className: 'non-selectable' },
     { data: 'currency_costo_venta', title: 'Precio', orderable: false, className: 'non-selectable' },
-    { title: 'Opciones', defaultContent: tableActions, width: '50px' }
+    { title: 'Opciones', defaultContent: tableActions, width: '50px', orderable: false }
   ],
   dom: 'rtp',
   language: {
@@ -457,19 +457,29 @@ $('#ordenes_compra_container').on('click', '.order_container_child', async funct
   const $order = $(this);
   const data = $order.data().data; //ORDER DATA
   const cliente_id = data?.clientes.id;
+
+  $('#ordenes_table')
+    .DataTable()
+    .column(5)
+    .visible(data.estado === 'pendiente');
+
   $('#client_id').text(data.folio_id);
   // <span class="text-capitalize badge bg-${badgeType[orden.estado]}">${orden.estado}</span>
   $('#order_status').text(data.estado);
   $('#order_status').removeClass().addClass(`text-capitalize badge bg-${badgeType[data.estado]}`);
+
+  $('#generate_order').addClass('d-none');
+  $('#edit_oc').addClass('d-none');
+  $('#delete_oc').addClass('d-none');
+  $('#cancelar_oc').addClass('d-none');
+  $('#restaurar_oc').addClass('d-none');
   if (data.estado === 'pendiente') {
     $('#generate_order').removeClass('d-none');
     $('#edit_oc').removeClass('d-none');
     $('#delete_oc').removeClass('d-none');
-    $('#cancelar_oc').addClass('d-none');
+  } else if (data.estado === 'cancelada') {
+    $('#restaurar_oc').removeClass('d-none');
   } else {
-    $('#generate_order').addClass('d-none');
-    $('#edit_oc').addClass('d-none');
-    $('#delete_oc').addClass('d-none');
     $('#cancelar_oc').removeClass('d-none');
   }
   if (cliente_id) {
@@ -1064,7 +1074,36 @@ $('#confirm_cancel_order').on('click', async function () {
   }
 
   toastr.success('Orden de compra cancelada con éxito');
-  $('#delete_orden_compra_modal').modal('hide');
+  $('#cancel_order_modal').modal('hide');
+  $('#ordenes_compra_container').empty();
+  page = 1;
+  loadMore = true;
+  await loadOrdenes();
+});
+
+$('#confirm_restore_order').on('click', async function () {
+  const order_data = $('#container-reporte').data();
+  const order_id = order_data.id;
+  const button = new loadingButton($(this));
+
+  if (!order_id) {
+    console.error('No orden de compra seleccionada');
+    return;
+  }
+  button.start();
+  const result = await fetchData(`/ordenes/update`, 'PUT', {
+    id: order_id,
+    estado: 'proceso'
+  });
+  button.stop();
+
+  if (!result.status) {
+    toastr.error('Ocurrió un error al restaurar la orden de compra');
+    return;
+  }
+
+  toastr.success('Orden de compra restaurada con éxito');
+  $('#restore_orden_modal').modal('hide');
   $('#ordenes_compra_container').empty();
   page = 1;
   loadMore = true;

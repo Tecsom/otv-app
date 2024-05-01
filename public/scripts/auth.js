@@ -20,7 +20,7 @@ $('#formLogin').on('submit', async function (event) {
     if (!access_token) return;
     console.log({ access_token });
     setCookie('accessToken', access_token, 1000);
-
+    localStorage.setItem('user_data', JSON.stringify(data.user));
     const redirect = new URLSearchParams(window.location.search).get('redirect');
 
     if (redirect && redirect !== '/login') {
