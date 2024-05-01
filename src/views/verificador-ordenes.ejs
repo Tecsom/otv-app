@@ -1,7 +1,13 @@
+<style>
+  .avatar img {
+    height: auto !important;
+  }
+</style>
 <div class="d-flex justify-content-between align-items-top pb-2 border-bottom">
   <div class="d-flex align-items-center gap-3">
     <div class="avatar avatar-xl">
-      <img src="/public/assets/img/avatars/1.png" alt="Avatar" class="rounded-circle" />
+      <span class="avatar-initial rounded-circle bg-secondary" id="client_avatar">pi</span>
+      <img alt="Avatar" class="rounded-circle d-none" id="client_pp" />
     </div>
     <div>
       <h6 class="mb-0"><strong>Cliente: </strong><span id="cliente_oc">-</span></h6>
@@ -60,6 +66,7 @@
 </div>
 <script>
   const ordenData = JSON.parse('<%- ordenData %>');
+  console.log(ordenData);
   let table_piezas;
 </script>
 

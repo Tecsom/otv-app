@@ -73,9 +73,20 @@ table_piezas = $('#table_piezas_oc').DataTable({
   }
 });
 
-$(document).ready(function () {
+$(document).ready(async function () {
   $('#folio_oc').text(ordenData.folio_unico);
   $('#fecha_entrega_oc').text(isoDateToFormatted(ordenData.fecha_entrega));
+  $('#cliente_oc').text(ordenData?.cliente?.nombre ?? '-');
+  $('#cliente_folio_oc').text(ordenData.folio_cliente);
+
+  $('#client_avatar').text(ordenData?.cliente?.nombre.charAt(0).toUpperCase());
+
+  const pp_res = await fetchData(`/clientes/${ordenData?.cliente?.id}/profile-photo`);
+  if (pp_res.status === true) {
+    $('#client_pp').attr('src', pp_res.data);
+    $('#client_avatar').addClass('d-none');
+    $('#client_pp').removeClass('d-none');
+  }
 
   const data_table_piezas = [];
   const { productos, codigos } = ordenData;
