@@ -232,7 +232,7 @@ async function loadOrdenes() {
     const uniqueFolio = orden.unique_folio ? addLeadingZeros(orden.unique_folio, 6) : 'Sin Folio';
     console.log({ orden });
     const $newdiv1 = $(`
-        <div class="order_container_child card-body border rounded mt-3" order_id="${orden.static_order_id}" id="order_${orden.unique_folio}">
+        <div class="order_container_child card-body border rounded mt-3 cursor-pointer" order_id="${orden.static_order_id}" id="order_${orden.unique_folio}">
           <div class="row g-2">
             <div class="col-md-12">
               <div class="d-flex align-items-center justify-content-between p-2 pb-0">
