@@ -7,7 +7,7 @@ $('#verificadorPass').on('submit',function(e){
     const newPass = $passChecker.val()
 
     if(!newPass || newPass.length >5){
-        toastr.error("La contraseña debe contener al menos 6 numeros","Contraseña inválida")
+        toastr.error("La contraseña debe contener al menos 6 números","Contraseña inválida")
         return
     }
 
