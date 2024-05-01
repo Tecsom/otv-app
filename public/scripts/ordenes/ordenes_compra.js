@@ -656,13 +656,6 @@ $('#addProductsButton').on('click', async function () {
     return;
   }
 
-  //dont add products that are already in the table
-  // const notAddedProducts = products.filter(product => {
-  //   const tableProds = $('#ordenes_table').DataTable().rows().data().toArray();
-  //   console.log({ tableProds });
-  //   return !tableProds.some(p => p.revision_id === product.id);
-  // });
-
   //add products to select
   for (const product of products) {
     $products.append(
@@ -675,19 +668,6 @@ $('#addProductsButton').on('click', async function () {
 
   $products.val('');
 
-  // const revisiones = revisionesResponse.data; //Array de revisiones
-  // const lastRevision = getLastCreated(revisiones);
-
-  // revisiones.forEach(revision => {
-  //   $revision.append(
-  //     $('<option>', {
-  //       value: revision.id,
-  //       text: revision.nombre
-  //     })
-  //   );
-  // });
-
-  // $revision.val(lastRevision.id);
   $addProducts.modal('show');
 });
 
@@ -791,6 +771,20 @@ loadProductos = async id => {
 
   verificaciones_table.clear().draw();
   verificaciones_table.rows.add(newData).draw();
+
+  //calculate progress of verifications
+  const order_data = $('#ordenes_table').data();
+  let scanned = [];
+  for (const verification of order_data.verifications) {
+    if (scanned.includes(verification.codigo)) continue;
+    scanned.push(verification.codigo);
+  }
+
+  const operation = (scanned.length / total_codes) * 100;
+  const progress = !operation ? 0 : operation;
+
+  $('#progress-bar-verificaciones').css('width', progress + '%');
+  $('#progress-bar-verificaciones').text(progress.toFixed(2) + '%');
 };
 function getLastCreated(array) {
   if (array.length === 0) {
