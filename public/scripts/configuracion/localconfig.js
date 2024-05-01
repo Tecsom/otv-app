@@ -59,7 +59,7 @@ $('#localConfigForm').on('submit',function(e){
 
     if(!portValue){
         deleteCookie(cookiePortName)
-        return
+        
     }
     const expiration = 157788000000 //5 años
 
