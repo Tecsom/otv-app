@@ -4,7 +4,7 @@ verificaciones_table = $('#verificaciones_table').DataTable({
   },
   columns: [
     { data: 'fecha', title: 'Fecha' },
-    { data: 'total_verificaciones', title: 'total' }
+    { data: 'total_verificaciones', title: 'total', defaultContent: '' }
   ],
   dom: 'rtp',
   language: {

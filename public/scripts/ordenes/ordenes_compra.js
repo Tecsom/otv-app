@@ -518,13 +518,11 @@ $('#ordenes_compra_container').on('click', '.order_container_child', async funct
     return acc;
   }, {});
 
-  const dates = Object.keys(verifications).map(date => {
-    return {
-      fecha: isoDateToFormattedWithTime(date),
-      total_verificaciones: verifications[date].length,
-      verifications: verifications[date]
-    };
-  });
+  const dates = Object.keys(verifications).map(date => ({
+    fecha: isoDateToFormattedWithTime(date),
+    total: verifications[date].length,
+    verifications: verifications[date]
+  }));
 
   verificaciones_table.clear().draw();
 
@@ -784,16 +782,15 @@ loadProductos = async id => {
   codigos_table.rows.add(codeProdsTable).draw();
 
   //append total products length to verifications table
+  const oldData = verificaciones_table.rows().data().toArray();
+  const newData = oldData.map(data => {
+    const total = data.total;
+    const total_verificaciones = total + ' de ' + total_codes;
+    return { ...data, total_verificaciones };
+  });
 
-  verificaciones_table
-    .column(1)
-    .nodes()
-    .each((node, index) => {
-      const total = verificaciones_table.row(index).data().total_verificaciones;
-      console.log({ productos });
-      const str = total + ' de ' + total_codes;
-      $(node).text(str);
-    });
+  verificaciones_table.clear().draw();
+  verificaciones_table.rows.add(newData).draw();
 };
 function getLastCreated(array) {
   if (array.length === 0) {
