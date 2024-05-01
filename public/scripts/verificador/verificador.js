@@ -223,10 +223,10 @@ async function loadOrdenes() {
     orden.verifications = orden?.verifications?.filter(elm => elm.id);
     const uniqueFolio = orden.unique_folio ? addLeadingZeros(orden.unique_folio, 6) : 'Sin Folio';
     const $newdiv1 = $(`
-        <div class="order_container_child card-body border-bottom" order_id="${orden.id}" id="order_${orden.unique_folio}">
+        <div class="order_container_child card-body border rounded mt-3" order_id="${orden.id}" id="order_${orden.unique_folio}">
           <div class="row g-2">
             <div class="col-md-12">
-              <div class="d-flex align-items-center justify-content-between">
+              <div class="d-flex align-items-center justify-content-between p-2 pb-0">
                 <span class="badge bg-label-dark">${uniqueFolio}</span>
                 <span class="text-capitalize badge bg-${badgeType[orden.estado]}">${orden.estado}</span>
               </div>
@@ -235,10 +235,12 @@ async function loadOrdenes() {
               <hr class="m-0" />
             </div>
             <div class="col-md-12">
-              <p class="mb-0 small"><strong>Cliente: </strong>${orden.clientes?.nombre ?? '<span style="color:Red">Sin cliente relacionado</span>'}</p>
-              <p class="mb-0 small"><strong>Folio de cliente: </strong>${orden.folio_id}</p>
-              <p class="mb-0 small"><strong>Fecha de entrega: </strong>${isoDateToFormatted(orden.delivery_date)}</p>
-              <p class="mb-0 small"><strong>Fecha de creación: </strong>${isoDateToFormatted(orden.created_at)}</p>              
+              <div class="p-2 pb-1 pt-0">
+                <p class="mb-0 small"><strong>Cliente: </strong>${orden.clientes?.nombre ?? '<span style="color:Red">Sin cliente relacionado</span>'}</p>
+                <p class="mb-0 small"><strong>Folio de cliente: </strong>${orden.folio_id}</p>
+                <p class="mb-0 small"><strong>Fecha de entrega: </strong>${isoDateToFormatted(orden.delivery_date)}</p>
+                <p class="mb-0 small"><strong>Fecha de creación: </strong>${isoDateToFormatted(orden.created_at)}</p>   
+              </div>      
             </div>
           </div>
         </div>
