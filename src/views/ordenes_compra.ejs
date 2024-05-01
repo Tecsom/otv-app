@@ -198,6 +198,8 @@
                         id="cancelar_oc"
                         class="dropdown-item d-flex align-items-center gap-2"
                         href="javascript:void(0);"
+                        data-bs-target="#cancel_order_modal"
+                        data-bs-toggle="modal"
                         ><i class="ti ti-square-x ti-xs me-1"></i>Cancelar</a
                       >
                     </li>
@@ -518,6 +520,23 @@
         </div>
         <div class="modal-footer">
           <button id="confirm_generate_order" type="button" class="btn btn-success">Generar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!--! Modal cancelar orden de compra -->
+  <div class="modal fade modal_cliente" id="cancel_order_modal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-sm" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel1">Cancelar orden de compra</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p>¿Estás seguro de cancelar la orden?</p>
+        </div>
+        <div class="modal-footer">
+          <button id="confirm_cancel_order" type="button" class="btn btn-success">Generar</button>
         </div>
       </div>
     </div>

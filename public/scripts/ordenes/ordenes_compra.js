@@ -1041,3 +1041,32 @@ $('#editProduct').on('submit', async function (e) {
   await loadProductos(genealData.id);
   $modal.modal('hide');
 });
+
+$('#confirm_cancel_order').on('click', async function () {
+  const order_data = $('#container-reporte').data();
+  const order_id = order_data.id;
+  const button = new loadingButton($(this));
+
+  if (!order_id) {
+    console.error('No orden de compra seleccionada');
+    return;
+  }
+  button.start();
+  const result = await fetchData(`/ordenes/update`, 'PUT', {
+    id: order_id,
+    estado: 'cancelada'
+  });
+  button.stop();
+
+  if (!result.status) {
+    toastr.error('Ocurrió un error al cancelar la orden de compra');
+    return;
+  }
+
+  toastr.success('Orden de compra cancelada con éxito');
+  $('#delete_orden_compra_modal').modal('hide');
+  $('#ordenes_compra_container').empty();
+  page = 1;
+  loadMore = true;
+  await loadOrdenes();
+});

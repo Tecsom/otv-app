@@ -2,6 +2,34 @@ import { fetchData, loadingButton, isoDateToFormatted } from '/public/scripts/he
 let verification_mode = false;
 
 let verificadas_array = [];
+$('#exit-checker').on('click', async function () {
+  $('#modal_quit_checker').modal('show');
+});
+
+$('#quit-checker-form').on('submit', async function (e) {
+  e.preventDefault();
+  const button = new loadingButton($('#button_confirm_quit'));
+  button.start();
+
+  const password = $('#password').val();
+
+  if (password === '') {
+    toastr.error('Por favor, ingrese su contraseña');
+    return;
+  }
+
+  const res = await fetchData('/settings/quit-checker?password=' + password);
+
+  if (res.status === true) {
+    toastr.success('Contraseña correcta');
+    localStorage.removeItem('checker');
+    window.location.href = '/';
+
+    return;
+  }
+  button.stop();
+  toastr.error('Contraseña incorrecta');
+});
 
 const renderListImage = (name, url) => {
   return `<a ${url && 'signed-url=' + url} href="javascript:void(0);" class="list-group-item list-group-item-action">${name}</a>`;
@@ -187,8 +215,7 @@ const verificarPieza = async codigo => {
     $('#progress_verificacion').text(`Progreso de verificación (${progress.toFixed(2)}%)`);
   }
 };
-
-$('#save_verification_btn').on('click', async function () {
+$('#save_verification_modal_btn').on('click', async function () {
   const table_data = table_piezas.rows().data().toArray();
   const piezas = table_data.filter(pieza => pieza.verified === true);
   const piezas_verificadas = piezas.map(pieza => {
@@ -238,6 +265,10 @@ $('#save_verification_btn').on('click', async function () {
   } else {
     toastr.error('Error al verificar piezas');
   }
+});
+
+$('#save_verification_btn').on('click', async function () {
+  $('#save_verification_modal').modal('show');
 });
 
 const updateGeneralProgress = () => {
