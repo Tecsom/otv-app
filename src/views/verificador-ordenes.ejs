@@ -21,6 +21,9 @@
     <button id="startVerificacion" type="button" class="btn btn-label-success w-100">
       <span class="tf-icons ti-xs ti ti-barcode me-1"> </span>Iniciar Verificación
     </button>
+    <button id="cancel_verificacion_btn" type="button" class="btn btn-danger w-100 d-none">
+      <span class="tf-icons ti-xs ti ti-square-cross me-1"> </span>Cancelar
+    </button>
     <button id="save_verification_btn" type="button" class="btn btn-success w-100 d-none">
       <span class="tf-icons ti-xs ti ti-square-check me-1"> </span>Guardar
     </button>
@@ -195,6 +198,29 @@
       <div class="modal-footer d-block">
         <div class="d-flex justify-content-end">
           <button id="save_verification_modal_btn" class="btn btn-success">Guardar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!--! MODAL CANCELAR VERIFICACIÓN -->
+<div class="modal fade" id="cancel_verification_modal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-sm" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel1">Cancelar verificación</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-12">
+            <p>Se perderá lo que llevas cancelado.</p>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer d-block">
+        <div class="d-flex justify-content-end">
+          <button id="cancel_verification_modal_btn" class="btn btn-success">Guardar</button>
         </div>
       </div>
     </div>

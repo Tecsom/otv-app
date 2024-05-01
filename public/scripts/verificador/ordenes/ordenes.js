@@ -172,9 +172,11 @@ $('#pieza_images_list').on('click', 'a', function () {
 });
 
 $('#start_verificacion_btn').on('click', function () {
+  resetVerifications();
   verification_mode = true;
   $('#start_verificacion').modal('hide');
   $('#save_verification_btn').removeClass('d-none');
+  $('#cancel_verificacion_btn').removeClass('d-none');
   $('#startVerificacion').addClass('d-none');
 
   $('#progress_verificacion').css('width', '0%');
@@ -182,10 +184,45 @@ $('#start_verificacion_btn').on('click', function () {
 
   $('#container_general').addClass('d-none');
   $('#container_verificacion').removeClass('d-none');
+  $('#select_verificaciones ~ span').addClass('d-none');
 });
+
+$('#cancel_verificacion_btn').on('click', function () {
+  $('#cancel_verification_modal').modal('show');
+});
+
+$('#cancel_verification_modal_btn').on('click', function () {
+  $('#cancel_verification_modal').modal('hide');
+  $('#save_verification_btn').addClass('d-none');
+  $('#cancel_verificacion_btn').addClass('d-none');
+  $('#startVerificacion').removeClass('d-none');
+  $('#select_verificaciones ~ span').removeClass('d-none');
+  resetVerifications();
+});
+
+const resetVerifications = () => {
+  $('tr').removeClass('bg-label-success');
+  $('#select_verificaciones').val(null).trigger('change');
+  const table_data = table_piezas.rows().data().toArray();
+  table_data.forEach(pieza => {
+    pieza.verified = false;
+  });
+  table_piezas.rows().invalidate().draw();
+  $('#progress_verificacion').css('width', '0%');
+  $('#progress_verificacion').text('Progreso de verificación (0%)');
+
+  $('#container_verificacion').addClass('d-none');
+  verificadas_array = [];
+  $('#container_general').removeClass('d-none');
+
+  updateGeneralProgress();
+
+  verification_mode = false;
+};
 
 const socket = io.connect();
 socket.on('scanner', data => {
+  console.log({ verification_mode });
   if (verification_mode === true) {
     verificarPieza(data);
   }
@@ -213,7 +250,6 @@ const verificarPieza = async codigo => {
   //set datatable row data to verified
   pieza.verified = true;
   table_piezas.rows().invalidate().draw();
-
   if (!verificadas_array.includes(codigo)) {
     verificadas_array.push(codigo);
 
@@ -257,7 +293,9 @@ $('#save_verification_modal_btn').on('click', async function () {
   if (response.status === true) {
     toastr.success('Piezas verificadas correctamente');
     verification_mode = false;
+    resetVerifications();
     $('#save_verification_btn').addClass('d-none');
+    $('#cancel_verificacion_btn').addClass('d-none');
     $('#startVerificacion').removeClass('d-none');
     $('#start_verificacion').modal('hide');
 
@@ -271,8 +309,9 @@ $('#save_verification_modal_btn').on('click', async function () {
       }
       return pieza;
     });
-
+    $('#select_verificaciones ~ span').removeClass('d-none');
     updateGeneralProgress();
+    $('#save_verification_modal').modal('hide');
   } else {
     toastr.error('Error al verificar piezas');
   }
