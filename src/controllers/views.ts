@@ -4,6 +4,7 @@ import { Request, Response } from 'express';
 import path from 'path';
 import { getStaticOrden } from '@/utils/ordenes_compra';
 import { getFilePublicURL } from '@/utils/storage';
+import { getUsuarios } from '@/utils/usuarios';
 
 export const renderHomePage = (_: Request, res: Response) => res.render('Home.ejs');
 export const renderUnidadesMedida = (_: Request, res: Response) => res.render('unidadesMedida.ejs');
@@ -64,6 +65,10 @@ export const renderVerificadorOrdenes = async (req: Request, res: Response) => {
     ordenData: JSON.stringify(ordenData)
   });
 };
-export const renderConfiguracion = async (_: Request, res: Response) => res.render('configuracion.ejs');
+export const renderConfiguracion = async (_: Request, res: Response) => {
+  const usuarios = await getUsuarios();
+
+  res.render('configuracion.ejs', { usuarios });
+};
 export const renderInventarios = async (_: Request, res: Response) => res.render('inventarios.ejs');
 export const renderEmbarques = async (_: Request, res: Response) => res.render('embarques.ejs');
