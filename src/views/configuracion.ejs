@@ -118,16 +118,7 @@
               </button>
             </div>
             <div class="table-responsive text-nowrap">
-              <table class="table table-striped w-100 table-hover table-sm">
-                <thead>
-                  <tr>
-                    <th>Nombre</th>
-                    <th>Correo</th>
-                    <th>Estado</th>
-                    <th>Acciones</th>
-                  </tr>
-                </thead>
-              </table>
+              <table id="usuarios-table" class="table table-striped w-100 table-hover table-sm"></table>
             </div>
           </div>
         </div>
@@ -135,6 +126,10 @@
     </div>
   </div>
 </div>
+
+<script>
+  let usuariosTable;
+</script>
 
 <script src="/public/scripts/usuarios/usuarios.js" type="module"></script>
 <script src="/public/scripts/usuarios/usuariosTable.js" type="module"></script>
