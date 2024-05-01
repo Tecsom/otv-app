@@ -110,7 +110,7 @@ export const generarOrdenDeCompraEstatica = async (order_data: any) => {
     );
   }
 
-  await updateOrder({ id: order_id, unique_folio: orden.folio_unico });
+  await updateOrder({ id: order_id, unique_folio: orden.folio_unico, estado: 'proceso' });
 
   const { error: error_upd } = await supabase()
     .from('ordenes_static')

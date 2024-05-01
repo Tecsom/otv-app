@@ -12,7 +12,7 @@ export interface OrdenCompra {
   unique_folio?: number;
   id: number;
   last_update?: string;
-  estado?: 'preceso' | 'pendiente' | 'completada';
+  estado?: 'pendiente' | 'proceso' | 'embarque' | 'finalizada' | 'cancelada';
 }
 
 export interface ProductAdd {

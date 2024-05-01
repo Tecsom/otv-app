@@ -23,7 +23,7 @@
 </style>
 
 <div class="d-flex align-items-center h-100 flex-wrap justify-content-center gap-5">
-  <a class="bg-label-primary rounded card square-container cursor-pointer" href="/verificador/ordenes">
+  <a class="bg-label-primary rounded card square-container cursor-pointer" href="#" id="oc_btn">
     <div class="square-content d-flex align-items-center justify-content-center">
       <div class="text-center">
         <img style="width: 50%" src="../../public/assets/img/otv-assets/3dinvoice.png" />
@@ -40,6 +40,112 @@
       </div>
     </div>
   </a>
+</div>
+<!--! MODAL ÓDENES DE COMPRA -->
+<div class="modal fade" id="oc_modal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-md" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel1">Órdenes de compra</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-12">
+            <div class="col app-chat-contacts app-sidebar flex-grow-0 border-end" id="app-chat-contacts">
+              <div class="sidebar-header">
+                <div class="d-flex align-items-center me-3 me-lg-0 gap-2">
+                  <div class="flex-grow-1 input-group input-group-merge">
+                    <span class="input-group-text" id="basic-addon-search31"><i class="ti ti-search"></i></span>
+                    <input
+                      type="text"
+                      id="search-report-filter"
+                      class="form-control chat-search-input"
+                      placeholder="Buscar orden de compra"
+                      aria-label="Buscar orden de compra"
+                      aria-describedby="basic-addon-search31" />
+                  </div>
+                  <button
+                    type="button"
+                    class="btn btn-icon btn-label-primary"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#collapse-filters"
+                    aria-expanded="false"
+                    aria-controls="collapse-filters">
+                    <span class="ti ti-filter"></span>
+                  </button>
+                </div>
+                <div class="border-1 border-top mt-2 pt-2 collapse" id="collapse-filters">
+                  <div class="row g-3">
+                    <div class="col-md-12">
+                      <label for="range_filter" class="form-label">Estado de la orden</label>
+
+                      <div class="form-check mt-2">
+                        <input
+                          class="form-check-input filter-checkbox"
+                          type="checkbox"
+                          value="proceso"
+                          id="check_proceso"
+                          checked />
+                        <label class="form-check-label" for="check_proceso">Proceso</label>
+                      </div>
+                      <div class="form-check mt-2">
+                        <input
+                          class="form-check-input filter-checkbox"
+                          type="checkbox"
+                          value="embarque"
+                          id="check_embarque"
+                          checked />
+                        <label class="form-check-label" for="check_embarque">Embarque</label>
+                      </div>
+                      <div class="form-check mt-2">
+                        <input
+                          class="form-check-input filter-checkbox"
+                          type="checkbox"
+                          value="finalizada"
+                          id="check_completada" />
+                        <label class="form-check-label" for="check_completada">Completada</label>
+                      </div>
+                    </div>
+                    <div class="col-md-12">
+                      <label for="range_filter" class="form-label">Fecha de creación</label>
+                      <input
+                        class="form-control datetimepicker flatpickr-input"
+                        id="range_filter"
+                        type="text"
+                        placeholder="Selecciona un rango de fecha"
+                        readonly="readonly" />
+                    </div>
+                    <div class="col-md-12">
+                      <label for="range_entrega_filter" class="form-label">Fecha de entrega</label>
+                      <input
+                        class="form-control datetimepicker flatpickr-input"
+                        id="range_entrega_filter"
+                        type="text"
+                        placeholder="Selecciona un rango de fecha"
+                        readonly="readonly" />
+                    </div>
+                    <div class="col-md-12">
+                      <div style="text-align: right" class="text-right cursor-pointer">
+                        <span class="text-muted" id="remove-filters-btn"><small>Eliminar filtros</small></span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <i
+                  class="ti ti-x cursor-pointer d-lg-none d-block position-absolute mt-2 me-1 top-0 end-0"
+                  data-overlay=""
+                  data-bs-toggle="sidebar"
+                  data-target="#app-chat-contacts"></i>
+              </div>
+              <hr class="container-m-nx m-0" />
+              <div id="ordenes_compra_container" class="sidebar-body" style="overflow-y: scroll"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <script src="/public/scripts/verificador/verificador.js" type="module"></script>

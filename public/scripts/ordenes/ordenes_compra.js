@@ -43,8 +43,6 @@ const flatpickOptions = {
     }
   }
 };
-
-let is_loading = false;
 let flatpickr_edit;
 $('#ordenes_table').DataTable({
   columns: [
