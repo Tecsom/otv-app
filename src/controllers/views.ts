@@ -65,3 +65,5 @@ export const renderVerificadorOrdenes = async (req: Request, res: Response) => {
   });
 };
 export const renderConfiguracion = async (_: Request, res: Response) => res.render('configuracion.ejs');
+export const renderInventarios = async (_: Request, res: Response) => res.render('inventarios.ejs');
+export const renderEmbarques = async (_: Request, res: Response) => res.render('embarques.ejs');
