@@ -1,9 +1,13 @@
 import {fetchData, setCookie, getCookie, deleteCookie} from '/public/scripts/helpers.js'
-//Modo oscuro
-
 const cookiePortName = "scannerPort"
 
 async function init(){
+    const $isDarkMode = $('#isDarkMode')
+    const isDarkMode = window.localStorage.getItem('templateCustomizer-vertical-menu-template-starter--Style') == "dark"
+    
+    if(isDarkMode){
+        $isDarkMode.prop('checked', true)
+    }
 
     await listPorts()
     const cookie = getCookie(cookiePortName)

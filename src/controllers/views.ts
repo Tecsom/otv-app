@@ -5,6 +5,7 @@ import path from 'path';
 import { getStaticOrden } from '@/utils/ordenes_compra';
 import { getFilePublicURL } from '@/utils/storage';
 import { getUsuarios } from '@/utils/usuarios';
+import { getCheckerPassword } from '@/utils/settings';
 
 export const renderHomePage = (_: Request, res: Response) => res.render('Home.ejs');
 export const renderUnidadesMedida = (_: Request, res: Response) => res.render('unidadesMedida.ejs');
@@ -24,7 +25,7 @@ export const renderClientPage = async (req: Request, res: Response) => {
 
   try {
     profile_picture = await getFilePublicURL('clientes', `${cliente_id}/logo.png`);
-  } catch (error) {}
+  } catch (error) { }
 
   try {
     const clientData = await getClientById(id);
@@ -67,8 +68,8 @@ export const renderVerificadorOrdenes = async (req: Request, res: Response) => {
 };
 export const renderConfiguracion = async (_: Request, res: Response) => {
   const usuarios = await getUsuarios();
-
-  res.render('configuracion.ejs', { usuarios });
+  const password = await getCheckerPassword()
+  res.render('configuracion.ejs', { usuarios, password });
 };
 export const renderInventarios = async (_: Request, res: Response) => res.render('inventarios.ejs');
 export const renderEmbarques = async (_: Request, res: Response) => res.render('embarques.ejs');
