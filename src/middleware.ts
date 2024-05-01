@@ -24,7 +24,7 @@ export default async function (req: Request, res: Response, next: NextFunction) 
 
     if (decoded && decoded.sub) {
       const { error: error_rol, data: rol } = await supabase()
-        .from('roles')
+        .from('usuarios')
         .select('rol')
         .eq('id', decoded.sub)
         .single();
