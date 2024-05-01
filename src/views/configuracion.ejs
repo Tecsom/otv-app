@@ -96,13 +96,18 @@
                     <p class="mb-0">Contraseña verificador</p>
                     <small class="text-muted">Establece una contraseña para salir del modo verificador.</small>
                   </div>
-                  <div>Input</div>
+                  <div>
+                    <form id="verificadorPass">
+                      <input id="passchecker" class="form-control" type="text" placeholder="Crea una contraseña">
+
+                    </form>
+                  </div>
                 </div>
                 <hr />
               </div>
               <div class="col-md-12">
                 <div class="col-md-12 d-flex justify-content-end">
-                  <button type="submit" class="btn btn-success waves-effect waves-light">Guardar</button>
+                  <button type="submit" form="verificadorPass" class="btn btn-success waves-effect waves-light">Guardar</button>
                 </div>
               </div>
             </div>
@@ -135,3 +140,4 @@
 <script src="/public/scripts/usuarios/usuarios.js" type="module"></script>
 <script src="/public/scripts/usuarios/usuariosTable.js" type="module"></script>
 <script type="module" src="/public/scripts/configuracion/localconfig.js"></script>
+<script type="module" src="/public/scripts/configuracion/accountConfig.js"></script>
