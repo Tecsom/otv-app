@@ -118,7 +118,7 @@
                 type="button"
                 class="btn btn-label-success waves-effect waves-light"
                 data-bs-toggle="modal"
-                data-bs-target="#modal_create_pieza">
+                data-bs-target="#create-user-modal">
                 <span class="tf-icons ti-xs ti ti-plus me-1"></span>Nuevo
               </button>
             </div>
@@ -127,6 +127,51 @@
             </div>
           </div>
         </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--!CREAR USUARIO MODAL-->
+<div class="modal fade" id="create-user-modal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel1">Nuevo usuario</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="create-user-form" class="row g-3">
+          <div class="col-md-12">
+            <label for="user_name" class="form-label required">Nombre</label>
+            <input type="text" id="user_name" name="name" class="form-control" />
+          </div>
+          <div class="col-md-12">
+            <label for="user_email" class="form-label required">Correo</label>
+            <input type="text" id="user_email" name="email" class="form-control" />
+          </div>
+          <div class="col-md-12">
+            <label for="user_rol" class="form-label required">Rol</label>
+            <select id="user_rol" name="rol" class="form-control">
+              <option></option>
+              <option value="ADMIN">Administrador</option>
+              <option value="SUPER_ADMIN">Súper Administrador</option>
+            </select>
+          </div>
+          <div class="col-md-12">
+            <label for="password_user" class="form-label required">Contraseña</label>
+            <input type="password" id="password_user" name="password" class="form-control" />
+          </div>
+          <div class="col-md-12">
+            <label for="confirm_password_user" class="form-label required">Confirmar contraseña</label>
+            <input type="password" id="confirm_password_user" name="confirmed_password" class="form-control" />
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button id="confirm_new_user" type="submit" form="create-user-form" class="btn btn-success">
+          Crear usuario
+        </button>
       </div>
     </div>
   </div>
