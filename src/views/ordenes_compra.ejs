@@ -18,6 +18,10 @@
   #verificaciones_table tr {
     cursor: pointer;
   }
+
+  .nav-tabs .nav-link.active {
+    background-color: transparent;
+  }
 </style>
 <div class="container-xxl flex-grow-1 container-p-y">
   <div class="d-flex justify-content-between align-items-center pb-2 border-bottom">
@@ -164,10 +168,7 @@
                   data-overlay=""
                   data-target="#app-chat-contacts"></i>
                 <div class="chat-contact-info flex-grow-1 ms-2">
-                  <div class="d-flex align-items-center gap-2">
-                    <h6 class="m-0"><span id="data-folio">-</span></h6>
-                    <span id="order_status"></span>
-                  </div>
+                  <h6 class="m-0"><span id="data-folio">-</span></h6>
                   <small class="user-status text-muted" id="data-fecha-creación">-</small>
                 </div>
               </div>
@@ -218,11 +219,11 @@
               </div>
             </div>
           </div>
-          <div class="chat-history-body bg-body flex-grow-1">
-            <div class="card w-100 h-100 d-flex justify-content-center align-items-center" id="container-no-data">
+          <div class="chat-history-body bg-body flex-grow-1 p-0">
+            <div class="w-100 h-100 d-flex justify-content-center align-items-center" id="container-no-data">
               Selecciona una orden de compra
             </div>
-            <div class="card d-none" id="container-data">
+            <div class="d-none" id="container-data">
               <div class="card-body">
                 <div class="d-flex justify-content-between flex-xl-row flex-md-column flex-sm-row flex-column">
                   <div class="d-flex align-items-center gap-3">
@@ -250,12 +251,16 @@
                       <strong>Última actualización: </strong>
                       <span id="data-last-update">[Fecha y hora]</span>
                     </div>
+                    <div>
+                      <strong>Estado: </strong>
+                      <span id="order_status"></span>
+                    </div>
                   </div>
                 </div>
               </div>
               <hr class="my-0" />
               <div class="card-header pt-1">
-                <ul class="nav nav-tabs card-header-tabs" role="tablist">
+                <ul style="background-color: transparent" class="mx-0 nav nav-tabs card-header-tabs" role="tablist">
                   <li class="nav-item" role="presentation">
                     <button
                       type="button"
