@@ -31,7 +31,7 @@ table_piezas = $('#table_piezas_oc').DataTable({
   },
   columns: [
     { data: 'codigo', title: '#CODIGO' },
-    { data: 'numero_parte', title: 'No. de parte' },
+    //{ data: 'numero_parte', title: 'No. de parte' },
     { data: 'revision', title: 'Revisión' },
     { data: 'descripcion', title: 'Descripción' },
     { defaultContent: optiones_html, title: 'Opciones' }
