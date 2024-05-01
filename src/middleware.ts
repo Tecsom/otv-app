@@ -26,7 +26,7 @@ export default async function (req: Request, res: Response, next: NextFunction) 
       const { error: error_rol, data: rol } = await supabase()
         .from('roles')
         .select('rol')
-        .eq('user_id', decoded.sub)
+        .eq('id', decoded.sub)
         .single();
 
       if (error_rol) {
