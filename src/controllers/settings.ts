@@ -9,3 +9,9 @@ export const validatePassword = async (req: Request, res: Response) => {
     res.status(501).json({});
   }
 };
+
+export const updatePassword = async (req: Request, res: Response) => {
+  const newPassword = req.body.password
+  console.log(newPassword)
+  res.status(200).json({ result: "OK" })
+}
