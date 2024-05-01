@@ -464,6 +464,8 @@ $('#ordenes_compra_container').on('click', '.order_container_child', async funct
     .DataTable()
     .column(5)
     .visible(data.estado === 'pendiente');
+  if (data.estado === 'pendiente') $('#addProductsButton').removeClass('d-none');
+  else $('#addProductsButton').addClass('d-none');
 
   $('#client_id').text(data.folio_id);
   $('#data-last-update').text(isoDateToFormattedWithTime(data.last_update));

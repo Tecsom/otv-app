@@ -180,7 +180,7 @@
                 </div>
               </div>
               <div class="d-flex align-items-center gap-2">
-                <button type="button" class="btn btn-label-success" id="generate_order">
+                <button type="button" class="btn btn-label-success d-none" id="generate_order">
                   <span class="tf-icons ti-xs ti ti-lock me-1"> </span>Generar
                 </button>
                 <div class="btn-group">
@@ -192,19 +192,25 @@
                   </button>
                   <ul class="dropdown-menu">
                     <li>
-                      <a id="edit_oc" class="dropdown-item d-flex align-items-center gap-2" href="javascript:void(0);"
+                      <a
+                        id="edit_oc"
+                        class="dropdown-item d-flex align-items-center gap-2 d-none"
+                        href="javascript:void(0);"
                         ><i class="ti ti-edit ti-xs me-1"></i>Editar</a
                       >
                     </li>
                     <li>
-                      <a id="delete_oc" class="dropdown-item d-flex align-items-center gap-2" href="javascript:void(0);"
+                      <a
+                        id="delete_oc"
+                        class="dropdown-item d-flex align-items-center gap-2 d-none"
+                        href="javascript:void(0);"
                         ><i class="ti ti-trash-x ti-xs me-1"></i>Eliminar</a
                       >
                     </li>
                     <li>
                       <a
                         id="cancelar_oc"
-                        class="dropdown-item d-flex align-items-center gap-2"
+                        class="dropdown-item d-flex align-items-center gap-2 d-none"
                         href="javascript:void(0);"
                         data-bs-target="#cancel_order_modal"
                         data-bs-toggle="modal"
@@ -214,7 +220,7 @@
                     <li>
                       <a
                         id="restaurar_oc"
-                        class="dropdown-item d-flex align-items-center gap-2"
+                        class="dropdown-item d-flex align-items-center gap-2 d-none"
                         href="javascript:void(0);"
                         data-bs-target="#restore_orden_modal"
                         data-bs-toggle="modal"
@@ -687,7 +693,7 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          <div id="list-verifications" class="list-group"></div>
+          <table id="verificacion_table" class="table table-striped w-100 card-table table-hover table-sm"></table>
         </div>
       </div>
     </div>
