@@ -464,7 +464,7 @@ $('#ordenes_compra_container').on('click', '.order_container_child', async funct
     .visible(data.estado === 'pendiente');
 
   $('#client_id').text(data.folio_id);
-  // <span class="text-capitalize badge bg-${badgeType[orden.estado]}">${orden.estado}</span>
+  $('#data-last-update').text(isoDateToFormattedWithTime(data.last_update));
   $('#order_status').text(data.estado);
   $('#order_status').removeClass().addClass(`text-capitalize badge bg-${badgeType[data.estado]}`);
 
