@@ -280,54 +280,12 @@
                       class="nav-link"
                       role="tab"
                       data-bs-toggle="tab"
-                      data-bs-target="#navs_codes"
-                      aria-controls="navs_codes"
-                      aria-selected="false"
-                      tabindex="-1">
-                      <i class="ti ti-file-barcode ti-xs me-1"></i>
-                      Códigos
-                    </button>
-                  </li>
-                  <li class="nav-item" role="presentation">
-                    <button
-                      type="button"
-                      class="nav-link"
-                      role="tab"
-                      data-bs-toggle="tab"
                       data-bs-target="#navs_verificaciones"
                       aria-controls="navs_verificaciones"
                       aria-selected="false"
                       tabindex="-1">
                       <i class="ti ti-checklist ti-xs me-1"></i>
                       Verificaciones
-                    </button>
-                  </li>
-                  <li class="nav-item" role="presentation">
-                    <button
-                      type="button"
-                      class="nav-link"
-                      role="tab"
-                      data-bs-toggle="tab"
-                      data-bs-target="#navs_embarques"
-                      aria-controls="navs_embarques"
-                      aria-selected="false"
-                      tabindex="-1">
-                      <i class="ti ti-truck-delivery ti-xs me-1"></i>
-                      Embarques
-                    </button>
-                  </li>
-                  <li class="nav-item" role="presentation">
-                    <button
-                      type="button"
-                      class="nav-link"
-                      role="tab"
-                      data-bs-toggle="tab"
-                      data-bs-target="#navs_inventario"
-                      aria-controls="navs_inventario"
-                      aria-selected="false"
-                      tabindex="-1">
-                      <i class="ti ti-packages ti-xs me-1"></i>
-                      Inventario
                     </button>
                   </li>
                 </ul>
@@ -380,22 +338,6 @@
                       </div>
                     </div>
                   </div>
-                  <div class="tab-pane fade" id="navs_codes" role="tabpanel">
-                    <div class="d-flex justify-content-between">
-                      <div>
-                        <p class="mb-0">
-                          <strong>Tipo de código: </strong><span id="code_type">[Tipo de código]</span>
-                        </p>
-                        <p class="mb-0">
-                          <strong>Total de códigos: </strong><span id="code_total">[Total de códigos]</span>
-                        </p>
-                      </div>
-                      <button id="download-csv" type="button" class="btn btn-label-dark waves-effect">
-                        <span class="tf-icons ti-xs ti ti-download me-1"> </span>Descargar CSV
-                      </button>
-                    </div>
-                    <table id="codigos_table" class="table m-0 w-100 border-top mt-3 table-sm"></table>
-                  </div>
                   <div class="tab-pane fade" id="navs_verificaciones" role="tabpanel">
                     <div class="py-1">
                       <div class="progress">
@@ -414,10 +356,6 @@
                     <table
                       id="verificaciones_table"
                       class="table m-0 w-100 border-top mt-3 table-sm table-hover table-striped"></table>
-                  </div>
-                  <div class="tab-pane fade" id="navs_embarques" role="tabpanel">Embarques asignados</div>
-                  <div class="tab-pane fade" id="navs_inventario" role="tabpanel">
-                    Movimientos de inventario asignados
                   </div>
                 </div>
               </div>
