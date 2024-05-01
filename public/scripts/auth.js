@@ -1,3 +1,5 @@
+import { loadingButton } from '/public/scripts/helpers.js';
+
 const client = supabase.createClient(
   'https://ysbttwpoacgzbospykzx.supabase.co',
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlzYnR0d3BvYWNnemJvc3B5a3p4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTI3ODEwMTcsImV4cCI6MjAyODM1NzAxN30.b_CJcOMVbNWDvEi7CnhsxirPBUfnPunR5HgZBjSdyTE'
@@ -5,6 +7,8 @@ const client = supabase.createClient(
 
 $('#formLogin').on('submit', async function (event) {
   event.preventDefault();
+  const button = new loadingButton($('#loginButton'), 'Iniciando sesión...');
+  button.start();
 
   const email = $('#email').val();
   const password = $('#password').val();
@@ -14,6 +18,7 @@ $('#formLogin').on('submit', async function (event) {
       email,
       password
     });
+    button.stop();
 
     const { data: user_data, error: user_error } = await client
       .from('usuarios')
@@ -36,6 +41,7 @@ $('#formLogin').on('submit', async function (event) {
       window.location.href = '/';
     }
   } catch (error) {
+    toastr.error('Revisa tu correo y contraseña', 'Error al iniciar sesión');
     const errorCode = error.code;
     const errorMessage = error.message;
     console.log(errorCode, errorMessage);
