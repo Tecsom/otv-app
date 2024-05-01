@@ -94,3 +94,33 @@ export function isoDateToFormattedWithTime(fechaISO) {
 
   return fechaFormateada;
 }
+
+export function setCookie(nombre, valor, expiracion_ms) {
+  var fechaExpiracion = new Date();
+  fechaExpiracion.setTime(fechaExpiracion.getTime() + (expiracion_ms * 24 * 60 * 60 * 1000)); 
+  var expiracionUTC = fechaExpiracion.toUTCString();
+  var cookieString = nombre + "=" + encodeURIComponent(valor) + "; expires=" + expiracionUTC + "; path=/";
+
+  document.cookie = cookieString;
+}
+
+export function getCookie(nombre) {
+  var cookies = document.cookie;
+  var cookiesArray = cookies.split(';');
+  for (var i = 0; i < cookiesArray.length; i++) {
+      var cookie = cookiesArray[i].trim();
+      if (cookie.indexOf(nombre + "=") === 0) {
+          return decodeURIComponent(cookie.substring(nombre.length + 1));
+      }
+  }
+
+  return null;
+}
+
+export function deleteCookie(nombre) {
+  var fechaExpiracion = new Date();
+  fechaExpiracion.setTime(fechaExpiracion.getTime() - 1);
+
+  var expiracionUTC = fechaExpiracion.toUTCString();
+  document.cookie = nombre + "=; expires=" + expiracionUTC + "; path=/";
+}

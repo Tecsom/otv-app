@@ -51,31 +51,41 @@
         <div class="tab-content">
           <div class="tab-pane fade show active" id="navs-local" role="tabpanel">
             <div class="row">
-              <div class="col-md-12">
-                <div class="d-flex justify-content-between align-items-center">
-                  <div>
-                    <p class="mb-0">Modo oscuro</p>
-                    <small class="text-muted">Activa el modo oscuro para tu panel.</small>
+              <form id="localConfigForm">
+                <div class="col-md-12">
+                  <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                      <p class="mb-0">Modo oscuro</p>
+                      <small class="text-muted">Activa el modo oscuro para tu panel.</small>
+                    </div>
+                    <div>
+                      <div class="form-check form-switch mb-2">
+                        <input class="form-check-input" type="checkbox" id="isDarkMode">
+                      </div>
+                    </div>
                   </div>
-                  <div>Switch</div>
+                  <hr />
                 </div>
-                <hr />
-              </div>
-              <div class="col-md-12">
-                <div class="d-flex justify-content-between align-items-center">
-                  <div>
-                    <p class="mb-0">Puerto serie escáner</p>
-                    <small class="text-muted">Estable el puerto serie que utilizará el escáner conectado.</small>
+                <div class="col-md-12">
+                  <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                      <p class="mb-0">Puerto serie escáner</p>
+                      <small class="text-muted">Estable el puerto serie que utilizará el escáner conectado.</small>
+                    </div>
+                    <div>
+                      <select id="portSelect" class="form-select">
+                        <option value="">Selecciona un puerto</option>
+                      </select>
+                    </div>
                   </div>
-                  <div>Select</div>
+                  <hr />
                 </div>
-                <hr />
-              </div>
-              <div class="col-md-12">
-                <div class="col-md-12 d-flex justify-content-end">
-                  <button type="submit" class="btn btn-success waves-effect waves-light">Guardar</button>
+                <div class="col-md-12">
+                  <div class="col-md-12 d-flex justify-content-end">
+                    <button type="submit" class="btn btn-success waves-effect waves-light">Guardar</button>
+                  </div>
                 </div>
-              </div>
+              </form>
             </div>
           </div>
           <div class="tab-pane fade" id="navs-account" role="tabpanel">
@@ -128,3 +138,4 @@
 
 <script src="/public/scripts/usuarios/usuarios.js" type="module"></script>
 <script src="/public/scripts/usuarios/usuariosTable.js" type="module"></script>
+<script type="module" src="/public/scripts/configuracion/localconfig.js"></script>
