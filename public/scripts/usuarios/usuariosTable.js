@@ -1,9 +1,9 @@
 const options = `
   <button class="btn btn-sm btn-primary" data-toggle="modal" data-target="#editUsuarioModal">
-    <i class="fas fa-edit"></i>
+    <i class="ti ti-edit"></i>
     </button>
     <button class="btn btn-sm btn-danger" data-toggle="modal" data-target="#deleteUsuarioModal">
-    <i class="fas fa-trash"></i>
+    <i class="ti ti-trash"></i>
     </button>`;
 
 usuariosTable = $('#usuarios-table').DataTable({
@@ -11,7 +11,7 @@ usuariosTable = $('#usuarios-table').DataTable({
     { data: 'name', title: 'Nombre', defaultContent: '' },
     { data: 'email', title: 'Correo' },
     { data: 'status', title: 'Estado', defaultContent: 'Activo' },
-    { data: 'role', title: 'Rol', defaultContent: '' },
+    { data: 'rol', title: 'Rol', defaultContent: '' },
     { data: 'action', title: 'Acciones', orderable: false, searchable: false, defaultContent: options }
   ],
   searching: false,
@@ -21,4 +21,9 @@ usuariosTable = $('#usuarios-table').DataTable({
   language: {
     url: 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/es-ES.json'
   }
+});
+
+$(document).ready(() => {
+  usuariosTable.clear().draw();
+  usuariosTable.rows.add(usuarios).draw();
 });

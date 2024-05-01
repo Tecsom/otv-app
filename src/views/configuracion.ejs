@@ -60,7 +60,7 @@
                     </div>
                     <div>
                       <div class="form-check form-switch mb-2">
-                        <input class="form-check-input" type="checkbox" id="isDarkMode">
+                        <input class="form-check-input" type="checkbox" id="isDarkMode" />
                       </div>
                     </div>
                   </div>
@@ -129,6 +129,7 @@
 
 <script>
   let usuariosTable;
+  const usuarios = JSON.parse('<%- JSON.stringify(usuarios) %>');
 </script>
 
 <script src="/public/scripts/usuarios/usuarios.js" type="module"></script>
