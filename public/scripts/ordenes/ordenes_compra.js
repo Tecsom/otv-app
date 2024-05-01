@@ -11,7 +11,7 @@ const badgeType = {
   proceso: 'secondary',
   embarque: 'info',
   cancelada: 'danger',
-  completada: 'success'
+  finalizada: 'success'
 };
 
 const flatpickOptions = {
@@ -460,6 +460,9 @@ $('#ordenes_compra_container').on('click', '.order_container_child', async funct
   const data = $order.data().data; //ORDER DATA
   const cliente_id = data?.clientes.id;
 
+  $('#progress-bar-verificaciones').css('width', 0 + '%');
+  $('#progress-bar-verificaciones').text('0%');
+
   $('#ordenes_table')
     .DataTable()
     .column(5)
@@ -477,14 +480,17 @@ $('#ordenes_compra_container').on('click', '.order_container_child', async funct
   $('#delete_oc').addClass('d-none');
   $('#cancelar_oc').addClass('d-none');
   $('#restaurar_oc').addClass('d-none');
+  $('#finalizar_oc').addClass('d-none');
   if (data.estado === 'pendiente') {
     $('#generate_order').removeClass('d-none');
     $('#edit_oc').removeClass('d-none');
     $('#delete_oc').removeClass('d-none');
   } else if (data.estado === 'cancelada') {
     $('#restaurar_oc').removeClass('d-none');
+  } else if (data.estado === 'finalizada') {
   } else {
     $('#cancelar_oc').removeClass('d-none');
+    $('#finalizar_oc').removeClass('d-none');
   }
   if (cliente_id) {
     $('#client_currency').text(data.clientes.currency);
@@ -1099,6 +1105,35 @@ $('#confirm_restore_order').on('click', async function () {
 
   toastr.success('Orden de compra restaurada con éxito');
   $('#restore_orden_modal').modal('hide');
+  $('#ordenes_compra_container').empty();
+  page = 1;
+  loadMore = true;
+  await loadOrdenes();
+});
+
+$('#confirm_finalizar_order').on('click', async function () {
+  const order_data = $('#container-reporte').data();
+  const order_id = order_data.id;
+  const button = new loadingButton($(this));
+
+  if (!order_id) {
+    console.error('No orden de compra seleccionada');
+    return;
+  }
+  button.start();
+  const result = await fetchData(`/ordenes/update`, 'PUT', {
+    id: order_id,
+    estado: 'finalizada'
+  });
+  button.stop();
+
+  if (!result.status) {
+    toastr.error('Ocurrió un error al finalizar la orden de compra');
+    return;
+  }
+
+  toastr.success('Orden de compra finalizada con éxito');
+  $('#finalizar_orden_modal').modal('hide');
   $('#ordenes_compra_container').empty();
   page = 1;
   loadMore = true;

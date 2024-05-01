@@ -212,7 +212,8 @@
                         id="cancelar_oc"
                         class="dropdown-item d-flex align-items-center gap-2 d-none"
                         href="javascript:void(0);"
-                        data-bs-target="#cancel_order_modal"
+                        data-bs-target="#
+                        "
                         data-bs-toggle="modal"
                         ><i class="ti ti-file-off ti-xs me-1"></i>Cancelar</a
                       >
@@ -230,9 +231,9 @@
                     <li>
                       <a
                         id="finalizar_oc"
-                        class="dropdown-item d-flex align-items-center gap-2"
+                        class="dropdown-item d-flex align-items-center gap-2 d-none"
                         href="javascript:void(0);"
-                        data-bs-target="#restore_orden_modal"
+                        data-bs-target="#finalizar_orden_modal"
                         data-bs-toggle="modal"
                         ><i class="ti ti-circle-check ti-xs me-1"></i>Finalizar</a
                       >
@@ -582,6 +583,23 @@
         </div>
         <div class="modal-footer">
           <button id="confirm_cancel_order" type="button" class="btn btn-danger">Sí, cancelar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!--! Modal finalizar orden de compra -->
+  <div class="modal fade modal_cliente" id="finalizar_orden_modal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-sm" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel1">Finalizar orden de compra</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p>¿Estás seguro de finalizar la orden?</p>
+        </div>
+        <div class="modal-footer">
+          <button id="confirm_finalizar_order" type="button" class="btn btn-success">Finalizar</button>
         </div>
       </div>
     </div>
