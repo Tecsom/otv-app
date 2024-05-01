@@ -23,3 +23,15 @@ export const createUsuario = async (usuario: Usuario, password: string): Promise
   if (error) throw error;
   return data;
 };
+
+export const editUsuario = async (usuario: Usuario): Promise<Usuario> => {
+  const { data, error } = await supabase().from('usuarios').update(usuario).eq('id', usuario.id).select('*').single();
+  if (error) throw error;
+  return data;
+};
+
+export const deleteUsuario = async (id: string): Promise<void> => {
+  console.log({ id });
+  const { data, error } = await supabase().auth.admin.deleteUser(id);
+  if (error) throw error;
+};

@@ -98,8 +98,7 @@
                   </div>
                   <div>
                     <form id="verificadorPass">
-                      <input id="passchecker" class="form-control" type="text" placeholder="Crea una contraseña">
-
+                      <input id="passchecker" class="form-control" type="text" placeholder="Crea una contraseña" />
                     </form>
                   </div>
                 </div>
@@ -107,7 +106,9 @@
               </div>
               <div class="col-md-12">
                 <div class="col-md-12 d-flex justify-content-end">
-                  <button type="submit" form="verificadorPass" class="btn btn-success waves-effect waves-light">Guardar</button>
+                  <button type="submit" form="verificadorPass" class="btn btn-success waves-effect waves-light">
+                    Guardar
+                  </button>
                 </div>
               </div>
             </div>
@@ -171,6 +172,55 @@
       <div class="modal-footer">
         <button id="confirm_new_user" type="submit" form="create-user-form" class="btn btn-success">
           Crear usuario
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<!--!EDITAR USUARIO MODAL-->
+<div class="modal fade" id="edit-user-modal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel1">Editar usuario</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="edit-user-form" class="row g-3">
+          <div class="col-md-12">
+            <label for="user_name_edit" class="form-label required">Nombre</label>
+            <input type="text" id="user_name_edit" name="name" class="form-control" />
+          </div>
+          <div class="col-md-12">
+            <label for="user_rol_edit" class="form-label required">Rol</label>
+            <select id="user_rol_edit" name="rol" class="form-control">
+              <option></option>
+              <option value="ADMIN">Administrador</option>
+              <option value="SUPER_ADMIN">Súper Administrador</option>
+            </select>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button id="confirm_edit_user" type="submit" form="edit-user-form" class="btn btn-success">
+          Editar usuario
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<!--!ELIMINAR USUARIO MODAL-->
+<div class="modal fade" id="delete-user-modal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel1">Eliminar usuario</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">¿Estás seguro de que deseas eliminar este usuario?</div>
+      <div class="modal-footer">
+        <button id="confirm_delete_user" type="submit" form="edit-user-form" class="btn btn-success">
+          Sí, eliminar
         </button>
       </div>
     </div>

@@ -1,8 +1,8 @@
 const options = `
-  <button class="btn btn-sm btn-primary" data-toggle="modal" data-target="#editUsuarioModal">
+  <button class="btn btn-sm btn-primary edit-user" >
     <i class="ti ti-edit"></i>
     </button>
-    <button class="btn btn-sm btn-danger" data-toggle="modal" data-target="#deleteUsuarioModal">
+    <button class="btn btn-sm btn-danger delete-user" >
     <i class="ti ti-trash"></i>
     </button>`;
 
