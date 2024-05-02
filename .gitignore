@@ -91,6 +91,7 @@ out
 .nuxt
 dist
 release
+.node-persist
 
 # Gatsby files
 .cache/
