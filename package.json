@@ -16,7 +16,7 @@
     "productName": "OTV APP",
     "win": {
       "target": "nsis",
-      "icon": "./dist/public/assets/logos/LOGO-Negro.ico"
+      "icon": "./dist/public/assets/logos/LOGO-Negro256.ico"
     },
     "mac": {
       "target": "dmg",
