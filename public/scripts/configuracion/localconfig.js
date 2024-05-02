@@ -28,6 +28,7 @@ async function init() {
 async function listPorts() {
   const $ports = $('#portSelect');
   const result = await fetchData('/list/ports');
+  console.log({ result });
   if (!result.status) {
     toastr.error('Ocurrió un error al leer puertos');
     return;
@@ -38,7 +39,7 @@ async function listPorts() {
     $ports.append(
       $('<option>', {
         value: port,
-        text: portName
+        text: portPath.friendlyName ?? portName
       })
     );
     console.log({ defaultScannerPort });
