@@ -15,10 +15,12 @@
     "appId": "com.tecsom.otvapp",
     "productName": "OTV APP",
     "win": {
-      "target": "nsis"
+      "target": "nsis",
+      "icon": "./dist/public/assets/logos/LOGO-Negro.ico"
     },
     "mac": {
-      "target": "dmg"
+      "target": "dmg",
+      "icon": "./dist/public/assets/logos/LOGO-Negro.ico"
     },
     "directories": {
       "output": "release"
