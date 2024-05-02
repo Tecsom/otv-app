@@ -98,8 +98,12 @@
                   </div>
                   <div>
                     <form id="verificadorPass">
-                      <input id="passchecker" class="form-control" type="text" placeholder="Crea una contraseña" value="<%= password %>">
-
+                      <input
+                        id="passchecker"
+                        class="form-control"
+                        type="text"
+                        placeholder="Crea una contraseña"
+                        value="<%= password %>" />
                     </form>
                   </div>
                 </div>
@@ -231,6 +235,7 @@
 <script>
   let usuariosTable;
   const usuarios = JSON.parse('<%- JSON.stringify(usuarios) %>');
+  const defaultScannerPort = '<%- defaultScannerPort %>';
 </script>
 
 <script src="/public/scripts/usuarios/usuarios.js" type="module"></script>

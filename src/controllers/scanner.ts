@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { Scanner } from '../utils/scanner';
 import io from 'socket.io';
 import { getOrdenByCodeProd } from '@/utils/ordenes_compra';
-
+import { session } from 'electron';
 declare global {
   var socket_io: io.Server;
 }
@@ -10,6 +10,7 @@ declare global {
 export const listPorts = async (req: Request, res: Response) => {
   try {
     const ports = await Scanner.getPorts();
+    console.log(ports);
     res.status(200).json(ports);
   } catch (error: any) {
     res.status(500).json({ error: error.message });
@@ -33,8 +34,11 @@ export const readScanner = async (req: Request, res: Response) => {
 
 export const initScanner = async () => {
   try {
-    console.log('init');
-    const port = '/dev/tty.usbmodem22177B12511';
+    const port = await Scanner.getSelectedPort();
+    if (!port) {
+      console.error('No port selected');
+      return;
+    }
     const scanner = new Scanner();
     console.log(await Scanner.getPorts());
     await scanner.connect(port);

@@ -1,7 +1,7 @@
 import { SerialPort } from 'serialport';
 import { PortInfo } from '@serialport/bindings-interface';
 import { BrowserWindow } from 'electron';
-import { getOrdenByCodeProd } from './ordenes_compra';
+import storage from 'node-persist';
 declare global {
   var globalWindow: BrowserWindow;
 }
@@ -59,7 +59,14 @@ export class Scanner {
   }
 
   public static async getPorts(): Promise<PortInfo[]> {
-    console.log(SerialPort.list());
+    // console.log(SerialPort.list());
     return SerialPort.list();
+  }
+
+  public static async getSelectedPort(): Promise<string | null> {
+    await storage.init();
+    const port = await storage.getItem('defaultScannerPort');
+
+    return port ?? null;
   }
 }
