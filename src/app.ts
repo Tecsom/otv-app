@@ -56,7 +56,8 @@ if (process.env.NODE_ENV !== 'test') {
       },
       useContentSize: true,
       show: false,
-      icon: path.resolve(__dirname, './assets/img/', 'logo_tpj.ico')
+      
+      icon: path.resolve(__dirname, '../public/assets/logos/', 'LOGO-Negro.ico')
     });
 
     const { port } = server.address() as AddressInfo;
