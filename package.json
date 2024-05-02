@@ -8,7 +8,8 @@
   "scripts": {
     "dev": "rm -rf dist && tsc && tsc-alias && rm -rf dist/public && cp -r public dist/public && cp -r src/views dist/src/views && cp -r src/layouts dist/src/layouts && electron dist/src/app.js",
     "local": "NODE_ENV=test tsx watch src/app.ts ",
-    "dist": "electron-builder"
+    "dist": "electron-builder",
+    "pack": " tsc && tsc-alias  && xcopy /s /e public dist\\public && xcopy /s /e src\\views dist\\src\\views && xcopy /s /e src\\layouts dist\\src\\layouts && electron dist\\src\\app.js"
   },
   "build": {
     "appId": "com.tecsom.otvapp",
