@@ -57,7 +57,7 @@ if (process.env.NODE_ENV !== 'test') {
       useContentSize: true,
       show: false,
       
-      icon: path.resolve(__dirname, '../public/assets/logos/', 'LOGO-Negro.ico')
+      icon: path.resolve(__dirname, '../public/assets/logos/', 'LOGO-Negro256.ico')
     });
 
     const { port } = server.address() as AddressInfo;
