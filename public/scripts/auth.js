@@ -1,9 +1,4 @@
-import { loadingButton } from '/public/scripts/helpers.js';
-
-const client = supabase.createClient(
-  'https://ysbttwpoacgzbospykzx.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlzYnR0d3BvYWNnemJvc3B5a3p4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTI3ODEwMTcsImV4cCI6MjAyODM1NzAxN30.b_CJcOMVbNWDvEi7CnhsxirPBUfnPunR5HgZBjSdyTE'
-);
+import { loadingButton, fetchData } from '/public/scripts/helpers.js';
 
 $('#formLogin').on('submit', async function (event) {
   event.preventDefault();
@@ -14,25 +9,18 @@ $('#formLogin').on('submit', async function (event) {
   const password = $('#password').val();
 
   try {
-    const { data, error } = await client.auth.signInWithPassword({
-      email,
-      password
-    });
+    const res = await fetchData('/login', 'POST', { email, password });
     button.stop();
+    if (!res.status) {
+      toastr.error('Revisa tu correo y contraseña', 'Error al iniciar sesión');
+      return;
+    }
 
-    const { data: user_data, error: user_error } = await client
-      .from('usuarios')
-      .select('*')
-      .eq('id', data.user.id)
-      .single();
+    const { user, access_token } = res.data;
 
-    if (error) throw error;
-    const { access_token } = data?.session ?? {};
-    if (!access_token) return;
-    console.log({ access_token });
     setCookie('accessToken', access_token, 1000);
-    console.log({ user_data, user_error, data });
-    localStorage.setItem('user_data', JSON.stringify({ ...data.user, ...user_data }));
+
+    localStorage.setItem('user_data', JSON.stringify(user));
     const redirect = new URLSearchParams(window.location.search).get('redirect');
 
     if (redirect && redirect !== '/login') {
@@ -64,11 +52,6 @@ function getCookie(name) {
 $('.logout-btn').on('click', async function (event) {
   event.preventDefault();
   try {
-    const { error } = await client.auth.signOut();
-    if (error) {
-      console.error(error);
-      return;
-    }
     //remove accessToken cookie
     document.cookie = 'accessToken=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
     window.location.href = '/login';
