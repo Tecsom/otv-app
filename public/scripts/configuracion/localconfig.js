@@ -43,7 +43,7 @@ async function listPorts() {
       })
     );
     console.log({ defaultScannerPort });
-    if (defaultScannerPort) {
+    if (defaultScannerPort && result.data?.some(elm => elm?.path?.includes(defaultScannerPort))) {
       $ports.val(defaultScannerPort);
     }
   });
