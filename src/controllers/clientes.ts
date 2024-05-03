@@ -10,6 +10,7 @@ import {
   getPiezas,
   getRevisionesByPiezaId,
   updatePieza,
+  updateRevision,
   uploadRevisionFiles
 } from '@/utils/piezas';
 import { deleteFile, deleteFolder, getFilePublicURL, getFilesByPath, uploadFile } from '@/utils/storage';
@@ -96,10 +97,12 @@ export const createPiezaC = async (req: Request, res: Response) => {
   const cliente_id = parseInt(id);
   const piezaData = req.body;
   piezaData.cliente_id = cliente_id;
+  const { revision_nombre } = piezaData;
   const imagenes = piezaData.imagenes;
   const archivos = piezaData.archivos;
   delete piezaData.imagenes;
   delete piezaData.archivos;
+  delete piezaData.revision_nombre;
 
   try {
     const pieza = await createPieza(piezaData);
@@ -107,7 +110,7 @@ export const createPiezaC = async (req: Request, res: Response) => {
     if (!pieza?.id) throw new Error('Error al crear la pieza');
 
     const revision = await createRevision(pieza?.id, {
-      nombre: '-',
+      nombre: revision_nombre,
       pieza_id: pieza.id
     });
 
@@ -196,8 +199,10 @@ export const getFilesByRevisionC = async (req: Request, res: Response) => {
 
 export const updateRevisionC = async (req: Request, res: Response) => {
   const { cliente_id, pieza_id, revision_id } = req.params;
-  const { archivos, imagenes } = req.body;
+  const { archivos, imagenes, nombre } = req.body;
   try {
+    console.log(req.body);
+    await updateRevision(parseInt(revision_id), nombre);
     await deleteFolder('clientes', `${cliente_id}/${pieza_id}/${revision_id}`);
     await uploadRevisionFiles(parseInt(cliente_id), parseInt(pieza_id), parseInt(revision_id), archivos);
     await uploadRevisionFiles(parseInt(cliente_id), parseInt(pieza_id), parseInt(revision_id), imagenes);
@@ -212,8 +217,7 @@ export const createRevisionC = async (req: Request, res: Response) => {
   const body_data = req.body;
   let { archivos, imagenes, ...revisionData } = body_data;
   try {
-    const nombre = await getNextNombreRevision(parseInt(pieza_id));
-    revisionData.nombre = nombre;
+    console.log({ body_data });
     const revision = await createRevision(parseInt(pieza_id), revisionData);
     if (!revision?.id) throw new Error('Error al crear la revisión');
     await uploadRevisionFiles(parseInt(cliente_id), parseInt(pieza_id), revision.id, archivos);
@@ -277,10 +281,13 @@ export const updateProfilePhotoC = async (req: Request, res: Response) => {
   const { id } = req.params;
   const { photo }: { photo: FileUpld } = req.body;
   try {
-    const file_path = `${id}/${photo.name}`;
+    let file_path = `${id}/${photo.name}`;
+    //force image type to png
+    file_path = file_path.replace(/\.[^/.]+$/, '.png');
+
     await deleteFile(file_path, 'clientes');
     await uploadFile(file_path, 'clientes', photo.data, {
-      contentType: photo.type
+      contentType: 'image/png'
     });
 
     res.status(200).json({ message: 'Foto de perfil actualizada', status: true });

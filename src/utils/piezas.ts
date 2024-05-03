@@ -83,6 +83,22 @@ export const createRevision = async (
   return (data ?? null) as Revision;
 };
 
+export const updateRevision = async (id: number, nombre: string): Promise<Revision | null> => {
+  const { data, error } = await supabase()
+    .from('revisiones')
+    .update({
+      nombre
+    })
+    .eq('id', id)
+    .select('*')
+    .single();
+  if (error) {
+    console.error('Error updating revision:', error.message);
+    throw error;
+  }
+  return data ?? null;
+};
+
 export const uploadRevisionFiles = async (
   cliente_id: number,
   pieza_id: number,

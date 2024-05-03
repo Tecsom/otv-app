@@ -324,6 +324,10 @@ $('#editar-pieza-form').on('submit', async function (e) {
 $('#btn_edit_revision').on('click', async function () {
   const pieza_id = $('#offcanvas_pieza').attr('data-pieza-id');
   const revision_id = select_revision.val();
+  const nombre_revision = select_revision.find('option:selected').text();
+
+  $('#revision_nombre_edit').val(nombre_revision);
+
   const button = new loadingButton($('#btn_edit_revision'));
   button.start();
   const res = await fetchData(`/clientes/${clientData.id}/piezas/${pieza_id}/revisiones/${revision_id}/files`);
@@ -383,9 +387,12 @@ $('#editar-revision-form').on('submit', async function (e) {
     });
   }
 
+  data.nombre = $('#revision_nombre_edit').val();
+
   const res = await fetchData(`/clientes/${clientData.id}/piezas/${pieza_id}/revisiones/${revision_id}`, 'PUT', data);
   button.stop();
   if (res.status === true) {
+    await piezas_table.ajax.reload();
     toastr.success(res.message, 'Revisión actualizada');
     $('#modal_editar_revision').modal('hide');
     return;
@@ -425,12 +432,14 @@ $('#nueva-revision-form').on('submit', async function (e) {
       type: file.type
     });
   }
-  console.log(data);
+
   const res = await fetchData(`/clientes/${clientData.id}/piezas/${pieza_id}/revisiones`, 'POST', data);
   button.stop();
   if (res.status === true) {
     toastr.success(res.message, 'Revisión creada');
     $('#modal_nueva_revision').modal('hide');
+    $(this).trigger('reset');
+    piezas_table.ajax.reload();
     return;
   }
   toastr.error(res.message, 'Error creando la revisión');

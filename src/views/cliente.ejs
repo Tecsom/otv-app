@@ -529,6 +529,10 @@
             <label for="descripcion" class="form-label required">Descripción de la pieza</label>
             <input type="text" id="descripcion" name="descripcion" class="form-control" />
           </div>
+          <div class="col-md-12">
+            <label for="revision_nombre" class="form-label required">Nombre de la revisión</label>
+            <input type="text" id="revision_nombre" name="revision_nombre" class="form-control" />
+          </div>
           <div class="col-md-6">
             <label for="costo_produccion" class="form-label required">Costo de producción</label>
             <input type="text" id="costo_produccion" name="costo_produccion" class="form-control" />
@@ -620,6 +624,10 @@
       <div class="modal-body">
         <form id="editar-revision-form" class="row g-3">
           <div class="col-md-12">
+            <label for="revision_nombre_edit" class="form-label required">Nombre de la revisión</label>
+            <input type="text" id="revision_nombre_edit" name="nombre" class="form-control" />
+          </div>
+          <div class="col-md-12">
             <label for="input-imgs-edit" class="form-label required">Imágenes</label>
             <div id="dpz-imgs-edit" class="fallback dropzone">
               <input id="input-imgs-edit" type="file" multiple />
@@ -651,6 +659,11 @@
       </div>
       <div class="modal-body">
         <form id="nueva-revision-form" class="row g-3">
+          <div class="col-md-12">
+            <label for="revision_nombre_new" class="form-label required">Nombre de la revisión</label>
+            <input type="text" id="revision_nombre_new" name="nombre" class="form-control" />
+          </div>
+          
           <div class="col-md-12">
             <label for="descripcion" class="form-label required">Descripción de la revisión</label>
             <input type="text" id="descripcion" name="descripcion" class="form-control" />
