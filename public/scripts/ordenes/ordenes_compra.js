@@ -384,7 +384,8 @@ async function getOrdenes() {
   return ordenes.data;
 }
 
-async function loadOrdenes() {
+loadOrdenes = async () => {
+  console.log('LOADD');
   const $container = $('#ordenes_compra_container');
 
   const ordenes = await getOrdenes();
@@ -423,7 +424,7 @@ async function loadOrdenes() {
       console.log('click');
     }
   }
-}
+};
 
 loadOrdenes();
 
@@ -494,9 +495,15 @@ $('#ordenes_compra_container').on('click', '.order_container_child', async funct
   }
   if (cliente_id) {
     $('#client_currency').text(data.clientes.currency);
+    $('#profile-pic').addClass('d-none');
+    $('#client_avatar').removeClass('d-none');
+    $('#client_avatar').text(data.clientes?.nombre.charAt(0).toUpperCase());
+
     const profile_pic_res = await fetchData(`/clientes/${cliente_id}/profile-photo`);
     if (profile_pic_res.status === true) {
       $('#profile-pic').attr('src', profile_pic_res.data);
+      $('#client_avatar').addClass('d-none');
+      $('#profile-pic').removeClass('d-none');
     }
   }
 
@@ -540,6 +547,7 @@ $('#ordenes_compra_container').on('click', '.order_container_child', async funct
   $folio.text(uniqueFolio);
   $fechaEntrega.text(isoDateToFormatted(data.delivery_date));
   $clientData.text(data.clientes?.nombre ?? 'Sin cliente relacionado');
+
   $fechaCreacion.text(isoDateToFormatted(data.created_at));
   $('#ordenes_compra_container .order_container_child').removeClass('bg-label-primary');
   $(this).addClass('bg-label-primary');
@@ -879,8 +887,7 @@ $('#edit_order_form').on('submit', async function (e) {
   $date.val('');
   $client.val('');
   $('#edit_orden_compra_modal').modal('hide');
-  page = 1;
-  loadMore = true;
+  resetPaging();
   $('#ordenes_compra_container').empty();
   await loadOrdenes();
   const element_selected = $(`[order_id=${order_data.id}]`);
@@ -918,8 +925,7 @@ $('#confirm_delete_order').on('click', async function () {
   toastr.success('Orden de compra eliminada con éxito');
   $('#delete_orden_compra_modal').modal('hide');
   $('#ordenes_compra_container').empty();
-  page = 1;
-  loadMore = true;
+  resetPaging();
   await loadOrdenes();
 });
 
@@ -1077,9 +1083,22 @@ $('#confirm_cancel_order').on('click', async function () {
   toastr.success('Orden de compra cancelada con éxito');
   $('#cancel_order_modal').modal('hide');
   $('#ordenes_compra_container').empty();
-  page = 1;
-  loadMore = true;
+  resetPaging();
   await loadOrdenes();
+
+  $('#generate_order').addClass('d-none');
+  $('#edit_oc').addClass('d-none');
+  $('#delete_oc').addClass('d-none');
+  $('#cancelar_oc').addClass('d-none');
+  $('#restaurar_oc').removeClass('d-none');
+  $('#finalizar_oc').addClass('d-none');
+
+  $('#order_status').text('cancelada');
+  $('#order_status')
+    .removeClass()
+    .addClass('text-capitalize badge bg-' + badgeType['cancelada']);
+
+  $('#ordenes_table').DataTable().column(5).visible(false);
 });
 
 $('#confirm_restore_order').on('click', async function () {
@@ -1106,9 +1125,20 @@ $('#confirm_restore_order').on('click', async function () {
   toastr.success('Orden de compra restaurada con éxito');
   $('#restore_orden_modal').modal('hide');
   $('#ordenes_compra_container').empty();
-  page = 1;
-  loadMore = true;
+  resetPaging();
   await loadOrdenes();
+
+  $('#finalizar_oc').removeClass('d-none');
+  $('#cancelar_oc').removeClass('d-none');
+  $('#generate_order').addClass('d-none');
+  $('#edit_oc').addClass('d-none');
+  $('#delete_oc').addClass('d-none');
+  $('#restaurar_oc').addClass('d-none');
+
+  $('#order_status').text('proceso');
+  $('#order_status')
+    .removeClass()
+    .addClass('text-capitalize badge bg-' + badgeType['proceso']);
 });
 
 $('#confirm_finalizar_order').on('click', async function () {
@@ -1135,7 +1165,24 @@ $('#confirm_finalizar_order').on('click', async function () {
   toastr.success('Orden de compra finalizada con éxito');
   $('#finalizar_orden_modal').modal('hide');
   $('#ordenes_compra_container').empty();
+  resetPaging();
+  await loadOrdenes();
+
+  $('#finalizar_oc').addClass('d-none');
+  $('#cancelar_oc').addClass('d-none');
+  $('#generate_order').addClass('d-none');
+  $('#edit_oc').addClass('d-none');
+  $('#delete_oc').addClass('d-none');
+  $('#restaurar_oc').addClass('d-none');
+
+  $('#order_status').text('finalizada');
+  $('#order_status')
+    .removeClass()
+    .addClass('text-capitalize badge bg-' + badgeType['finalizada']);
+});
+
+resetPaging = () => {
+  console.log('Reset');
   page = 1;
   loadMore = true;
-  await loadOrdenes();
-});
+};

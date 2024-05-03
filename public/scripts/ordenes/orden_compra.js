@@ -30,6 +30,9 @@ $('#confirm_generate_order').on('click', async function () {
     $('#ordenes_table').data('estado', 'entregada');
     $('#ordenes_table').data('folio_unico', data.folio_unico);
     $('#generate_order_modal').modal('hide');
+    $('#ordenes_compra_container').empty();
+    resetPaging();
+    await loadOrdenes();
   } catch (error) {
     console.error(error);
     toastr.error('Error al generar la orden');
@@ -57,6 +60,18 @@ const generateOrder = async () => {
   if (!response.status) {
     throw new Error(response.message);
   }
+
+  $('#generate_order').addClass('d-none');
+  $('#edit_oc').addClass('d-none');
+  $('#delete_oc').addClass('d-none');
+  $('#restaurar_oc').addClass('d-none');
+  $('#cancelar_oc').removeClass('d-none');
+  $('#finalizar_oc').removeClass('d-none');
+
+  $('#order_status').text('Proceso');
+  $('#order_status').removeClass().addClass('text-capitalize badge bg-secondary');
+
+  $('#ordenes_table').DataTable().column(5).visible(false);
 
   return response.data;
 };

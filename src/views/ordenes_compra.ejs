@@ -212,8 +212,7 @@
                         id="cancelar_oc"
                         class="dropdown-item d-flex align-items-center gap-2 d-none"
                         href="javascript:void(0);"
-                        data-bs-target="#
-                        "
+                        data-bs-target="#cancel_order_modal"
                         data-bs-toggle="modal"
                         ><i class="ti ti-file-off ti-xs me-1"></i>Cancelar</a
                       >
@@ -252,11 +251,8 @@
                 <div class="d-flex justify-content-between flex-xl-row flex-md-column flex-sm-row flex-column">
                   <div class="d-flex align-items-center gap-3">
                     <div class="avatar avatar-lg">
-                      <img
-                        id="profile-pic"
-                        src="/public/assets/img/avatars/1.png"
-                        alt="Avatar"
-                        class="rounded-circle" />
+                      <span class="avatar-initial rounded-circle bg-secondary" id="client_avatar">pi</span>
+                      <img id="profile-pic" src="" alt="Avatar" class="rounded-circle" />
                     </div>
                     <div>
                       <p class="mb-0">
@@ -723,6 +719,8 @@
     var codigos_table;
     var verificaciones_table;
     var loadProductos = () => {};
+    var loadOrdenes;
+    var resetPaging;
   </script>
 
   <script src="/public/scripts/ordenes/ordenes_compra.js" type="module"></script>
