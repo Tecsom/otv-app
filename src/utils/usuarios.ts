@@ -31,7 +31,6 @@ export const editUsuario = async (usuario: Usuario): Promise<Usuario> => {
 };
 
 export const deleteUsuario = async (id: string): Promise<void> => {
-  console.log({ id });
   const { data, error } = await supabase().auth.admin.deleteUser(id);
   if (error) throw error;
 };

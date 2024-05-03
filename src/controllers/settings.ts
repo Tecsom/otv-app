@@ -5,7 +5,7 @@ import storage from 'node-persist';
 export const validatePassword = async (req: Request, res: Response) => {
   const { password } = req.query as { password: string };
   const dbpassword = await getCheckerPassword();
-  console.log({ password, dbpassword });
+
   if (password === dbpassword) {
     res.status(200).json({});
   } else {
@@ -25,7 +25,7 @@ export const saveDefaultScannerPort = async (req: Request, res: Response) => {
   const port = req.body.port;
 
   await storage.init();
-  console.log({ port });
+
   await storage.setItem('defaultScannerPort', port);
 
   res.status(200).json({ result: 'OK' });

@@ -59,7 +59,6 @@ export class Scanner {
   }
 
   public static async getPorts(): Promise<PortInfo[]> {
-    // console.log(SerialPort.list());
     return SerialPort.list();
   }
 

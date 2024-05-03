@@ -10,7 +10,6 @@ declare global {
 export const listPorts = async (req: Request, res: Response) => {
   try {
     const ports = await Scanner.getPorts();
-    console.log(ports);
     res.status(200).json(ports);
   } catch (error: any) {
     res.status(500).json({ error: error.message });
@@ -40,12 +39,11 @@ export const initScanner = async () => {
       return;
     }
     const scanner = new Scanner();
-    console.log(await Scanner.getPorts());
+
     await scanner.connect(port);
     await scanner.open();
 
     scanner.scan(onScanner);
-    console.log('Scanner initialized');
   } catch (error: any) {
     console.error('Error initializing scanner: ', error.message);
   }
@@ -57,7 +55,6 @@ const onScanner = async (data: Buffer) => {
   const current_url = globalThis.globalWindow?.webContents.getURL();
   if (current_url.includes('verificador') && !current_url.includes('ordenes')) {
     const orden_res = await getOrdenByCodeProd(data.toString());
-    console.log({ orden_res });
     const orden = orden_res && orden_res.length > 0 ? orden_res[0] : null;
     if (!orden?.id) {
       console.log('Orden no encontrada');

@@ -756,7 +756,7 @@
   '<% const parsed = clientData %>'
   '<% delete clientData.code_string %>'
   var clientData = JSON.parse('<%- JSON.stringify(clientData) %>') ?? {};
-  console.log({ clientData })
+
   var piezasData = JSON.parse('<%- JSON.stringify(piezasData) %>') ?? [];
   var piezas_table;
 </script>

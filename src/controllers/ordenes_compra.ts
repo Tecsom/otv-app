@@ -28,7 +28,6 @@ export const getOrdenes = async (req: Request, res: Response) => {
 export const deleteOrden = async (req: Request, res: Response) => {
   const { id } = req.params;
   try {
-    console.log('entra delete');
     const deleteResult = await deleteOrder(parseInt(id));
     res.status(200).json(deleteResult);
   } catch (e) {
@@ -40,7 +39,6 @@ export const generateOrder = async (req: Request, res: Response) => {
   try {
     const data = req.body;
     const Result = await generarOrdenDeCompraEstatica(data);
-    console.log({ Result });
     res.status(200).json(Result.data);
   } catch (error: any) {
     console.log({ error });
@@ -49,11 +47,9 @@ export const generateOrder = async (req: Request, res: Response) => {
 };
 
 export const verifyProductsOrder = async (req: Request, res: Response) => {
-  console.log('llamao');
   try {
     const { order_id, piezas_verificadas } = req.body;
     const Result = await verifyProds(parseInt(order_id), piezas_verificadas);
-    console.log('pasaaaa');
     return res.status(200).json({ message: 'Productos verificados' });
   } catch (error: any) {
     console.log('entra error');
@@ -122,7 +118,6 @@ export const getOrderProducts = async (req: Request, res: Response) => {
   const orderid = req.params.order_id;
   try {
     const products = await getProducts(orderid);
-    console.log({ products });
     res.status(200).json(products);
   } catch (e) {
     res.status(500).json(e);
@@ -181,7 +176,7 @@ export const getFilesC = async (req: Request, res: Response) => {
 
 export const deleteOrderProduct = async (req: Request, res: Response) => {
   const productOrderid = req.params.product_id;
-  console.log({ productOrderid });
+
   try {
     const deleteResult = await removeOrderProduct(productOrderid);
     res.status(200).json({ deleteResult });

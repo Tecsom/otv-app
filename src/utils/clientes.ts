@@ -74,7 +74,6 @@ export const updateCliente = async (cliente: Cliente, id_string: string): Promis
     console.error('Error updating cliente:', error.message);
     throw error;
   }
-  console.log({ data });
 
   return data as Cliente;
 };

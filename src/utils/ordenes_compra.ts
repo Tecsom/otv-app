@@ -139,7 +139,7 @@ export const getOrdenesCompraPaging = async (
   deliveryDateFilter: any[]
 ) => {
   search = search?.trim() === '' ? null : search;
-  console.log({ search });
+
   const { data: Ordenes, error } = await supabase().rpc('search_ordenes_compra', {
     search: search ?? '',
     page,
@@ -148,7 +148,6 @@ export const getOrdenesCompraPaging = async (
     created_at_array: createdAtFilter,
     delivery_date_array: deliveryDateFilter
   });
-  console.log({ Ordenes, error });
 
   if (error) {
     console.error('Error fetching Ordenes:', error.message);
@@ -295,7 +294,6 @@ export const removeOrderProduct = async (product_id: string): Promise<boolean> =
     console.log(uploadError);
     throw new Error('Error eliminando producto');
   }
-  console.log({ order_data });
 
   await updateOrder({ id: order_data.order_id, last_update: new Date().toISOString() });
   return true;

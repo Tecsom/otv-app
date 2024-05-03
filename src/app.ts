@@ -44,7 +44,7 @@ if (process.env.NODE_ENV !== 'test') {
 
   function createWindow() {
     // Create the browser window.
-    console.log('createWindow');
+
     const mainWindow = new BrowserWindow({
       autoHideMenuBar: true,
       height: 600,
@@ -56,7 +56,7 @@ if (process.env.NODE_ENV !== 'test') {
       },
       useContentSize: true,
       show: false,
-      
+
       icon: path.resolve(__dirname, '../public/assets/logos/', 'LOGO-Negro256.ico')
     });
 

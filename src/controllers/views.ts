@@ -32,8 +32,6 @@ export const renderClientPage = async (req: Request, res: Response) => {
     const clientData = await getClientById(id);
     const piezasData = await getPiezas(cliente_id);
 
-    console.log({ profile_picture });
-
     res.render('cliente.ejs', { clientData, piezasData, profile_picture });
   } catch (error) {
     res.status(404).render('404.ejs');
@@ -57,7 +55,6 @@ export const renderVerificadorOrdenes = async (req: Request, res: Response) => {
 
   let ordenData = await getStaticOrden(parseInt(order_id));
 
-  console.log({ codigosdata: ordenData.codigos });
   const code_string = ordenData?.cliente?.code_string;
 
   ordenData.cliente.code_string = JSON.parse(code_string);
@@ -72,7 +69,7 @@ export const renderConfiguracion = async (_: Request, res: Response) => {
   const usuarios = await getUsuarios();
   const password = await getCheckerPassword();
   const defaultScannerPort = (await storage.getItem('defaultScannerPort')) ?? null;
-  console.log({ defaultScannerPort });
+
   res.render('configuracion.ejs', { usuarios, password, defaultScannerPort });
 };
 export const renderInventarios = async (_: Request, res: Response) => res.render('inventarios.ejs');

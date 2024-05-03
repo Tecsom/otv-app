@@ -42,7 +42,7 @@ export const deleteFolder = async (bucket: string, path: string) => {
   if (!folderFiles || folderFiles.length === 0) {
     return true;
   }
-  console.log(folderFiles);
+
   const { error } = await supabase()
     .storage.from(bucket)
     .remove(folderFiles.map((file: any) => file?.name));

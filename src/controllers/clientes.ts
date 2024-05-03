@@ -274,7 +274,6 @@ export const deleteRevisionC = async (req: Request, res: Response) => {
 };
 
 export const updateProfilePhotoC = async (req: Request, res: Response) => {
-  console.log('entra updateProfilePhotoC');
   const { id } = req.params;
   const { photo }: { photo: FileUpld } = req.body;
   try {
