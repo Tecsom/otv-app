@@ -1,4 +1,4 @@
-import { fetchData, loadingButton, isoDateToFormatted } from '/public/scripts/helpers.js';
+import { fetchData, loadingButton, isoDateToFormatted, isoDateToFormattedWithTime } from '/public/scripts/helpers.js';
 let verification_mode = false;
 
 let verificadas_array = [];
@@ -231,6 +231,7 @@ socket.on('scanner', data => {
 const verificarPieza = async codigo => {
   const table_data = table_piezas.rows().data().toArray();
   const pieza = table_data.find(pieza => pieza.codigo === codigo);
+  console.log({ pieza });
 
   if (!pieza) {
     console.error('Pieza no encontrada');
@@ -279,9 +280,11 @@ $('#save_verification_modal_btn').on('click', async function () {
     return;
   }
 
+  const created_at = new Date().toISOString();
   const data = {
     order_id,
-    piezas_verificadas
+    piezas_verificadas,
+    created_at
   };
 
   console.log({ data });
@@ -309,7 +312,17 @@ $('#save_verification_modal_btn').on('click', async function () {
       }
       return pieza;
     });
+
+    for (const cod of piezas_verificadas) {
+      ordenData.ordenes_static_verified.push({
+        created_at,
+        codigo: cod.codigo
+      });
+    }
+    console.log({ saveed: ordenData });
+
     $('#select_verificaciones ~ span').removeClass('d-none');
+    $('#select_verificaciones').append(new Option(isoDateToFormattedWithTime(created_at), created_at, false, false));
     updateGeneralProgress();
     $('#save_verification_modal').modal('hide');
   } else {

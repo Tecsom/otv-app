@@ -1,5 +1,5 @@
 import { isoDateToFormattedWithTime } from '/public/scripts/helpers.js';
-
+console.log(ordenData);
 const select_verifications = $('#select_verificaciones').select2({
   placeholder: 'Selecciona una verificación',
   allowClear: true
@@ -12,6 +12,7 @@ $('#select_verificaciones').on('change', async function () {
 
   const codes_verfications = ordenData.ordenes_static_verified.filter(ver => ver.created_at === verification);
 
+  console.log({ veri: ordenData.ordenes_static_verified, verification });
   for (const ver of codes_verfications) {
     verificarPieza(ver.codigo);
   }
@@ -20,6 +21,7 @@ $('#select_verificaciones').on('change', async function () {
 const verificarPieza = async codigo => {
   const table_data = table_piezas.rows().data().toArray();
   const pieza = table_data.find(pieza => pieza.codigo === codigo);
+  console.log(pieza);
 
   //set background color green to verified row
   const row = table_piezas.rows().nodes().to$().find(`td:contains(${codigo})`).parent();

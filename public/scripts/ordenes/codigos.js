@@ -59,19 +59,20 @@ $('#codigos_table').on('click', 'tbody tr button', async function (e) {
 
 const showBarcode = async data => {
   const code_type = data.code_type;
+  //get templateCustomizer-vertical-menu-template-starter--Style from localstorage
+  const colorPref = localStorage.getItem('templateCustomizer-vertical-menu-template-starter--Style');
+  $('#viewCodeModal').modal('show');
+  $('#codeWrapper').empty();
   if (code_type == 'QR') {
     const svgNode = QRCode(data.code);
 
-    $('#viewCodeModal').modal('show');
-    $('#codeWrapper').empty();
     $('#codeWrapper').append(svgNode);
   } else if (code_type == 'DM') {
     const svgNode = DATAMatrix(data.code);
 
-    $('#viewCodeModal').modal('show');
-    $('#codeWrapper').empty();
     $('#codeWrapper').append(svgNode);
   }
+  $('#codeWrapper svg').attr('fill', colorPref === 'dark' ? '#fff' : '#000');
 };
 
 $('#download-csv').on('click', function () {

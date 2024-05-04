@@ -48,8 +48,8 @@ export const generateOrder = async (req: Request, res: Response) => {
 
 export const verifyProductsOrder = async (req: Request, res: Response) => {
   try {
-    const { order_id, piezas_verificadas } = req.body;
-    const Result = await verifyProds(parseInt(order_id), piezas_verificadas);
+    const { order_id, piezas_verificadas, created_at } = req.body;
+    const Result = await verifyProds(parseInt(order_id), piezas_verificadas, created_at);
     return res.status(200).json({ message: 'Productos verificados' });
   } catch (error: any) {
     console.log('entra error');
