@@ -72,9 +72,23 @@
   </div>
 </div>
 <script>
-  const ordenData = JSON.parse('<%- ordenData %>');
+  let ordenData = {};
 
   let table_piezas;
+  let flatpckr_day;
+  let flatpckr_week;
+
+  let flatpickr_edit;
+  let page = 1;
+  const limit = 10;
+  let loadMore = true;
+  let isLoading = false;
+  let estatusFilters = ['proceso', 'embarque'];
+  let search = '';
+  let timeout_debounce;
+  let createdAtFilter = null;
+  let deliveryDateFilter = null;
+  let filter = 'folio';
 </script>
 
 <script src="/public/scripts/verificador/ordenes/ordenes.js" type="module"></script>

@@ -47,43 +47,7 @@ let search = '';
 let timeout_debounce;
 let createdAtFilter = null;
 let deliveryDateFilter = null;
-
-const flatpckr_created = $('#range_filter').flatpickr({
-  onChange: function (selectedDates, dateStr) {
-    if (selectedDates.length < 2) return;
-
-    const startDate = new Date(selectedDates[0]).toISOString();
-    //end date at the end of the day
-
-    const endDate = new Date(new Date(selectedDates[1]).getTime() + 23 * 60 * 60 * 1000).toISOString();
-
-    createdAtFilter = [startDate, endDate];
-    page = 1;
-    loadMore = true;
-    $('#ordenes_compra_container').empty();
-    loadOrdenes();
-  },
-  ...flatpickOptions
-});
-
-const flatpckr_delivery = $('#range_entrega_filter').flatpickr({
-  onChange: function (selectedDates, dateStr) {
-    if (selectedDates.length < 2) return;
-
-    const startDate = new Date(selectedDates[0]).toISOString();
-
-    //end date at the end of the day
-    const endDate = new Date(new Date(selectedDates[1]).getTime() + 23 * 60 * 60 * 1000).toISOString();
-
-    deliveryDateFilter = [startDate, endDate];
-
-    page = 1;
-    loadMore = true;
-    $('#ordenes_compra_container').empty();
-    loadOrdenes();
-  },
-  ...flatpickOptions
-});
+let filter = 'folio';
 
 $('.filter-checkbox').on('change', function () {
   const checked = $(this).prop('checked');
@@ -121,8 +85,7 @@ $('#search-report-filter').on('input', function () {
 $('#remove-filters-btn').on('click', function () {
   $('#search-report-filter').val('');
 
-  flatpckr_created.clear();
-  flatpckr_delivery.clear();
+  flatpckr_day.clear();
 
   estatusFilters = ['pendiente', 'proceso', 'embarque'];
 
@@ -197,9 +160,11 @@ async function getOrdenes() {
   if (!loadMore) return [];
   const createdAtFilterString = createdAtFilter?.join(',') ?? '';
   const deliveryDateFilterString = deliveryDateFilter?.join(',') ?? '';
+  console.log({ deliveryDateFilterString, createdAtFilterString, loadMore, page, limit, estatusFilters, search });
   const query = `?page=${page}&pageSize=${limit}&estatusFiltersStr=${estatusFilters.join(',')}&search=${search}&createdAtFilterString=${createdAtFilterString}&deliveryDateFilterString=${deliveryDateFilterString}`;
   isLoading = true;
   const ordenes = await fetchData('/ordenes/paging' + query, 'GET'); //api/ordenes
+  console.log({ ordenes });
   isLoading = false;
 
   if (!ordenes.status) {
@@ -279,4 +244,35 @@ function addLeadingZeros(number, length) {
 
 $('#ordenes_compra_container').on('click', '.order_container_child', function () {
   location.href = `/verificador/ordenes/${$(this).attr('order_id')}`;
+});
+
+$('#tab_folio_btn').on('click', function () {
+  if (filter === 'folio') return;
+  filter = 'folio';
+
+  page = 1;
+  loadMore = true;
+  deliveryDateFilter = null;
+  $('#ordenes_compra_container').empty();
+  loadOrdenes();
+});
+
+$('#tab_dia_btn').on('click', function () {
+  if (filter === 'dia') return;
+  filter = 'dia';
+
+  page = 1;
+  loadMore = true;
+  flatpckr_day.setDate(new Date(), true);
+});
+
+$('#tab_semana_btn').on('click', function () {
+  if (filter === 'semana') return;
+  filter = 'semana';
+
+  page = 1;
+  loadMore = true;
+  deliveryDateFilter = null;
+
+  flatpckr_week.setDate(new Date(), true);
 });

@@ -51,17 +51,17 @@ export const renderVerificador = async (_: Request, res: Response) =>
 export const renderVerificadorEmbarques = async (_: Request, res: Response) =>
   res.render('verificador-embarques.ejs', { layout: './../layouts/horizontal.ejs' });
 export const renderVerificadorOrdenes = async (req: Request, res: Response) => {
-  const { order_id } = req.params;
+  // const { order_id } = req.params;
 
-  let ordenData = await getStaticOrden(parseInt(order_id));
+  // let ordenData = await getStaticOrden(parseInt(order_id));
 
-  const code_string = ordenData?.cliente?.code_string;
+  // const code_string = ordenData?.cliente?.code_string;
 
-  ordenData.cliente.code_string = JSON.parse(code_string);
+  // ordenData.cliente.code_string = JSON.parse(code_string);
 
   res.render('verificador-ordenes.ejs', {
-    layout: './../layouts/horizontal.ejs',
-    ordenData: JSON.stringify(ordenData)
+    layout: './../layouts/horizontal.ejs'
+    // ordenData: JSON.stringify(ordenData)
   });
 };
 export const renderConfiguracion = async (_: Request, res: Response) => {

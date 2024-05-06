@@ -140,6 +140,8 @@ export const getOrdenesCompraPaging = async (
 ) => {
   search = search?.trim() === '' ? null : search;
 
+  console.log({ search, estatus, createdAtFilter, deliveryDateFilter });
+
   const { data: Ordenes, error } = await supabase().rpc('search_ordenes_compra', {
     search: search ?? '',
     page,
