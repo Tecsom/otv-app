@@ -1,5 +1,5 @@
 import { isoDateToFormattedWithTime } from '/public/scripts/helpers.js';
-console.log(ordenData);
+
 const select_verifications = $('#select_verificaciones').select2({
   placeholder: 'Selecciona una verificación',
   allowClear: true
@@ -8,32 +8,29 @@ const select_verifications = $('#select_verificaciones').select2({
 $('#select_verificaciones').on('change', async function () {
   const verification = $(this).val();
   $('tr').removeClass('bg-label-success');
+
+  $('#container_piezas_table').removeClass('d-none');
+  $('#container_verificaciones_table').addClass('d-none');
   if (!verification) return;
 
   const codes_verfications = ordenData.ordenes_static_verified.filter(ver => ver.created_at === verification);
+  const codes_not_verfications = ordenData.codigos.filter(
+    codigo => !codes_verfications.find(ver => ver.codigo === codigo.code)
+  );
+  console.log({ codes_verfications, codes_not_verfications });
 
-  console.log({ veri: ordenData.ordenes_static_verified, verification });
-  for (const ver of codes_verfications) {
-    verificarPieza(ver.codigo);
-  }
+  table_verificadas.clear().draw();
+  table_not_verificadas.clear().draw();
+
+  table_verificadas.rows.add(codes_verfications).draw();
+  table_not_verificadas.rows.add(codes_not_verfications).draw();
+
+  $('#container_piezas_table').addClass('d-none');
+  $('#container_verificaciones_table').removeClass('d-none');
 });
 
-const verificarPieza = async codigo => {
-  const table_data = table_piezas.rows().data().toArray();
-  const pieza = table_data.find(pieza => pieza.codigo === codigo);
-  console.log(pieza);
-
-  //set background color green to verified row
-  const row = table_piezas.rows().nodes().to$().find(`td:contains(${codigo})`).parent();
-  row.addClass('bg-label-success');
-  const cells = row.find('td');
-
-  //set datatable row data to verified
-  pieza.verified = true;
-  table_piezas.rows().invalidate().draw();
-};
-
-$(document).ready(async function () {
+loadVerificaciones = async () => {
+  select_verifications.empty();
   const codes_verfications = ordenData.ordenes_static_verified;
 
   //group verifications by created_at
@@ -51,4 +48,4 @@ $(document).ready(async function () {
   }
 
   select_verifications.val(null).trigger('change');
-});
+};

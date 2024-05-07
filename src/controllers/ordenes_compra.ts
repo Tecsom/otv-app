@@ -12,7 +12,8 @@ import {
   OrderProductEdit,
   getProductsCodes,
   generarOrdenDeCompraEstatica,
-  verifyProds
+  verifyProds,
+  getStaticOrden
 } from './../utils/ordenes_compra';
 import type { CreateOrderDataModel, ProductAdd } from '@/types/ordenes_compra';
 
@@ -196,4 +197,16 @@ export const editOrderProduct = async (req: Request, res: Response) => {
     console.log(e);
     res.status(500).json(e);
   }
+};
+
+export const getStaticOrderC = async (req: Request, res: Response) => {
+  const { order_id } = req.params;
+
+  let ordenData = await getStaticOrden(parseInt(order_id));
+
+  const code_string = ordenData?.cliente?.code_string;
+
+  ordenData.cliente.code_string = JSON.parse(code_string);
+
+  res.status(200).json(ordenData);
 };

@@ -1,5 +1,4 @@
 import { fetchData, loadingButton, isoDateToFormatted, isoDateToFormattedWithTime } from '/public/scripts/helpers.js';
-let verification_mode = false;
 
 let verificadas_array = [];
 $('#exit-checker').on('click', async function () {
@@ -51,6 +50,9 @@ const optiones_html = `
   <button class="btn btn-sm btn-opciones-pieza">
     <i class="ti ti-eye"></i>
   </button>
+  <button class="btn btn-sm btn-ver-codigos">
+    <i class="ti ti-plus"></i>
+  </button>
   `;
 
 table_piezas = $('#table_piezas_oc').DataTable({
@@ -58,26 +60,94 @@ table_piezas = $('#table_piezas_oc').DataTable({
     url: 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/es-ES.json'
   },
   columns: [
-    { data: 'codigo', title: '#CODIGO' },
-    //{ data: 'numero_parte', title: 'No. de parte' },
-    { data: 'revision', title: 'Revisión' },
-    { data: 'descripcion', title: 'Descripción' },
+    { data: 'numero_parte', title: 'No. de parte' },
+    {
+      title: 'Total verificado',
+      render: function (data, type, row) {
+        //verificaciones unicas por pieza
+        const verificaciones = ordenData.ordenes_static_verified.filter(ver => row.codigos.includes(ver.codigo));
+        const verificaciones_unicas = verificaciones.reduce((acc, ver) => {
+          if (!acc.includes(ver.codigo)) {
+            acc.push(ver.codigo);
+          }
+          return acc;
+        }, []);
+        return `${verificaciones_unicas.length} de ${row.codigos.length}`;
+      }
+    },
     { defaultContent: optiones_html, title: 'Opciones' }
   ],
   searching: false,
   paging: false,
   info: false,
-  autoWidth: false,
-  rowGroup: {
-    dataSrc: 'numero_parte'
+  autoWidth: false
+});
+
+table_verificadas = $('#table_verificadas').DataTable({
+  language: {
+    url: 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/es-ES.json'
+  },
+  columns: [{ data: 'codigo', title: 'Código' }],
+  searching: false,
+  paging: false,
+  info: false,
+  autoWidth: false
+});
+
+table_not_verificadas = $('#table_not_verificadas').DataTable({
+  language: {
+    url: 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/es-ES.json'
+  },
+  columns: [{ data: 'code', title: 'Código' }],
+  searching: false,
+  paging: false,
+  info: false,
+  autoWidth: false
+});
+
+const format_subrow = (data, isLast) => {
+  const styles = !isLast ? 'border-bottom: 1px dotted #dee2e6;' : '';
+  return `
+    <div class="row py-3 px-2" codigo="${data.code}" style="${styles}" >
+      <div class="col-md-6">
+        <p class="mb-0"><strong>Código: </strong>${data.code}</p>
+      </div>
+      <div class="col-md-6">
+        <p class="mb-0"><strong>Revisión: </strong>${data.revisiones.nombre}</p>
+      </div>
+    </div>
+  `;
+};
+
+table_piezas.on('click', '.btn-ver-codigos', function (e) {
+  let tr = e.target.closest('tr');
+  let row = table_piezas.row(tr);
+  const data = row.data();
+  const full_codigos = ordenData.codigos;
+  const codigos = full_codigos.filter(codigo => data.codigos.includes(codigo.code));
+  const codigos_html = codigos
+    .map((codigo, index) => {
+      return format_subrow({ ...codigo, revisiones: data.revisiones }, index === codigos.length - 1);
+    })
+    .join('');
+
+  if (row.child.isShown()) {
+    // This row is already open - close it
+    row.child.hide();
+    $(this).find('i').removeClass('ti-minus').addClass('ti-plus');
+  } else {
+    // Open this row
+    row.child(codigos_html).show();
+    $(this).find('i').removeClass('ti-plus').addClass('ti-minus');
   }
 });
 
-$(document).ready(async function () {
-  $('#folio_oc').text(ordenData.folio_unico);
-  $('#fecha_entrega_oc').text(isoDateToFormatted(ordenData.fecha_entrega));
-  $('#cliente_oc').text(ordenData?.cliente?.nombre ?? '-');
-  $('#cliente_folio_oc').text(ordenData.folio_cliente);
+loadOrderData = async () => {
+  table_piezas.clear().draw();
+  $('#folio_oc').text(ordenData.folio_unico ?? 'Sin folio');
+  $('#fecha_entrega_oc').text(isoDateToFormatted(ordenData.fecha_entrega) ?? 'Sin fecha de entrega');
+  $('#cliente_oc').text(ordenData?.cliente?.nombre ?? 'Sin cliente relacionado');
+  $('#cliente_folio_oc').text(ordenData.folio_cliente ?? 'Sin folio de cliente');
 
   $('#client_avatar').text(ordenData?.cliente?.nombre.charAt(0).toUpperCase());
 
@@ -86,37 +156,30 @@ $(document).ready(async function () {
     $('#client_pp').attr('src', pp_res.data);
     $('#client_avatar').addClass('d-none');
     $('#client_pp').removeClass('d-none');
+  } else {
+    $('#client_avatar').removeClass('d-none');
+    $('#client_pp').addClass('d-none');
   }
 
-  const data_table_piezas = [];
+  // const data_table_piezas = [];
   const { productos, codigos } = ordenData;
 
-  for (const codigo of codigos) {
-    const { code, numero_parte, verified } = codigo;
-    const producto = productos.find(producto => producto.codigos?.some(codigo => codigo === code));
-    data_table_piezas.push({
-      codigo: code,
-      verified: false,
-      numero_parte: producto.numero_parte,
-      revision: producto.revisiones.nombre,
-      descripcion: producto.descripcion,
-      producto
-    });
-  }
-  table_piezas.rows.add(data_table_piezas).draw();
+  // for (const codigo of codigos) {
+  //   const { code, numero_parte, verified } = codigo;
+  //   const producto = productos.find(producto => producto.codigos?.some(codigo => codigo === code));
+  //   data_table_piezas.push({
+  //     codigo: code,
+  //     verified: false,
+  //     numero_parte: producto.numero_parte,
+  //     revision: producto.revisiones.nombre,
+  //     descripcion: producto.descripcion,
+  //     producto
+  //   });
+  // }
+
+  table_piezas.rows.add(productos).draw();
   updateGeneralProgress();
-  //if pieza is verified set background color to green
-  // const rows = table_piezas.rows().nodes().to$();
-  // rows.each((index, row) => {
-  //   const cells = $(row).find('td');
-  //   const codigo = $(cells[0]).text();
-  //   const pieza = data_table_piezas.find(pieza => pieza.codigo === codigo);
-  //   if (pieza.verified) {
-  //     // $('#table_piezas_oc tr').removeClass('bg-label-success');
-  //     $(row).addClass('bg-label-success');
-  //   }
-  // });
-});
+};
 
 $('#startVerificacion').on('click', function () {
   $('#start_verificacion').modal('show');
@@ -124,7 +187,7 @@ $('#startVerificacion').on('click', function () {
 
 $('#table_piezas_oc').on('click', '.btn-opciones-pieza', async function () {
   const data = table_piezas.row($(this).parents('tr')).data();
-  const producto = data.producto;
+  const producto = data;
   console.log({ producto, data });
   $('#pieza_numero_parte').text(producto.numero_parte);
   $('#pieza_numero_parte_title').text(producto.numero_parte);
@@ -185,6 +248,16 @@ $('#start_verificacion_btn').on('click', function () {
   $('#container_general').addClass('d-none');
   $('#container_verificacion').removeClass('d-none');
   $('#select_verificaciones ~ span').addClass('d-none');
+
+  $('#container_piezas_table').addClass('d-none');
+  $('#container_verificaciones_table').removeClass('d-none');
+
+  table_verificadas.clear().draw();
+  table_not_verificadas.clear().draw();
+
+  const codigos = ordenData.codigos;
+
+  table_not_verificadas.rows.add(codigos).draw();
 });
 
 $('#cancel_verificacion_btn').on('click', function () {
@@ -197,6 +270,10 @@ $('#cancel_verification_modal_btn').on('click', function () {
   $('#cancel_verificacion_btn').addClass('d-none');
   $('#startVerificacion').removeClass('d-none');
   $('#select_verificaciones ~ span').removeClass('d-none');
+
+  $('#container_piezas_table').removeClass('d-none');
+  $('#container_verificaciones_table').addClass('d-none');
+
   resetVerifications();
 });
 
@@ -224,38 +301,46 @@ const socket = io.connect();
 socket.on('scanner', data => {
   console.log({ verification_mode });
   if (verification_mode === true) {
+    console.log({ data });
     verificarPieza(data);
   }
 });
 
 const verificarPieza = async codigo => {
-  const table_data = table_piezas.rows().data().toArray();
-  const pieza = table_data.find(pieza => pieza.codigo === codigo);
-  console.log({ pieza });
+  const exists = ordenData.codigos.find(pieza => pieza.code === codigo);
+  const isVerified = verificadas_array.includes(codigo);
 
-  if (!pieza) {
+  if (!exists) {
     console.error('Pieza no encontrada');
     return;
   }
 
-  if (pieza.verified) {
+  if (isVerified) {
     toastr.warning('Pieza ya verificada');
     return;
   }
 
-  //set background color green to verified row
-  const row = table_piezas.rows().nodes().to$().find(`td:contains(${codigo})`).parent();
-  row.addClass('bg-label-success');
-  const cells = row.find('td');
+  table_verificadas.rows
+    .add([
+      {
+        codigo
+      }
+    ])
+    .draw();
 
-  //set datatable row data to verified
-  pieza.verified = true;
-  table_piezas.rows().invalidate().draw();
+  //remove from table_not_verificadas
+  table_not_verificadas.rows().every(function () {
+    const row = this.data();
+    if (row?.code === codigo) {
+      this.remove().draw();
+    }
+  });
+
   if (!verificadas_array.includes(codigo)) {
     verificadas_array.push(codigo);
 
     const piezas_verificadas = verificadas_array.length;
-    const piezas_totales = table_data.length;
+    const piezas_totales = ordenData.codigos.length;
 
     const progress = (piezas_verificadas / piezas_totales) * 100;
 
@@ -264,14 +349,8 @@ const verificarPieza = async codigo => {
   }
 };
 $('#save_verification_modal_btn').on('click', async function () {
-  const table_data = table_piezas.rows().data().toArray();
-  const piezas = table_data.filter(pieza => pieza.verified === true);
-  const piezas_verificadas = piezas.map(pieza => {
-    console.log({ pieza });
-    return {
-      codigo: pieza.codigo
-    };
-  });
+  const piezas_verificadas = table_verificadas.rows().data().toArray();
+
   const order_id = ordenData.id;
   const button = new loadingButton($(this), 'Guardando...');
 
@@ -286,8 +365,6 @@ $('#save_verification_modal_btn').on('click', async function () {
     piezas_verificadas,
     created_at
   };
-
-  console.log({ data });
 
   button.start();
   const response = await fetchData('/ordenes/verificar', 'POST', data);
@@ -305,6 +382,9 @@ $('#save_verification_modal_btn').on('click', async function () {
     $('#container_general').removeClass('d-none');
     $('#container_verificacion').addClass('d-none');
 
+    $('#container_piezas_table').removeClass('d-none');
+    $('#container_verificaciones_table').addClass('d-none');
+
     verificadas_array = [];
     ordenData.codigos = ordenData.codigos.map(pieza => {
       if (piezas_verificadas.find(pieza_verificada => pieza_verificada.codigo === pieza.code)) {
@@ -319,12 +399,13 @@ $('#save_verification_modal_btn').on('click', async function () {
         codigo: cod.codigo
       });
     }
-    console.log({ saveed: ordenData });
 
     $('#select_verificaciones ~ span').removeClass('d-none');
+    $('#select_verificaciones').empty();
     $('#select_verificaciones').append(new Option(isoDateToFormattedWithTime(created_at), created_at, false, false));
     updateGeneralProgress();
     $('#save_verification_modal').modal('hide');
+    $(".order_container_child[order_id='" + ordenData.id + "']").click();
   } else {
     toastr.error('Error al verificar piezas');
   }
