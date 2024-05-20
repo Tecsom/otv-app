@@ -55,6 +55,8 @@ const generateOrder = async () => {
     order_id
   };
 
+  console.log(productos);
+
   const response = await fetchData('/ordenes/generar', 'POST', data);
 
   if (!response.status) {

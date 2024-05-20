@@ -96,7 +96,8 @@ export const generarOrdenDeCompraEstatica = async (order_data: any) => {
         ...product,
         pieza_id: product.piezas.id,
         revision: product.revisiones.id,
-        order_id: orden.id
+        order_id: orden.id,
+        type: product.piezas.type
       },
       product.quantity
     );
@@ -264,7 +265,7 @@ export const getProducts = async (id: string) => {
       `
     id,
     created_at,
-    piezas (id, numero_parte, descripcion, estado, costo_venta, costo_produccion),
+    piezas (id, numero_parte, descripcion, estado, costo_venta, costo_produccion, type),
     revisiones (id, nombre, descripcion),
     quantity
     `
@@ -353,6 +354,11 @@ const deleteCodesFromProduct = async (product_id: number): Promise<boolean> => {
 const generateProductCodeDb = async (product: ProductCode, quantity: number): Promise<any> => {
   await deleteCodesFromProduct(product.id);
   let codes = [];
+
+  if(product.type == 'bulk')
+  {
+    quantity = 1
+  }
   for (let i = 0; i < quantity; i++) {
     const { code_str: code, consecutivo } = await generateCodesForProduct({ ...product }, i);
     if (!code) {
