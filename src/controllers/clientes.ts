@@ -16,6 +16,7 @@ import {
 import { deleteFile, deleteFolder, getFilePublicURL, getFilesByPath, uploadFile } from '@/utils/storage';
 import { FileUpld, QueryTable } from '@/types/types';
 import supabase from '@/config/supabase';
+import { Pieza } from '@/types/piezas';
 
 export const getClientesC = async (req: Request, res: Response) => {
   try {
@@ -97,12 +98,15 @@ export const createPiezaC = async (req: Request, res: Response) => {
   const cliente_id = parseInt(id);
   const piezaData = req.body;
   piezaData.cliente_id = cliente_id;
+
   const { revision_nombre } = piezaData;
   const imagenes = piezaData.imagenes;
   const archivos = piezaData.archivos;
   delete piezaData.imagenes;
   delete piezaData.archivos;
   delete piezaData.revision_nombre;
+
+  console.log(piezaData)
 
   try {
     const pieza = await createPieza(piezaData);
@@ -131,6 +135,8 @@ export const editPiezaC = async (req: Request, res: Response) => {
 
   try {
     const pieza = await updatePieza(piezaData.id, piezaData);
+
+    console.log(piezaData)
 
     res.status(200).json({});
   } catch (error: any) {
@@ -246,6 +252,14 @@ export const getPiezasTableC = async (req: Request, res: Response) => {
     page: parseInt(start ?? '0') / parseInt(length ?? '10') + 1,
     limitperpage: parseInt(length ?? '10'),
     client: parseInt(client_id as string)
+  });
+
+
+  data.forEach((e: Pieza) => {
+
+    console.log(e.type)
+
+    e.type = e.type == 'bulk' ? "A granel" : "Individual"
   });
 
   res.status(200).json({

@@ -180,6 +180,7 @@ $('#crear-pieza-form').on('submit', async function (e) {
   const cliente_id = clientData.id;
   const formData = new FormData(this);
   let data = Object.fromEntries(formData);
+  console.log(data);
   const accepted_images = dropzoneImages.getAcceptedFiles();
   const accepted_files = dropzoneFiles.getAcceptedFiles();
 
@@ -219,7 +220,7 @@ $('#crear-pieza-form').on('submit', async function (e) {
 
 piezas_table.on('click', 'tbody tr', async function () {
   const data = piezas_table.row(this).data();
-  const { cliente_id, id, estado, created_at, numero_parte, descripcion } = data;
+  const { cliente_id, id, estado, created_at, numero_parte, descripcion, type } = data;
   $('#offcanvas_pieza').attr('data-pieza-id', id);
   $('#offcanvas_pieza').data('pieza_data', data);
   $('#revision_date_created').text(isoDateToFormattedWithTime(created_at));
@@ -285,7 +286,8 @@ select_revision.on('change', async function () {
 
 $('#btn_edit_pieza').on('click', async function () {
   const pieza_data = $('#offcanvas_pieza').data('pieza_data');
-  const { numero_parte, descripcion, estado, costo_venta, costo_produccion } = pieza_data;
+
+  const { numero_parte, descripcion, estado, costo_venta, costo_produccion, type } = pieza_data;
   $('#numero_parte_editar').val(numero_parte);
   $('#descripcion_editar').val(descripcion);
   $('#costo_venta_editar').val(costo_venta);
@@ -293,6 +295,12 @@ $('#btn_edit_pieza').on('click', async function () {
 
   $('#modal_editar_pieza').modal('show');
   $('#offcanvas_pieza').offcanvas('hide');
+
+  if (type == 'bulk') {
+    $('#tipo_bulk_edit').attr('checked', true);
+  } else {
+    $('#tipo_simple_edit').attr('checked', true);
+  }
 
   $('#switch-input-estado')
     .prop('checked', estado === true)
