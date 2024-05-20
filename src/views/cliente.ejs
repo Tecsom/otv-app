@@ -541,6 +541,17 @@
             <label for="costo_venta" class="form-label required">Costo de venta</label>
             <input type="number" min="0" id="costo_venta" name="costo_venta" class="form-control" />
           </div>
+          <div class="col-md-6 ">
+            <label class="form-label d-block required">Tipo de pieza</label>
+            <div class="form-check form-check-inline mt-3">
+              <input class="form-check-input" type="radio" name="type" id="tipo_simple_create" value="simple" />
+              <label class="form-check-label" for="tipo_simple_create">Individual</label>
+            </div>
+            <div class="form-check form-check-inline mt-3">
+              <input class="form-check-input" type="radio" name="type" id="tipo_bulk_create" value="bulk" />
+              <label class="form-check-label" for="tipo_bulk_create">A granel</label>
+            </div>
+          </div>
           <div class="col-md-12">
             <label for="input-imgs" class="form-label required">Imágenes</label>
             <div id="dpz-imgs" class="fallback dropzone">
@@ -587,6 +598,17 @@
           <div class="col-md-6">
             <label for="costo_venta_editar" class="form-label required">Costo de venta</label>
             <input type="number" min="0" id="costo_venta_editar" name="costo_venta" class="form-control" />
+          </div>
+          <div class="col-md-12 ">
+            <label class="form-label d-block required">Tipo de pieza</label>
+            <div class="form-check form-check-inline mt-3">
+              <input class="form-check-input" type="radio" name="type" id="tipo_simple_edit" value="simple" />
+              <label class="form-check-label" for="tipo_simple_edit">Individual</label>
+            </div>
+            <div class="form-check form-check-inline mt-3">
+              <input class="form-check-input" type="radio" name="type" id="tipo_bulk_edit" value="bulk" />
+              <label class="form-check-label" for="tipo_bulk_edit">A granel</label>
+            </div>
           </div>
           <div class="col-md-12">
             <div>
@@ -772,6 +794,8 @@
 
   var piezasData = JSON.parse('<%- JSON.stringify(piezasData) %>') ?? [];
   var piezas_table;
+
+  console.log(piezasData)
 </script>
 
 <script src="/public/scripts/clientes/cliente.js" type="module"></script>

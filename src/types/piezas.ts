@@ -7,6 +7,7 @@ export type Pieza = {
   descripcion: string;
   cliente_id: number;
   clientes?: Cliente;
+  type: string;
 };
 
 export type Revision = {
