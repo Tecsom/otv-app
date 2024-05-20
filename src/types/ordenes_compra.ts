@@ -45,6 +45,7 @@ export interface ProductCode {
   pieza_id: number;
   revision: number;
   created_at: string;
+  type: string;
 }
 
 export interface productEdit {

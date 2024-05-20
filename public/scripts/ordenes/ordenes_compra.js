@@ -48,6 +48,7 @@ $('#ordenes_table').DataTable({
   columns: [
     { data: 'numero_parte', title: '# Parte', orderable: true, className: 'non-selectable' },
     { data: 'revision_name', title: 'Revisión', orderable: false, className: 'non-selectable' },
+    { data: 'type', title: 'Tipo', orderable: false, className: 'non-selectable', width: '1px' },
     //{ data: 'descripcion', title: 'Descripción', orderable: true, className: 'non-selectable' },
     { data: 'currency_costo_produccion', title: 'Costo', orderable: false, className: 'non-selectable' },
     { data: 'quantity', title: 'Cant.', orderable: false, className: 'non-selectable' },
@@ -466,10 +467,12 @@ $('#ordenes_compra_container').on('click', '.order_container_child', async funct
 
   $('#ordenes_table')
     .DataTable()
-    .column(5)
+    .column(6)
     .visible(data.estado === 'pendiente');
   if (data.estado === 'pendiente') $('#addProductsButton').removeClass('d-none');
   else $('#addProductsButton').addClass('d-none');
+
+  console.log($('#container_reporte'));
 
   $('#client_id').text(data.folio_id);
   $('#data-last-update').text(isoDateToFormattedWithTime(data.last_update));
@@ -556,6 +559,7 @@ $('#ordenes_compra_container').on('click', '.order_container_child', async funct
   loadFiles(data.id);
   $('#container-no-data').addClass('d-none');
   $('#container-data').removeClass('d-none');
+  console.log('llegó');
 });
 
 const renderListItem = (name, url) => {
@@ -735,7 +739,7 @@ loadProductos = async id => {
 
   const tableData = $('#ordenes_table').data();
 
-  console.log({ productos });
+  console.log(tableData);
 
   const productosTable = productos.map(product => {
     return {
@@ -757,7 +761,8 @@ loadProductos = async id => {
       client_name: tableData.clientes.nombre,
       piezas: product.piezas,
       revisiones: product.revisiones,
-      proveedor_id: tableData.clientes.proveedor_id
+      proveedor_id: tableData.clientes.proveedor_id,
+      type: product.piezas.type
     };
   });
 
@@ -1098,7 +1103,7 @@ $('#confirm_cancel_order').on('click', async function () {
     .removeClass()
     .addClass('text-capitalize badge bg-' + badgeType['cancelada']);
 
-  $('#ordenes_table').DataTable().column(5).visible(false);
+  $('#ordenes_table').DataTable().column(6).visible(false);
 });
 
 $('#confirm_restore_order').on('click', async function () {

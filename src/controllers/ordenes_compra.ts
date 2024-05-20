@@ -16,6 +16,7 @@ import {
   getStaticOrden
 } from './../utils/ordenes_compra';
 import type { CreateOrderDataModel, ProductAdd } from '@/types/ordenes_compra';
+import { Pieza } from '@/types/piezas';
 
 export const getOrdenes = async (req: Request, res: Response) => {
   try {
@@ -85,6 +86,7 @@ export const getOrdenesPagingC = async (req: Request, res: Response) => {
       createdAtFilter as any[],
       deliveryDateFilter as any[]
     );
+
     res.status(200).json(ordenes);
   } catch (error: any) {
     res.status(500).json(error);
@@ -119,6 +121,16 @@ export const getOrderProducts = async (req: Request, res: Response) => {
   const orderid = req.params.order_id;
   try {
     const products = await getProducts(orderid);
+
+
+    products.forEach((e: any) => {
+
+      e.piezas.type = e.piezas.type == 'bulk' ? 'A granel' : 'Individual'
+
+    })
+
+    console.log(products)
+
     res.status(200).json(products);
   } catch (e) {
     res.status(500).json(e);
