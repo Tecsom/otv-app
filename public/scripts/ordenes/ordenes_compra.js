@@ -382,7 +382,7 @@ async function getOrdenes() {
   const query = `?page=${page}&pageSize=${limit}&estatusFiltersStr=${estatusFilters.join(',')}&search=${search}&createdAtFilterString=${createdAtFilterString}&deliveryDateFilterString=${deliveryDateFilterString}`;
   isLoading = true;
   const ordenes = await fetchData('/ordenes/paging' + query, 'GET'); //api/ordenes
-  console.log({ordenes})
+  console.log({ ordenes });
   isLoading = false;
 
   if (!ordenes.status) {
