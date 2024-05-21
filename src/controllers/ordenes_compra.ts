@@ -122,13 +122,6 @@ export const getOrderProducts = async (req: Request, res: Response) => {
   try {
     const products = await getProducts(orderid);
 
-
-    products.forEach((e: any) => {
-
-      e.piezas.type = e.piezas.type == 'bulk' ? 'A granel' : 'Individual'
-
-    })
-
     console.log(products)
 
     res.status(200).json(products);

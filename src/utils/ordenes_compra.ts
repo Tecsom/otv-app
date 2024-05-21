@@ -36,6 +36,7 @@ export const getStaticOrden = async (id: number) => {
     .select('*, ordenes_static_verified(order_id, id, created_at, codigo)')
     .eq('id', id)
     .single();
+    console.log(orden)
   if (error) {
     console.error('Error fetching Ordenes:', error.message);
     throw error;
@@ -53,6 +54,8 @@ export const getStaticOrden = async (id: number) => {
     }
   }
 
+
+
   return orden;
 };
 
@@ -68,6 +71,8 @@ export const getOrdenByCodeProd = async (code: string) => {
 export const generarOrdenDeCompraEstatica = async (order_data: any) => {
   const { order_id, ...static_data } = order_data;
   const productos = order_data.productos;
+
+  console.log(productos)
 
   const { data: orden, error } = await supabase()
     .from('ordenes_static')

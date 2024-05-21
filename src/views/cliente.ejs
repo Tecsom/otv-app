@@ -794,6 +794,7 @@
 
   var piezasData = JSON.parse('<%- JSON.stringify(piezasData) %>') ?? [];
   var piezas_table;
+  piezasData.type = piezasData.type == "bulk" ? "A granel" : "Individual";
 
   console.log(piezasData)
 </script>
