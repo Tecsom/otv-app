@@ -256,9 +256,6 @@ export const getPiezasTableC = async (req: Request, res: Response) => {
 
 
   data.forEach((e: Pieza) => {
-
-    console.log(e.type)
-
     e.type = e.type == 'bulk' ? "A granel" : "Individual"
   });
 

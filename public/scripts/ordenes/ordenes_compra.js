@@ -48,7 +48,19 @@ $('#ordenes_table').DataTable({
   columns: [
     { data: 'numero_parte', title: '# Parte', orderable: true, className: 'non-selectable' },
     { data: 'revision_name', title: 'Revisión', orderable: false, className: 'non-selectable' },
-    { data: 'type', title: 'Tipo', orderable: false, className: 'non-selectable', width: '1px' },
+    {
+      data: 'type',
+      title: 'Tipo',
+      orderable: false,
+      className: 'non-selectable',
+      render: function (data, type, row) {
+        if (data == 'bulk') {
+          return 'A granel';
+        } else {
+          return 'Individual';
+        }
+      }
+    },
     //{ data: 'descripcion', title: 'Descripción', orderable: true, className: 'non-selectable' },
     { data: 'currency_costo_produccion', title: 'Costo', orderable: false, className: 'non-selectable' },
     { data: 'quantity', title: 'Cant.', orderable: false, className: 'non-selectable' },
