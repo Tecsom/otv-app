@@ -377,12 +377,14 @@ const verificarCantidad = (producto, codigo) => {
       toastr.error('La cantidad ingresada es mayor a la cantidad de la pieza');
       return false;
     }
-    if ($('#check_quantity').val() <= 0) {
-      toastr.error('Debe ingresar una cantidad valida');
-      return false;
-    }
+
     if ($('#check_quantity').val() === '') {
       toastr.error('Ingrese la cantidad de producto');
+      return false;
+    }
+
+    if ($('#check_quantity').val() <= 0) {
+      toastr.error('Debe ingresar una cantidad valida');
       return false;
     }
     $('#ask_quantity').modal('hide');
