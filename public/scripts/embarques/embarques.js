@@ -1,4 +1,4 @@
-import { fetchData } from "../helpers.js";
+import { fetchData, isoDateToFormatted } from "../helpers.js";
 
 $(() => {
   init();
@@ -48,7 +48,7 @@ async function loadEmbarques() {
             <p class="mb-0 small"><strong>Cliente: </strong>${embarque.descripcion ?? '<span style="color:Red">Sin cliente relacionado</span>'}</p>
             <p class="mb-0 small"><strong>Folio de cliente: </strong></p>
             <p class="mb-0 small"><strong>Fecha de entrega: </strong></p>
-            <p class="mb-0 small"><strong>Fecha de creación: </strong></p>   
+            <p class="mb-0 small"><strong>Fecha de creación: ${isoDateToFormatted(embarque.created_at)}</strong></p>   
           </div>      
         </div>
       </div>
@@ -57,9 +57,7 @@ async function loadEmbarques() {
   $newdiv1.data({ data: embarque });
   $container.append($newdiv1);
   }
-
 }
-
 
 $("#create_order").on('submit', async function (e) {
   e.preventDefault();
@@ -101,6 +99,11 @@ $("#embarques_container").on('click', '.embarque_container_child', async functio
 
   const embarque = await fetchData('/embarque/' + data.id)
 
-  console.log(embarque.data)
+  $("#data-folio").text($embarque.attr('embarque_id'))
+  $("#data-fecha-creacion").text(isoDateToFormatted(data.created_at))
+
+
+
+
 
 })
