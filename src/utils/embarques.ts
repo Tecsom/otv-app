@@ -5,6 +5,7 @@ import { ApiResult } from "@/types/types";
 export const listEmbarques = async () => {
     const { data: Embarques, error } = await supabase().from('embarques').select('*').order('id', { ascending: false });
 
+
     if (error) {
         console.error("Error en la consult", error)
         throw error;
