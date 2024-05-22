@@ -5,6 +5,7 @@ import OrdenesCompra from './ordenes_compra';
 import SettingsRoutes from './settings';
 import UsuariosRoutes from './usuarios';
 import authRoutes from './auth';
+import embarquesRoutes from './embarques'
 
 export const viewsRoutes = [ViewsRoutes];
-export const apiRoutes = [ScannerRoutes, ClientesRoutes, OrdenesCompra, SettingsRoutes, UsuariosRoutes, authRoutes];
+export const apiRoutes = [ScannerRoutes, ClientesRoutes, OrdenesCompra, SettingsRoutes, UsuariosRoutes, authRoutes, embarquesRoutes];
