@@ -1,9 +1,9 @@
 <link rel="stylesheet" href="/public/assets/vendor/css/pages/app-chat.css" />
 <style>
-  .order_container_child {
+  .embarque_container_child {
     cursor: pointer;
   }
-  .order_container_child:hover {
+  .embarque_container_child:hover {
     background-color: rgba(0, 0, 0, 0.05);
   }
 
@@ -312,23 +312,23 @@
                     <div class="row">
                       <div class="col-md-12">
                         <div class="row">
-                          <div class="col-md-3">
+                          <div class="col-md-12">
                             <div class="row g-2">
                               <div class="col-md-12" id="container-imagenes">
-                                <label for="input-imgs" class="form-label required">Imágenes</label>
-                                <div id="dpz-imgs" class="list-group mt-2"></div>
+                                <label for="input-imgs" class="form-label required">Tipo de contenedor</label>
+                                <input type="text" class="form-control"  />
                               </div>
-                              <div class="col-md-12" id="container-archivos">
+                              <!-- <div class="col-md-12" id="container-archivos">
                                 <label for="input-files" class="form-label required">Archivos</label>
                                 <div id="dpz-files" class="list-group mt-2"></div>
-                              </div>
+                              </div> -->
                             </div>
                           </div>
-                          <div class="col-md-9">
+                          <!-- <div class="col-md-9">
                             <div id="dropzone" class="fallback dropzone">
                               <input id="input-dropzone" type="file" multiple />
                             </div>
-                          </div>
+                          </div> -->
                         </div>
                       </div>
                       <div class="col-md-12 d-flex justify-content-end mt-2">
@@ -373,22 +373,14 @@
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel1">Nueva orden</h5>
+          <h5 class="modal-title" id="exampleModalLabel1">Nuevo embarque</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
           <form id="create_order" class="row g-3">
-            <div class="col-md-6">
-              <label for="folio_id" class="form-label required">Folio del cliente</label>
-              <input type="text" id="folio_id" name="nombre" class="form-control" />
-            </div>
-            <div class="col-md-6 col-12">
-              <label for="date_picker" class="form-label">Fecha de entrega</label>
-              <input type="hidden" class="form-control flatpickr-input" placeholder="dd/mm/aaaa" id="date_picker" />
-            </div>
             <div class="col-md-12">
-              <label for="select_client" class="form-label">Cliente</label>
-              <select name="client" id="select_client" class="form-select"></select>
+              <label for="descripcion_embarque" class="form-label required">Descripcion</label>
+              <input type="text" id="descripcion_embarque" name="nombre" class="form-control" />
             </div>
           </form>
         </div>
@@ -603,7 +595,7 @@
     var loadFiles;
     var codigos_table;
     var verificaciones_table;
-    var loadProductos = () => {};
+    var loadEmbarques = () => {};
   </script>
 
   <script src="/public/scripts/embarques/embarques.js" type="module"></script>

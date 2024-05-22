@@ -7,6 +7,7 @@ import UsuariosRoutes from './usuarios';
 import authRoutes from './auth';
 import InventoryRoutes from './inventory';
 import MovementsRoutes from './movements';
+// import embarquesRoutes from './embarques';
 
 export const viewsRoutes = [ViewsRoutes];
 export const apiRoutes = [
@@ -16,6 +17,7 @@ export const apiRoutes = [
   SettingsRoutes,
   UsuariosRoutes,
   authRoutes,
+
   InventoryRoutes,
   MovementsRoutes
 ];
