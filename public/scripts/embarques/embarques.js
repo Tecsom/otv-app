@@ -181,6 +181,7 @@ async function loadEmbarques() {
 
 $('#create_embarque').on('submit', async function (e) {
   e.preventDefault();
+
   //Variables para post
   $('#create_embarque_button').prop('disabled', true);
 
@@ -198,6 +199,7 @@ $('#create_embarque').on('submit', async function (e) {
   const isoStringEntrega = fecha_entrega.toISOString();
 
   const descripcion = $descripcion.val().trim();
+  const tipo_contenedor = $tipo_contenedor.val().trim();
 
   if (descripcion == '' || fecha_embarque == '' || fecha_entrega == '') {
     toastr.error('Completar los campos para crear el embarque');
@@ -222,6 +224,7 @@ $('#create_embarque').on('submit', async function (e) {
 
   toastr.success('Creado con éxito');
   $descripcion.val('');
+  $tipo_contenedor.val('');
 
   $('#create_embarque_modal').modal('hide');
 
