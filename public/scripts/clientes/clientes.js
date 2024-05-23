@@ -5,6 +5,11 @@ $('#create-client-form').on('submit', async function (event) {
   const formData = new FormData(this);
   const data = Object.fromEntries(formData);
 
+  if (data.nombre == '' || data.identificador == '') {
+    toastr.error('Completar el campo de nombre y rfc para crear el cliente');
+    return;
+  }
+
   const button = new loadingButton('#confirm_new_client');
   button.start();
 

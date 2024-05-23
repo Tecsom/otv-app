@@ -180,6 +180,19 @@ $('#crear-pieza-form').on('submit', async function (e) {
   const cliente_id = clientData.id;
   const formData = new FormData(this);
   let data = Object.fromEntries(formData);
+
+  if (
+    data.numero_parte == '' ||
+    data.descripcion == '' ||
+    data.revision_nombre == '' ||
+    data.costo_produccion == '' ||
+    data.costo_venta == '' ||
+    data.type == ''
+  ) {
+    toastr.warning('Rellene los campos obligatorios para crear la pieza');
+    return;
+  }
+
   console.log(data);
   const accepted_images = dropzoneImages.getAcceptedFiles();
   const accepted_files = dropzoneFiles.getAcceptedFiles();

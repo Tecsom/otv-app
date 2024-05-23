@@ -1,9 +1,9 @@
-import { Embarque } from "@/types/embarques";
+import { Embarque, EmbarqueProduct } from "@/types/embarques";
 import supabase from "@/config/supabase";
 import { ApiResult } from "@/types/types";
 
 export const index = async () => {
-    const { data: Embarques, error } = await supabase().from('embarques').select('*');
+    const { data: Embarques, error } = await supabase().from('embarques').select('*').order('id', { ascending: false });
 
     if (error) {
         console.error("Error en la consult", error)
@@ -30,7 +30,8 @@ export const show = async (id: number) => {
 export const create = async (embarque_data: Embarque): Promise<ApiResult> => {
 
     const newEmbarque = {
-        descripcion: embarque_data.descripcion
+        descripcion: embarque_data.descripcion,
+        tipo_contenedor: embarque_data.tipo_contenedor,
     }
 
     const { error: uploadError, data: data } = await supabase()
@@ -103,4 +104,93 @@ export const eliminarEmbarque = async (embarque_id: number): Promise<ApiResult> 
     }
     return result;
 
+}
+
+export const getOrdenesStatic = async () => {
+    const { data: ordenes, error } = await supabase().from('ordenes_static').select('*');
+
+    if (error) {
+        console.error("Error fetching ordenes: ", error);
+        throw error;
+    }
+    return ordenes;
+
+}
+
+export const createEmbarqueProduct = async (embarque_product_body: EmbarqueProduct[]): Promise<ApiResult> => {
+    const { error: uploadError, data: data } = await supabase().from('embarque_products').insert(embarque_product_body).select('*');
+
+
+
+    if (uploadError) {
+        console.error("Error creating embarque product: ", uploadError.message);
+
+        const error: ApiResult = {
+            data: uploadError,
+            message: uploadError.message,
+            status: false
+        }
+        return error;
+    }
+
+    const result: ApiResult = {
+        data,
+        message: 'Producto/s agregado al embarque con éxito',
+        status: true
+    }
+    return result;
+}
+
+export const getEmbarqueProducts = async (embarque_id: number) => {
+    const { data: embarque_products, error } = await supabase().from('embarque_products').select('*').eq('estado', true);
+
+    if (error) {
+        console.error("Error fetching embarque products: ", error);
+        throw error;
+    }
+
+    return embarque_products;
+}
+
+export const uploadEmbarqueProducts = async (embarque_id: number, products: EmbarqueProduct[]) => {
+    const { error: uploadError, data: data } = await supabase().from('embarque_products').update({ ...products, last_update: new Date().toISOString() }).eq('embarque_id', embarque_id).single();
+
+    if (uploadError) {
+        console.error("Error uploading embarque products: ", uploadError.message);
+        
+        const error: ApiResult = {
+            data: uploadError,
+            message: uploadError.message,
+            status: false
+        }
+        return error;
+    }
+
+    const result: ApiResult = {
+        data,
+        message: 'Productos agregados al embarque con éxito',
+        status: true
+    }
+    return result;
+}
+
+export const deleteEmbarqueProduct = async (embarque_product_id: number) => {
+    const { error: uploadError } = await supabase().from('embarque_products').update({ estado: false }).eq('id', embarque_product_id);
+
+    if (uploadError) {
+        console.error("Error deleting embarque product: ", uploadError.message);
+        const error: ApiResult = {
+            data: uploadError,
+            message: uploadError.message,
+            status: false
+        }
+        return error;
+    }
+
+    const result: ApiResult = {
+        data: null,
+        message: 'Producto eliminado del embarque con éxito',
+        status: true
+    }
+    return result;
 }
