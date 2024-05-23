@@ -19,6 +19,7 @@ $('#generate_order').on('click', async function () {
 
 $('#confirm_generate_order').on('click', async function () {
   const button = new loadingButton('#confirm_generate_order', 'Generando orden...');
+  $('#confirm_generate_order').prop('disabled', true);
   const table_data = $('#ordenes_table').data();
   try {
     const data = await generateOrder();
