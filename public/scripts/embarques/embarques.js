@@ -501,7 +501,9 @@ $('#contenedor_add_product').on('change', function () {
 
   contenedorId = data.id;
 });
+// FIN DE LA SECCIÓN DE MODAL PARA SELECCIONAR ORDENES
 
+// SECCIÓN DE MODAL PARA AGREGAR Y RECUPERAR LOS DATOS DE LAS ORDENES
 $('#add_product_select').on('change', function () {
   const selectedOption = $(this).find('option:selected');
   let data = selectedOption.data('productos');
