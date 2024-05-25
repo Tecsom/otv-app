@@ -85,6 +85,7 @@ export const update = async (payload: Embarque, embarque_id: number): Promise<Ap
 
 export const eliminarEmbarque = async (embarque_id: number): Promise<ApiResult> => {
 
+    const { error: error } = await supabase().from('embarque_products').delete().eq('embarque_id', embarque_id);
     const { error: uploadError } = await supabase().from('embarques').delete().eq('id', embarque_id);
 
     if (uploadError) {
@@ -107,7 +108,7 @@ export const eliminarEmbarque = async (embarque_id: number): Promise<ApiResult> 
 }
 
 export const getOrdenesStatic = async () => {
-    const { data: ordenes, error } = await supabase().from('ordenes_static').select('*');
+    const { data: ordenes, error } = await supabase().from('ordenes_static_verified').select('*, order_id(id, productos, order_id(*))');
 
     if (error) {
         console.error("Error fetching ordenes: ", error);
@@ -117,10 +118,12 @@ export const getOrdenesStatic = async () => {
 
 }
 
-export const createEmbarqueProduct = async (embarque_product_body: EmbarqueProduct[]): Promise<ApiResult> => {
+export const createEmbarqueProduct = async (embarque_product_body: any): Promise<ApiResult> => {
     const { error: uploadError, data: data } = await supabase().from('embarque_products').insert(embarque_product_body).select('*');
 
+    console.log(data)
 
+    //const { error: error, data: dataOrden} = await supabase().from('ordenes').select('*').eq('id', embarque_product_body.product_id).single();
 
     if (uploadError) {
         console.error("Error creating embarque product: ", uploadError.message);
@@ -134,7 +137,7 @@ export const createEmbarqueProduct = async (embarque_product_body: EmbarqueProdu
     }
 
     const result: ApiResult = {
-        data,
+        data: data,
         message: 'Producto/s agregado al embarque con éxito',
         status: true
     }
@@ -142,7 +145,18 @@ export const createEmbarqueProduct = async (embarque_product_body: EmbarqueProdu
 }
 
 export const getEmbarqueProducts = async (embarque_id: number) => {
-    const { data: embarque_products, error } = await supabase().from('embarque_products').select('*').eq('estado', true);
+    const { data: embarque_products, error } = await supabase()
+    .from('embarque_products')
+    .select(`
+    id, 
+    embarque_id, 
+    producto_id,
+    order_products(pieza_id, piezas(id, numero_parte, descripcion, costo_venta, costo_produccion, cliente_id(id, nombre, identificador, domicilio, pais, estado, ciudad, correo, celular, currency))),
+    cantidad,
+    last_update
+    `)
+    .eq('embarque_id', embarque_id)
+    .eq('estado', true);
 
     if (error) {
         console.error("Error fetching embarque products: ", error);

@@ -22,6 +22,11 @@
   .nav-tabs .nav-link.active {
     background-color: transparent;
   }
+
+  .active-container {
+    background-color: #eae8fd !important;
+    color: #7367f0 !important;
+  }
 </style>
 <div class="container-xxl flex-grow-1 container-p-y">
   <div class="app-chat card overflow-hidden mt-2">
@@ -322,9 +327,17 @@
                           </div>
                           <div class="col-md-12">
                             <div class="row g-2">
-                              <div class="col-md-12" id="container-imagenes">
+                              <div class="col-md-12" id="container-container-type">
                                 <label for="input_container_type" class="form-label required">Tipo de contenedor</label>
                                 <input type="text" class="form-control" id="input_container_type" />
+                              </div>
+                              <div class="col-md-12 d-flex justify-content-end mt-2">
+                                <button id="uploadContainerType" type="button" class="btn btn-label-primary">
+                                  <span class="tf-icons ti-xs ti ti-device-floppy me-1"> </span>Guardar
+                                </button>
+                              </div>
+                              <div class="col-md-12">
+                                <table class="table w-100" id="embarque-product-table"></table>
                               </div>
                               <!-- <div class="col-md-12" id="container-archivos">
                                 <label for="input-files" class="form-label required">Archivos</label>
@@ -338,11 +351,6 @@
                             </div>
                           </div> -->
                         </div>
-                      </div>
-                      <div class="col-md-12 d-flex justify-content-end mt-2">
-                        <button id="uploadContainerType" type="button" class="btn btn-label-primary">
-                          <span class="tf-icons ti-xs ti ti-device-floppy me-1"> </span>Guardar
-                        </button>
                       </div>
                     </div>
                   </div>
@@ -614,4 +622,5 @@
   </script>
 
   <script src="/public/scripts/embarques/embarques.js" type="module"></script>
+  <script src="/public/scripts/embarques/embarques-products-table.js" type="module"></script>
 </div>

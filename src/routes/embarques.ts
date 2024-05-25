@@ -4,6 +4,8 @@ import {
     deleteEmbarque,
     getEmbarques,
     getOrdenes,
+    indexEmbarqueProduct,
+    newEmbarqueProduct,
     showEmbarque,
     updateEmbarque
 } from '../controllers/embarques'
@@ -18,5 +20,9 @@ router.delete('/embarque/:id', deleteEmbarque);
 router.post('/embarque/create', createEmbarque)
 
 router.get('/embarques/ordenes', getOrdenes)
+
+router.post('/embarques/productos', newEmbarqueProduct)
+router.get('/embarques/:embarque_id/productos', indexEmbarqueProduct)
+
 
 export default router;

@@ -9,6 +9,29 @@ async function init() {
     wheelPropagation: false
   });
 
+  $('#productos_table').DataTable({
+    data: [], // Empty data
+    columns: [
+      { title: '' },
+      { title: '# Parte' },
+      { title: 'Costo Produccion' },
+      { title: 'Descripción' },
+      { title: 'Costo Venta' },
+      { title: 'Tipo' }
+    ],
+    searching: false,
+    lengthChange: false,
+    info: false,
+    language: {
+      url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/es-ES.json'
+    },
+    pageLength: 5,
+    ordering: false,
+    select: false,
+    destroy: true,
+    paging: false
+  });
+
   $('#add_product_select').select2({
     dropdownParent: $('#addProductsModal'),
     placeholder: 'Selecciona una orden'
@@ -105,8 +128,9 @@ $('#create_embarque').on('submit', async function (e) {
 $('#embarques_container').on('click', '.embarque_container_child', async function (e) {
   const $embarque = $(this);
   const data = $embarque.data().data;
+  $embarque.addClass('active-container').siblings().removeClass('active-container');
 
-  console.log(data);
+  loadProducts(data);
 
   $('#data-folio').text($embarque.attr('folio'));
   $('#data-fecha-creacion').text(isoDateToFormatted(data.created_at));
@@ -156,8 +180,12 @@ $('#confirm_delete_embarque').on('click', async function (e) {
   $('#container-data').addClass('d-none');
   $('#container-no-data').removeClass('d-none');
 
-  $('#data-folio').text($embarque.attr('-'));
+  $('#data-folio').text('-');
   $('#data-fecha-creacion').text('-');
+  $('#edit_oc').addClass('d-none');
+  $('#delete_oc').addClass('d-none');
+  $('#cancelar_oc').addClass('d-none');
+  $('#restaurar_oc').addClass('d-none');
 
   await loadEmbarques();
 });
@@ -206,8 +234,6 @@ $('#edit_embarque_form').on('submit', async function (e) {
     return;
   }
 
-  console.log(result);
-
   toastr.success('Embarque editado con éxito');
   $('#edit_embarque_modal').modal('hide');
 
@@ -250,12 +276,11 @@ $('#uploadContainerType').on('click', async function () {
 });
 //FIN PARTE DE EDITAR EL TIPO DE CONTENEDOR
 
+// SECCIÓN EN LA QUE SE ABRE MODAL PARA SELECCIONAR ORDENES Y CARGADO DE ORDENES A <select></select>
 $('#addProductsButton').on('click', async function () {
   $('#addProductsModal').modal('show');
 
   const ordenes = await fetchData('/embarques/ordenes', 'GET', {});
-
-  console.log(ordenes.data[0]);
 
   if (ordenes.status == false) {
     toastr.error('Error al obtener las ordenes');
@@ -264,33 +289,59 @@ $('#addProductsButton').on('click', async function () {
 
   $('#add_product_select').empty();
 
+  $('#add_product_select').append('<option value=""></option>');
+
   ordenes.data.forEach(function (item) {
-    const option = $(`<option value="${item.id}">${item.folio_unico}  ${item.folio_cliente}</option>`);
-    option.data('productos', item.productos); // Asociar datos a la opción
+    const option = $(`<option value="${item.id}">Folio unico: ${item.codigo} </option>`);
+    option.data('productos', item.order_id.productos || item.productos);
     $('#add_product_select').append(option);
   });
 
   $('#add_product_select').trigger('change');
 });
+// FIN DE LA SECCIÓN DE MODAL PARA SELECCIONAR ORDENES
 
+// SECCIÓN DE MODAL PARA AGREGAR Y RECUPERAR LOS DATOS DE LAS ORDENES
 $('#add_product_select').on('change', function () {
   const selectedOption = $(this).find('option:selected');
-  const data = selectedOption.data('productos'); // Recuperar datos de la opción seleccionada
+  const data = selectedOption.data('productos');
 
-  console.log(data);
+  console.log('DATA', data);
+
+  if (!data) {
+    $('#confirm_add_products').prop('disabled', true);
+  } else {
+    $('#confirm_add_products').prop('disabled', false);
+  }
 
   if (!data || !Array.isArray(data)) {
-    console.error('No data available');
     return;
   }
 
   const dataForTable = data.map(function (item) {
     return {
-      checkbox: `<input type="checkbox" class="form-check-input product_check" name="product_${item.id}" id="product_${item.id}">`,
-      numeroParte: item.numero_parte || '',
-      costoProduccion: item.currency_costo_produccion || '',
+      id: item.id,
+      checkbox:
+        `<input type="checkbox" class="form-check-input product_check" name="product_${item.id}" id="product_${item.id}">` ||
+        '',
+      client_id: item.client_id || '',
+      client_name: item.client_name || '',
+      codigos: item.codigos || '',
+      currency_costo_produccion: item.currency_costo_produccion || '',
+      currency_costo_venta: item.currency_costo_venta || '',
       descripcion: item.descripcion || '',
-      costoVenta: item.currency_costo_venta || '',
+      estado: item.estado || '',
+      numero_parte: item.numero_parte || '',
+      order_id: item.order_id || '',
+      pieza_id: item.pieza_id || '',
+      piezas: item.piezas || '',
+      proveedor_id: item.proveedor_id || '',
+      quantity: item.quantity || '',
+      revision_description: item.revision_description || '',
+      revision_id: item.revision_id || '',
+      revision_name: item.revision_name || '',
+      revisiones: item.revisiones || '',
+      descripcion: item.descripcion || '',
       tipo: item.type == 'bulk' ? 'A granel' : 'Individual'
     };
   });
@@ -299,7 +350,6 @@ $('#add_product_select').on('change', function () {
     $('#productos_table').DataTable().destroy();
   }
 
-  // Ahora puedes inicializar la tabla de nuevo
   $('#productos_table').DataTable({
     data: dataForTable,
     columnDefs: [
@@ -324,10 +374,10 @@ $('#add_product_select').on('change', function () {
     },
     columns: [
       { orderable: false, defaultContent: '', width: '50px' },
-      { data: 'numeroParte', title: 'Numero Parte', orderable: true, className: 'non-selectable' },
-      { data: 'costoProduccion', title: 'Costo Produccion', orderable: true, className: 'non-selectable' },
+      { data: 'numero_parte', title: '# Parte', orderable: true, className: 'non-selectable' },
+      { data: 'currency_costo_produccion', title: 'Costo Produccion', orderable: true, className: 'non-selectable' },
       { data: 'descripcion', title: 'Descripcion', orderable: false, className: 'non-selectable' },
-      { data: 'costoVenta', title: 'Costo Venta', orderable: true, className: 'non-selectable' },
+      { data: 'currency_costo_venta', title: 'Costo Venta', orderable: true, className: 'non-selectable' },
       { data: 'tipo', title: 'Tipo', orderable: false, className: 'non-selectable' }
     ],
     dom: 'rtp',
@@ -336,14 +386,104 @@ $('#add_product_select').on('change', function () {
       url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/es-ES.json'
     },
     order: [[0, 'asc']],
-    searching: true
+    searching: false,
+    info: false,
+    destroy: true
   });
 
   $('#productos_table thead, tbody').off('change');
 
   $('#productos_table thead, tbody').on('change', 'input[type="checkbox"]', function () {
     const dataCheck = $('#productos_table').DataTable().rows({ selected: true }).data().toArray();
-
-    console.log(dataCheck);
   });
+});
+// FIN DE LA SECCIÓN DE RECUPARA LOS DATOS DE LAS ORDENES
+
+// INSERTAR DATOS A LA TABLA DE EMBARQUES_PRODUCTS
+$('#confirm_add_products').on('click', async function () {
+  const data = $('#container-reporte').data();
+
+  console.log(data);
+
+  const selectedProducts = $('#productos_table').DataTable().rows({ selected: true }).data().toArray();
+
+  console.log('SELECTED PRODUCTS', selectedProducts);
+
+  if (selectedProducts.length == 0) {
+    toastr.error('Selecciona al menos un producto');
+    return;
+  }
+
+  for (let product of selectedProducts) {
+    const result = await fetchData('/embarques/productos', 'POST', {
+      embarque_id: data.id,
+      producto_id: product.id,
+      cantidad: product.quantity,
+      estado: true,
+      order_id: product.order_id
+    });
+
+    console.log(result);
+  }
+
+  loadProducts(data);
+
+  toastr.success('Productos agregados con éxito');
+  $('#addProductsModal').modal('hide');
+});
+
+//METODO PARA CARGAR LA TABLA DE PRODUCTOS EN EL APARTADO DE CONTENEDORES
+const loadProducts = async data => {
+  const result = await fetchData('/embarques/' + data.id + '/productos/', 'GET', {});
+
+  console.log(result);
+
+  if (result.status == false) {
+    toastr.error('Error al obtener los productos');
+    return;
+  }
+
+  const productos = result.data.map(producto => {
+    return {
+      id: producto.id,
+      producto_id: producto.producto_id,
+      cantidad: producto.cantidad,
+      estado: producto.order_products.piezas.cliente_id.estado,
+      cliente: producto.order_products.piezas.cliente_id.nombre || '',
+      opciones: `
+      <div class="d-inline-block text-nowrap">
+        <button class="btn btn-sm btn-icon delete-icon eliminar-producto" title="Eliminar" data-bs-toggle="tooltip" data-bs-placement="top"><i class="ti ti-trash-x"></i></button>
+      </div>`
+    };
+  });
+
+  $('#embarque-product-table').DataTable({
+    data: productos,
+    paging: true,
+    searching: false,
+    lengthChange: false,
+    columns: [
+      { data: 'id', title: 'ID' },
+      { data: 'cliente', title: 'Cliente' },
+      { data: 'producto_id', title: 'Producto ID' },
+      { data: 'cantidad', title: 'Cantidad' },
+      { data: 'estado', title: 'Estado' },
+      { data: 'opciones', title: 'Opciones' }
+    ],
+    info: false,
+    language: {
+      url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/es-ES.json'
+    },
+    pageLength: 5,
+    ordering: false,
+    select: false,
+    destroy: true,
+    autoWidth: true
+  });
+};
+
+$('#addProductsModal').on('hidden.bs.modal', function () {
+  let table = $('#productos_table').DataTable();
+  table.clear().draw();
+  table.destroy();
 });

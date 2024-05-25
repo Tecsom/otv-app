@@ -1,6 +1,6 @@
 import { Request, Response } from 'express'
 import { Embarque } from '@/types/embarques'
-import { create, eliminarEmbarque, getOrdenesStatic, index, show, update } from '@/utils/embarques';
+import { create, createEmbarqueProduct, eliminarEmbarque, getEmbarqueProducts, getOrdenesStatic, index, show, update } from '@/utils/embarques';
 
 export const getEmbarques = async (req: Request, res: Response) => {
 
@@ -63,7 +63,6 @@ export const createEmbarque = async (req: Request, res: Response) => {
 export const getOrdenes = async (req: Request, res: Response) => {
     try {
         const ordenes = await getOrdenesStatic();
-        console.log(ordenes)
 
         res.status(200).json(ordenes)
     } catch (error: any) {
@@ -71,10 +70,24 @@ export const getOrdenes = async (req: Request, res: Response) => {
     }
 }
 
-//export const createEmbarqueProduct = async (req: Request, res: Response) => {
-//    try {
-//        const newEmbarqueProducto = await createEmbarqueProduct(req.body);
-//    } catch (error) {
-//        
-//    }
-//}
+export const newEmbarqueProduct = async (req: Request, res: Response) => {
+    try {
+        const newEmbarqueProducto = await createEmbarqueProduct(req.body);
+
+        res.status(201).json(newEmbarqueProducto)
+    } catch (error) {
+        console.error(error)
+        throw error
+    }
+}
+export const indexEmbarqueProduct = async (req: Request, res: Response) => {
+    try {
+        const embarque_id = req.params.embarque_id;
+        const embarque = await getEmbarqueProducts(parseInt(embarque_id))
+
+        res.status(200).json(embarque)
+
+    } catch (error) {
+        res.status(500).json(error)
+    }
+}

@@ -124,6 +124,9 @@ table_piezas.on('click', '.btn-ver-codigos', function (e) {
   let tr = e.target.closest('tr');
   let row = table_piezas.row(tr);
   const data = row.data();
+
+  console.log(data);
+
   const full_codigos = ordenData.codigos;
   const codigos = full_codigos.filter(codigo => data.codigos.includes(codigo.code));
   const codigos_html = codigos
