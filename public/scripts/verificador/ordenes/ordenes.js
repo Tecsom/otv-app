@@ -313,7 +313,6 @@ socket.on('scanner', data => {
 });
 
 const verificarPieza = async codigo => {
-  let quantitySuccess;
   const exists = ordenData.codigos.find(pieza => pieza.code === codigo);
   const isVerified = verificadas_array.includes(codigo);
 

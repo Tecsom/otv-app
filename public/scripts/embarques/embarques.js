@@ -146,6 +146,7 @@ async function loadEmbarques() {
   const $container = $('#embarques_container');
 
   const embarques = await getEmbarques();
+  console.log(embarques.data[0]);
 
   for (let embarque of embarques.data) {
     const uniqueFolio = addLeadingZeros(embarque.folio_unico, 5);
@@ -181,7 +182,6 @@ async function loadEmbarques() {
 
 $('#create_embarque').on('submit', async function (e) {
   e.preventDefault();
-
   //Variables para post
   $('#create_embarque_button').prop('disabled', true);
 
@@ -207,6 +207,8 @@ $('#create_embarque').on('submit', async function (e) {
 
     return;
   }
+
+  console.log(fecha_entrega);
 
   const result = await fetchData('/embarque/create', 'POST', {
     descripcion: descripcion,
