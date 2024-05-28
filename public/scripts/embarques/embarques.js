@@ -146,7 +146,6 @@ async function loadEmbarques() {
   const $container = $('#embarques_container');
 
   const embarques = await getEmbarques();
-  console.log(embarques.data[0]);
 
   for (let embarque of embarques.data) {
     const uniqueFolio = addLeadingZeros(embarque.folio_unico, 5);
@@ -199,7 +198,6 @@ $('#create_embarque').on('submit', async function (e) {
   const isoStringEntrega = fecha_entrega.toISOString();
 
   const descripcion = $descripcion.val().trim();
-  const tipo_contenedor = $tipo_contenedor.val().trim();
 
   if (descripcion == '' || fecha_embarque == '' || fecha_entrega == '') {
     toastr.error('Completar los campos para crear el embarque');
@@ -207,8 +205,6 @@ $('#create_embarque').on('submit', async function (e) {
 
     return;
   }
-
-  console.log(fecha_entrega);
 
   const result = await fetchData('/embarque/create', 'POST', {
     descripcion: descripcion,
@@ -226,7 +222,6 @@ $('#create_embarque').on('submit', async function (e) {
 
   toastr.success('Creado con éxito');
   $descripcion.val('');
-  $tipo_contenedor.val('');
 
   $('#create_embarque_modal').modal('hide');
 
@@ -506,6 +501,13 @@ $('#contenedor_add_product').on('change', function () {
 // FIN DE LA SECCIÓN DE MODAL PARA SELECCIONAR ORDENES
 
 // SECCIÓN DE MODAL PARA AGREGAR Y RECUPERAR LOS DATOS DE LAS ORDENES
+$('#contenedor_add_product').on('change', function () {
+  const selectedOption = $(this).find('option:selected');
+  let data = selectedOption.data('contenedor');
+
+  contenedorId = data.id;
+});
+
 $('#add_product_select').on('change', function () {
   const selectedOption = $(this).find('option:selected');
   let data = selectedOption.data('productos');
