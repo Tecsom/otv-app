@@ -37,7 +37,7 @@ export const getStaticOrden = async (id: number) => {
     .select('*, ordenes_static_verified(order_id, id, created_at, codigo)')
     .eq('id', id)
     .single();
-    console.log(orden)
+  console.log(orden);
   if (error) {
     console.error('Error fetching Ordenes:', error.message);
     throw error;
@@ -55,8 +55,6 @@ export const getStaticOrden = async (id: number) => {
     }
   }
 
-
-
   return orden;
 };
 
@@ -73,7 +71,7 @@ export const generarOrdenDeCompraEstatica = async (order_data: any) => {
   const { order_id, ...static_data } = order_data;
   const productos = order_data.productos;
 
-  console.log(productos)
+  console.log(productos);
 
   const { data: orden, error } = await supabase()
     .from('ordenes_static')
@@ -360,9 +358,8 @@ const generateProductCodeDb = async (product: ProductCode, quantity: number): Pr
   await deleteCodesFromProduct(product.id);
   let codes = [];
 
-  if(product.type == 'bulk')
-  {
-    quantity = 1
+  if (product.type == 'bulk') {
+    quantity = 1;
   }
   for (let i = 0; i < quantity; i++) {
     const { code_str: code, consecutivo } = await generateCodesForProduct({ ...product }, i);
