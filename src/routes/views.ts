@@ -11,7 +11,8 @@ import {
   renderVerificadorOrdenes,
   renderConfiguracion,
   renderInventarios,
-  renderEmbarques
+  renderEmbarques,
+  renderProductoInventarios
 } from '../controllers/views';
 
 const router = express.Router();
@@ -27,6 +28,7 @@ router.get('/verificador/embarques', renderVerificadorEmbarques);
 router.get('/verificador/ordenes', renderVerificadorOrdenes);
 router.get('/configuracion', renderConfiguracion);
 router.get('/inventario', renderInventarios);
+router.get('/inventario/:product_id', renderProductoInventarios);
 router.get('/embarques', renderEmbarques);
 
 export default router;
