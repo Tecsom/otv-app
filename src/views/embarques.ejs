@@ -68,7 +68,7 @@
             </button>
           </div>
           <div class="border-1 border-top mt-2 pt-2 collapse" id="collapse-filters">
-            <!--<div class="row g-3">
+            <div class="row g-3">
               <div class="col-md-12">
                 <label for="range_filter" class="form-label">Estado de la orden</label>
                 <div class="form-check mt-2">
@@ -79,15 +79,6 @@
                     id="check_pendiente"
                     checked />
                   <label class="form-check-label" for="check_pendiente">Pendiente </label>
-                </div>
-                <div class="form-check mt-2">
-                  <input
-                    class="form-check-input filter-checkbox"
-                    type="checkbox"
-                    value="proceso"
-                    id="check_proceso"
-                    checked />
-                  <label class="form-check-label" for="check_proceso">Proceso</label>
                 </div>
                 <div class="form-check mt-2">
                   <input
@@ -116,29 +107,11 @@
                 </div>
               </div>
               <div class="col-md-12">
-                <label for="range_filter" class="form-label">Fecha de creación</label>
-                <input
-                  class="form-control datetimepicker flatpickr-input"
-                  id="range_filter"
-                  type="text"
-                  placeholder="Selecciona un rango de fecha"
-                  readonly="readonly" />
-              </div>
-              <div class="col-md-12">
-                <label for="range_entrega_filter" class="form-label">Fecha de entrega</label>
-                <input
-                  class="form-control datetimepicker flatpickr-input"
-                  id="range_entrega_filter"
-                  type="text"
-                  placeholder="Selecciona un rango de fecha"
-                  readonly="readonly" />
-              </div>
-              <div class="col-md-12">
                 <div style="text-align: right" class="text-right cursor-pointer">
                   <span class="text-muted" id="remove-filters-btn"><small>Eliminar filtros</small></span>
                 </div>
               </div>
-            </div>-->
+            </div>
           </div>
           <i
             class="ti ti-x cursor-pointer d-lg-none d-block position-absolute mt-2 me-1 top-0 end-0"
@@ -159,9 +132,9 @@
                 </div>
               </div>
               <div class="d-flex align-items-center gap-2">
-                <!--<button type="button" class="btn btn-label-success" id="generate_order">
-                  <span class="tf-icons ti-xs ti ti-lock me-1"> </span>Generar
-                </button>-->
+                <button type="button" class="btn btn-label-success d-none" id="generate_embarque">
+                  <span class="tf-icons ti-xs ti ti-lock me-1"> </span>Comenzar
+                </button>
                 <div class="btn-group">
                   <button
                     type="button"
@@ -197,13 +170,21 @@
                       >
                     </li>
                     <li>
-                      <a
+                      <button
                         id="restaurar_oc"
                         class="dropdown-item d-flex align-items-center gap-2 d-none"
                         href="javascript:void(0);"
                         data-bs-target="#restore_orden_modal"
                         data-bs-toggle="modal"
-                        ><i class="ti ti-arrow-back-up ti-xs me-1"></i>Restaurar</a
+                        ><i class="ti ti-arrow-back-up ti-xs me-1"></i>Restaurar</
+                      >
+                    </li>
+                    <li>
+                      <a
+                        id="finalizar_oc"
+                        class="dropdown-item d-flex align-items-center gap-2 d-none"
+                        href="javascript:void(0);"
+                        ><i class="ti ti-circle-check ti-xs me-1"></i>Finalizar</a
                       >
                     </li>
                   </ul>
@@ -230,22 +211,23 @@
                       <p class="mb-0">
                         <strong>Descripcion: </strong><span id="data-description-data">[Nombre de cliente]</span>
                       </p>
-                      <p class="mb-0"><strong>ID: </strong><span id="client_id">[Identificador del cliente]</span></p>
-                      <p class="mb-0"><strong>Moneda: </strong><span id="client_currency">[Moneda]</span></p>
+                      <p class="mb-0">
+                        <strong>Estado: </strong><span id="data-status-data">[Estado del embarque]</span>
+                      </p>
+                      <p class="mb-0">
+                        <strong>Ultima actualización: </strong
+                        ><span id="data-last-update">[Ultima fecha de actualizacion]</span>
+                      </p>
                     </div>
                   </div>
                   <div>
                     <div>
+                      <div>
+                        <strong>Fecha de embarque: </strong>
+                        <span id="data-embarque-data">-</span>
+                      </div>
                       <strong>Fecha de entrega: </strong>
                       <span id="data-fecha-entrega">[Fecha de entrega]</span>
-                    </div>
-                    <div>
-                      <strong>Última actualización: </strong>
-                      <span id="data-last-update">-</span>
-                    </div>
-                    <div>
-                      <strong>Estado: </strong>
-                      <span id="order_status"></span>
                     </div>
                   </div>
                 </div>
@@ -309,7 +291,7 @@
                       </div>
                       <div class="col-md-12">
                         <div class="border-top mt-2">
-                          <table id="ordenes_table" class="table m-0 w-100 table-sm"></table>
+                          <table id="ordenes_table" class="table w-100"></table>
                         </div>
                       </div>
                     </div>
@@ -320,32 +302,26 @@
                         <div class="row">
                           <div class="col-md-12">
                             <div class="d-flex justify-content-end gap-2">
-                              <button type="button" class="btn btn-label-primary waves-effect">
+                              <button
+                                type="button"
+                                class="btn btn-label-dark waves-effect"
+                                id="add_product_container_modal">
                                 <span class="tf-icons ti-xs ti ti-plus me-1"></span>
-                                <span>Productos</span>
+                                <span>Producto</span>
                               </button>
                               <button
-                                id="create_embarque_button"
+                                id="create_container_modal"
                                 type="button"
                                 class="btn btn-label-primary waves-effect">
                                 <span class="tf-icons ti-xs ti ti-plus me-1"></span>
-                                <span>Embarque</span>
+                                <span>Contenedor</span>
                               </button>
                             </div>
                           </div>
                           <div class="col-md-12">
                             <div class="row g-2">
-                              <div class="col-md-12" id="container-container-type">
-                                <label for="input_container_type" class="form-label required">Tipo de contenedor</label>
-                                <input type="text" class="form-control" id="input_container_type" />
-                              </div>
-                              <div class="col-md-12 d-flex justify-content-end mt-2">
-                                <button id="uploadContainerType" type="button" class="btn btn-label-primary">
-                                  <span class="tf-icons ti-xs ti ti-device-floppy me-1"> </span>Guardar
-                                </button>
-                              </div>
                               <div class="col-md-12">
-                                <table class="table w-100" id="embarque-product-table"></table>
+                                <table id="contenedores_table" class="table m-0 w-100 border-top mt-3 table-sm"></table>
                               </div>
                               <!-- <div class="col-md-12" id="container-archivos">
                                 <label for="input-files" class="form-label required">Archivos</label>
@@ -393,7 +369,7 @@
   </div>
 
   <!--! Modal nuevo embarque-->
-  <div class="modal fade modal_cliente" id="create_embarque_modal" tabindex="-1" aria-hidden="true">
+  <div class="modal fade " id="create_embarque_modal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
       <div class="modal-content">
         <div class="modal-header">
@@ -405,10 +381,6 @@
             <div class="col-md-12">
               <label for="descripcion_embarque" class="form-label required">Descripcion</label>
               <input type="text" id="descripcion_embarque" name="nombre" class="form-control" />
-            </div>
-            <div class="col-md-12">
-              <label for="tipo_contenedor" class="form-label required">Tipo de contenedor</label>
-              <input type="text" id="tipo_contenedor" name="nombre" class="form-control" />
             </div>
             <div class="col-md-6">
               <label for="fecha_embarque" class="form-label">Fecha de embarque</label>
@@ -437,7 +409,7 @@
     </div>
   </div>
   <!--! Modal editar orden de compra -->
-  <div class="modal fade modal_cliente" id="edit_embarque_modal" tabindex="-1" aria-hidden="true">
+  <div class="modal fade " id="edit_embarque_modal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
       <div class="modal-content">
         <div class="modal-header">
@@ -450,10 +422,6 @@
               <label for="edit_descripcion_embarque" class="form-label required">Descripcion</label>
               <input type="text" id="edit_descripcion_embarque" name="nombre" class="form-control" />
             </div>
-            <div class="col-md-12">
-              <label for="edit_container_type" class="form-label required">Tipo de contenedor</label>
-              <input type="text" id="edit_container_type" name="nombre" class="form-control" />
-            </div>
           </form>
         </div>
         <div class="modal-footer">
@@ -464,9 +432,25 @@
       </div>
     </div>
   </div>
-
+    <!--! MODAL FINALIZAR EMBARQUE-->
+    <div class="modal fade" id="finalizarEmbarque" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel1">Finalizar embarque</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <p>¿Estás seguro de empezar con el embarque?</p>
+          </div>
+          <div class="modal-footer">
+            <button id="confirm_finish_embarque" type="button" class="btn btn-success">Comenzar</button>
+          </div>
+        </div>
+      </div>
+    </div>
   <!--! Modal eliminar orden de compra -->
-  <div class="modal fade modal_cliente" id="delete_embarque_modal" tabindex="-1" aria-hidden="true">
+  <div class="modal fade " id="delete_embarque_modal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-sm" role="document">
       <div class="modal-content">
         <div class="modal-header">
@@ -484,7 +468,7 @@
     </div>
   </div>
   <!--! Modal eliminar orden de compra -->
-  <div class="modal fade modal_cliente" id="generate_order_modal" tabindex="-1" aria-hidden="true">
+  <div class="modal fade " id="generate_order_modal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-sm" role="document">
       <div class="modal-content">
         <div class="modal-header">
@@ -501,7 +485,7 @@
     </div>
   </div>
   <!--! Modal cancelar orden de compra -->
-  <div class="modal fade modal_cliente" id="cancel_order_modal" tabindex="-1" aria-hidden="true">
+  <div class="modal fade " id="cancel_order_modal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-sm" role="document">
       <div class="modal-content">
         <div class="modal-header">
@@ -518,15 +502,15 @@
     </div>
   </div>
   <!--! Modal restaurar orden de compra -->
-  <div class="modal fade modal_cliente" id="restore_orden_modal" tabindex="-1" aria-hidden="true">
+  <div class="modal fade " id="restore_orden_modal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-sm" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel1">Restaurar orden de compra</h5>
+          <h5 class="modal-title" id="exampleModalLabel1">Restaurar embarque</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          <p>¿Estás seguro de restaurar la orden?</p>
+          <p>¿Estás seguro de restaurar embarque?</p>
         </div>
         <div class="modal-footer">
           <button id="confirm_restore_order" type="button" class="btn btn-success">Restaurar</button>
@@ -535,72 +519,30 @@
     </div>
   </div>
 
-  <!--MODAL DE AGREGAR  UN PRODUCTO A LA ORDEN-->
-  <div class="modal fade modal_cliente" id="addEmbarqueModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-sm" role="document">
+  <!--MODAL DE AGREGAR UN CONTENEDOR AL EMBARQUE-->
+  <div class="modal fade" id="addContainerEmbarque" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel1">Añadir producto</h5>
+          <h5 class="modal-title" id="exampleModalLabel1">Agregar contenedor</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-        <div class="modal-body">
-          <form id="addProduct" class="row g-3">
-            <div class="col-md-12">
-              <!--<label for="add_product_select" class="form-label required">Producto</label>
-              <select name="client" id="add_product_select" class="form-select">
-                <option value=""></option>
-              </select>-->
-            </div>
-            <div class="col-md-6">
-              <label for="add_product_revision" class="form-label">Revisión</label>
-              <select name="client" id="add_product_revision" class="form-select"></select>
-            </div>
-            <div class="col-md-6">
-              <label for="add_product_quantity" class="form-label">Cantidad</label>
-              <input class="form-control" type="number" value="1" id="add_product_quantity" />
-            </div>
-          </form>
+        <div class="modal-body row">
+          <div class="mb-2 col-md-6">
+            <label for="nombre_contenedor" class="required">Nombre del contenedor</label>
+            <input type="text" class="form-control" id="nombre_contenedor" />
+          </div>
+          <div class="mb-2 col-md-6">
+            <label for="codigo_contenedor" class="required">Código del contenedor</label>
+            <input type="text" id="codigo_contenedor" class="form-control" />
+          </div>
         </div>
         <div class="modal-footer">
-          <button id="confirm_add_product" type="submit" form="addProduct" class="btn btn-success">Añadir</button>
+          <button id="confirm_add_container" type="button" class="btn btn-success">Añadir</button>
         </div>
       </div>
     </div>
   </div>
-
-  <!--MODAL DE AGREGAR  UN PRODUCTO A LA ORDEN-->
-  <div class="modal fade modal_cliente" id="editProductModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-sm" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="">Editar producto</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <form id="editProduct" class="row g-3">
-            <div class="col-md-12">
-              <label for="edit_product_select" class="form-label required">Producto</label>
-              <select name="client" id="edit_product_select" class="form-select" disabled>
-                <option value=""></option>
-              </select>
-            </div>
-            <div class="col-md-6">
-              <label for="edit_product_revision" class="form-label">Revisión</label>
-              <select name="client" id="edit_product_revision" class="form-select"></select>
-            </div>
-            <div class="col-md-6">
-              <label for="edit_product_quantity" class="form-label">Cantidad</label>
-              <input class="form-control" type="number" value="1" id="edit_product_quantity" />
-            </div>
-          </form>
-        </div>
-        <div class="modal-footer">
-          <button id="confirm_edit_product" type="submit" form="editProduct" class="btn btn-success">Guardar</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
   <!--MODAL DE AGREGAR  UN PRODUCTO A LA ORDEN-->
   <div class="modal fade" id="addProductsModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
@@ -610,10 +552,12 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          <label for="order_venta">Selecciona una orden de venta</label>
-          <select name="client" id="add_product_select" class="form-select">
-            <option value=""></option>
-          </select>
+          <div class="mb-2">
+            <label for="contenedor_add_product" class="required">Selecciona un contenedor</label>
+            <select name="contenedor_add_product" id="contenedor_add_product" class="form-select"></select>
+          </div>
+          <label for="order_venta" class="required">Selecciona una orden de venta</label>
+          <select name="client" id="add_product_select" class="form-select"></select>
           <table id="productos_table" class="table w-100"></table>
         </div>
         <div class="modal-footer">
@@ -622,46 +566,52 @@
       </div>
     </div>
   </div>
-  <!--MODAL LISTA DE VERIFICACIONES-->
-  <div class="modal fade" id="view_verifications_modal" tabindex="-1" aria-hidden="true">
+  <!--MODAL CONFIRMAR EMBARQUE-->
+  <div class="modal fade" id="generate_embarque_modal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel1">Verificaciones</h5>
+          <h5 class="modal-title" id="exampleModalLabel1">Comenzar embarque</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          <div id="list-verifications" class="list-group"></div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <!--MODAL VERIFICAR ELIMINADO-->
-  <div class="modal fade" id="delete_product_modal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel1">Eliminar producto</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <p>¿Estás seguro de eliminar el producto?</p>
+          <p>¿Estás seguro de empezar con el embarque?</p>
         </div>
         <div class="modal-footer">
-          <button id="confirm_delete_product" type="button" class="btn btn-danger">Eliminar</button>
+          <button id="confirm_generate_embarque" type="button" class="btn btn-success">Comenzar</button>
         </div>
       </div>
     </div>
-
-    <script>
-      var dropzoneFiles;
-      var loadFiles;
-      var codigos_table;
-      var verificaciones_table;
-      var loadEmbarques = () => {};
-    </script>
-
-    <script src="/public/scripts/embarques/embarques.js" type="module"></script>
-    <script src="/public/scripts/embarques/embarques-products-table.js" type="module"></script>
   </div>
-</div>
+      <!--MODAL VERIFICAR ELIMINADO-->
+      <div class="modal fade" id="delete_product_modal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel1">Eliminar producto</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <p>¿Estás seguro de eliminar el producto?</p>
+            </div>
+            <div class="modal-footer">
+              <button id="confirm_delete_product" type="button" class="btn btn-danger">Eliminar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+
+        <script>
+          var dropzoneFiles;
+          var loadFiles;
+          var contenedores_table;
+          var verificaciones_table;
+          var loadEmbarques = () => {};
+        </script>
+
+        <script src="/public/scripts/embarques/embarques.js" type="module"></script>
+        <script src="/public/scripts/embarques/embarques-products-table.js" type="module"></script>
+        <script src="/public/scripts/embarques/contenedores.js" type="module"></script>
+      </div>
