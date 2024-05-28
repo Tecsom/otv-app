@@ -8,6 +8,7 @@ router.post('/inventory', InventoryRouter.createProductController);
 router.put('/inventory', InventoryRouter.updateProductController);
 router.delete('/inventory/:product_id', InventoryRouter.deleteProductController);
 
+router.get('/inventory/paging/individual', InventoryRouter.getIndividualProductsPaging);
 router.post('/inventory/:product_id/individual', InventoryRouter.createIndividualProductController);
 router.get('/inventory/:product_id/individual', InventoryRouter.getIndividualProductsByProductIdController);
 router.put('/inventory/:product_id/individual', InventoryRouter.updateIndividualProductController);

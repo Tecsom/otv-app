@@ -13,25 +13,29 @@ import { Request, Response } from 'express';
 
 export const getInventoryPaging = async (req: Request, res: Response) => {
   const queries = req.query as any;
-  const { length, draw, search, start } = queries as QueryTable;
+  const { length, draw, search, start, page: pageStr } = queries as QueryTable;
+  console.log({ pageStr });
 
+  const page = pageStr ? parseInt(pageStr) : Math.floor(parseInt(start ?? '0') / parseInt(length ?? '10')) + 1;
+  console.log({ page });
   const { error, data } = await supabase().rpc('searchinventory', {
     search: search?.value ?? search ?? '',
-    page: parseInt(start ?? '0') / parseInt(length ?? '10') + 1,
+    page,
     limitperpage: parseInt(length ?? '10')
   });
 
   const { error: error_totals, data: data_totals } = await supabase().rpc('searchinventory_totals', {
     search: search?.value ?? search ?? '',
-    page: parseInt(start ?? '0') / parseInt(length ?? '10') + 1,
+    page,
     limitperpage: parseInt(length ?? '10')
   });
-  console.log({ data });
+  console.log({ error, error_totals });
   res.status(200).json({
     draw,
     recordsTotal: data_totals[0].total_records,
     recordsFiltered: data_totals[0].total_records,
-    data
+    data,
+    page
   });
 };
 
@@ -114,6 +118,35 @@ export const updateIndividualProductController = async (req: Request, res: Respo
   } catch (error) {
     res.status(400).json({ error: 'Error actualizando el producto' });
   }
+};
+
+export const getIndividualProductsPaging = async (req: Request, res: Response) => {
+  const queries = req.query as any;
+  const { length: lengthStr, draw, search, start, page: pageStr } = queries as QueryTable;
+  const product_id = parseInt(queries.product_id);
+  const excluded_individuals = queries.excluded_individuals?.map((id: string) => parseInt(id)) ?? [];
+
+  const length = parseInt(lengthStr ?? '10');
+  const page = pageStr ? parseInt(pageStr) : Math.floor(parseInt(start ?? '0') / length) + 1;
+
+  if (!product_id) return res.status(400).json({ data: [], draw, page });
+
+  const from = page * length - length;
+  const to = page * length - 1;
+
+  const { data, error } = await supabase()
+    .from('individual_products')
+    .select()
+    .not('id', 'in', `(${excluded_individuals.join(',')})`)
+    .eq('product_id', product_id)
+    .ilike('code', `%${search?.value ?? search ?? ''}%`)
+    .range(from, to);
+
+  res.status(200).json({
+    draw,
+    data,
+    page
+  });
 };
 
 //function generates uid 7chars from 0-1 AZ az

@@ -5,6 +5,7 @@ import type { ApiResult } from '@/types/types';
 import { deleteFolder } from './storage';
 import { getPiezaById, getPiezaWithCliente, getRevisionById } from './piezas';
 import { getRevisionesByPiezaC } from '@/controllers/clientes';
+import { getMovementsByOrderId, restRemaining, upsertMovements } from './inventory';
 
 /**
  * 
@@ -120,6 +121,20 @@ export const generarOrdenDeCompraEstatica = async (order_data: any) => {
   if (error_upd) {
     console.error('Error updating order:', error_upd.message);
     throw error_upd;
+  }
+
+  const movements = await getMovementsByOrderId(order_id);
+
+  for (const movement of movements) {
+    if (!movement.individual_id) continue;
+
+    await restRemaining(String(movement.individual_id), movement.consumed);
+    await upsertMovements([
+      {
+        ...movement,
+        generated: true
+      }
+    ]);
   }
 
   const result: ApiResult = {

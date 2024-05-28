@@ -1,5 +1,5 @@
 import supabase from '@/config/supabase';
-import { IndividualProduct, Product } from '@/types/inventory';
+import { IndividualProduct, Movement, Product } from '@/types/inventory';
 
 export const createProduct = async (product: Product): Promise<Product> => {
   const { data: newProduct, error } = await supabase().from('inventory').insert(product).select('*').single();
@@ -71,4 +71,96 @@ export const getIndividualProductsByProduct = async (product_id: string): Promis
     .eq('product_id', product_id);
 
   return products as IndividualProduct[];
+};
+
+export const upsertMovements = async (movements: Movement[]): Promise<Movement[]> => {
+  const { data, error } = await supabase()
+    .from('movements')
+    .upsert(movements, { onConflict: 'id' })
+    .select('*, product:product_id(*), individual:individual_id(*)');
+
+  if (error) {
+    throw error;
+  }
+
+  if (!data) {
+    return [];
+  }
+
+  console.log({ data });
+
+  return data as Movement[];
+};
+
+export const getMovementsByIndividual = async (product_id: string): Promise<Movement[]> => {
+  const { data: movements, error } = await supabase()
+    .from('movements')
+    .select('*, product:product_id(*), individual:individual_id(*)')
+    .eq('individual_id', product_id);
+
+  if (error) {
+    throw error;
+  }
+
+  return movements as Movement[];
+};
+
+export const deleteMovement = async (id: string): Promise<Movement> => {
+  const { data: deletedMovement, error } = await supabase()
+    .from('movements')
+    .delete()
+    .eq('id', id)
+    .select('*')
+    .single();
+
+  return deletedMovement as Movement;
+};
+
+export const restRemaining = async (individual_id: string, consumed: number): Promise<IndividualProduct> => {
+  const individual_product = await getIndividualProductById(individual_id);
+  const updated_individual_product = await updateIndividualProduct({
+    ...individual_product,
+    remaining: individual_product.remaining - consumed
+  });
+
+  return updated_individual_product;
+};
+
+export const getMovementsByOrderId = async (order_id: string): Promise<Movement[]> => {
+  const { data: movements, error } = await supabase().from('movements').select('*').eq('order_id', order_id);
+
+  if (error) {
+    throw error;
+  }
+
+  return movements as Movement[];
+};
+
+export const checkProductStock = async (individual_id: string, consumed: number): Promise<boolean> => {
+  const individual_product = await getIndividualProductById(individual_id);
+  const remaining_individual = individual_product.remaining;
+  const ungenerated = await getUngeneratedOutputMovements(individual_id);
+
+  const ungenerated_consumed = ungenerated.reduce((acc, movement) => acc + movement.consumed, 0);
+
+  if (remaining_individual - consumed - ungenerated_consumed < 0) {
+    throw new Error('No hay suficiente stock');
+  }
+
+  return remaining_individual - consumed - ungenerated_consumed >= 0;
+};
+
+export const getUngeneratedOutputMovements = async (individual_id: string): Promise<Movement[]> => {
+  const { data: movements, error } = await supabase()
+    .from('movements')
+    .select('*')
+    .eq('individual_id', individual_id)
+    .eq('type', 'output')
+    .eq('generated', false);
+
+  if (error) {
+    throw error;
+  }
+
+  return movements as Movement[];
 };

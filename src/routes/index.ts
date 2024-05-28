@@ -6,6 +6,7 @@ import SettingsRoutes from './settings';
 import UsuariosRoutes from './usuarios';
 import authRoutes from './auth';
 import InventoryRoutes from './inventory';
+import MovementsRoutes from './movements';
 
 export const viewsRoutes = [ViewsRoutes];
 export const apiRoutes = [
@@ -15,5 +16,6 @@ export const apiRoutes = [
   SettingsRoutes,
   UsuariosRoutes,
   authRoutes,
-  InventoryRoutes
+  InventoryRoutes,
+  MovementsRoutes
 ];
