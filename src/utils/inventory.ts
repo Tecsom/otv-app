@@ -116,14 +116,14 @@ export const deleteMovement = async (id: string): Promise<Movement> => {
   return deletedMovement as Movement;
 };
 
-export const restRemaining = async (individual_id: string, consumed: number): Promise<IndividualProduct> => {
+export const restRemaining = async (individual_id: string, consumed: number): Promise<number> => {
   const individual_product = await getIndividualProductById(individual_id);
   const updated_individual_product = await updateIndividualProduct({
     ...individual_product,
     remaining: individual_product.remaining - consumed
   });
 
-  return updated_individual_product;
+  return individual_product.remaining - consumed;
 };
 
 export const getMovementsByOrderId = async (order_id: string): Promise<Movement[]> => {
@@ -142,7 +142,8 @@ export const checkProductStock = async (individual_id: string, consumed: number)
   const ungenerated = await getUngeneratedOutputMovements(individual_id);
 
   const ungenerated_consumed = ungenerated.reduce((acc, movement) => acc + movement.consumed, 0);
-
+  const rem = remaining_individual - consumed - ungenerated_consumed;
+  console.log({ rem, remaining_individual, consumed, ungenerated_consumed });
   if (remaining_individual - consumed - ungenerated_consumed < 0) {
     throw new Error('No hay suficiente stock');
   }

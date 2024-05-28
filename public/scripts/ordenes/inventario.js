@@ -226,7 +226,12 @@ $('#save_inventory').on('click', async function () {
 $container_individuals.on('input', '.input-consumed', function () {
   const value = $(this).val();
   if (value.length === 0) return;
-  const regex = /^\d{1,2}(\.\d{1,2})?$/;
+  //   const regex = /^\d{1,2}(\.\d{1,2})?$/; need to allow 100
+  //   if (!regex.test(value)) {
+  //     $(this).val(value.slice(0, -1));
+  //   }
+
+  const regex = /^\d{1,3}(\.\d{1,2})?$/;
   if (!regex.test(value)) {
     $(this).val(value.slice(0, -1));
   }
