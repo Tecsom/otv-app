@@ -38,7 +38,7 @@ $('#create-product-form').submit(async function (e) {
   const button = new loadingButton($('#confirm_new_product'));
   button.start();
   const res = await fetchData('/inventory', 'POST', data);
-
+  button.stop();
   if (res.status === true) {
     products_table.ajax.reload();
     $('#create-product-modal').modal('hide');
@@ -46,8 +46,6 @@ $('#create-product-form').submit(async function (e) {
     toastr.success('Producto creado exitosamente', 'Producto creado');
     return;
   }
-
-  button.stop();
 });
 
 products_table.on('click', 'tbody tr', function () {

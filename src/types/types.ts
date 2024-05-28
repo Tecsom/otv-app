@@ -14,4 +14,5 @@ export type QueryTable = {
   draw: string;
   search: { value: string };
   start: string;
+  page: string;
 };
