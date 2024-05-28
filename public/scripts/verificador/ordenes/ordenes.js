@@ -2,6 +2,7 @@ import { fetchData, loadingButton, isoDateToFormatted, isoDateToFormattedWithTim
 
 let verificadas_array = [];
 let productoByCode;
+let codigoVerificador;
 $('#exit-checker').on('click', async function () {
   $('#modal_quit_checker').modal('show');
 });
@@ -312,12 +313,12 @@ socket.on('scanner', data => {
 });
 
 const verificarPieza = async codigo => {
-  let quantitySuccess;
   const exists = ordenData.codigos.find(pieza => pieza.code === codigo);
   const isVerified = verificadas_array.includes(codigo);
 
   productoByCode = ordenData.productos.find(product => product.codigos.find(code => code === codigo));
 
+  codigoVerificador = codigo;
   console.log('PRODUCTO', productoByCode);
 
   if (!exists) {
@@ -333,20 +334,39 @@ const verificarPieza = async codigo => {
   if (productoByCode?.type === 'bulk') {
     $('#check_quantity').val('');
     $('#ask_quantity').modal('show');
-    quantitySuccess = verificarCantidad(productoByCode, codigo);
+    return;
   }
 
-  if (quantitySuccess || productoByCode?.type !== 'bulk') {
-    verify(codigo);
-  }
+  productoByCode.quantity = 1;
+
+  verify(codigo);
 };
+
+$('#boton_mandar_cantidad').on('click', function () {
+  if ($('#check_quantity').val() > productoByCode.quantity) {
+    console.log('cantidad mala ');
+    toastr.error('La cantidad ingresada es mayor a la cantidad de la pieza');
+    return false;
+  }
+  if ($('#check_quantity').val() <= 0) {
+    toastr.error('Debe ingresar una cantidad valida');
+    return false;
+  }
+  if ($('#check_quantity').val() === '') {
+    toastr.error('Ingrese la cantidad de producto');
+    return false;
+  }
+  $('#ask_quantity').modal('hide');
+  verify(codigoVerificador);
+});
 
 const verify = codigo => {
   console.log(codigo);
   table_verificadas.rows
     .add([
       {
-        codigo
+        codigo,
+        cantidad: productoByCode.quantity
       }
     ])
     .draw();
@@ -370,28 +390,6 @@ const verify = codigo => {
     $('#progress_verificacion').css('width', `${progress}%`);
     $('#progress_verificacion').text(`Progreso de verificación (${progress.toFixed(2)}%)`);
   }
-};
-
-const verificarCantidad = (producto, codigo) => {
-  $('#boton_mandar_cantidad').unbind('click');
-  $('#boton_mandar_cantidad').on('click', function () {
-    if ($('#check_quantity').val() > producto.quantity) {
-      console.log('cantidad mala ');
-      toastr.error('La cantidad ingresada es mayor a la cantidad de la pieza');
-      return false;
-    }
-    if ($('#check_quantity').val() <= 0) {
-      toastr.error('Debe ingresar una cantidad valida');
-      return false;
-    }
-    if ($('#check_quantity').val() === '') {
-      toastr.error('Ingrese la cantidad de producto');
-      return false;
-    }
-    $('#ask_quantity').modal('hide');
-    verify(codigo);
-    return true;
-  });
 };
 
 $('#save_verification_modal_btn').on('click', async function () {

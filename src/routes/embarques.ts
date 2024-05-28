@@ -7,7 +7,10 @@ import {
     indexEmbarqueProduct,
     newEmbarqueProduct,
     showEmbarque,
-    updateEmbarque
+    updateEmbarque,
+    deleteProductEmbarque,
+    createEmbarqueContenedores,
+    getEmbarqueContenedores
 } from '../controllers/embarques'
 
 
@@ -23,6 +26,9 @@ router.get('/embarques/ordenes', getOrdenes)
 
 router.post('/embarques/productos', newEmbarqueProduct)
 router.get('/embarques/:embarque_id/productos', indexEmbarqueProduct)
+router.delete('/embarque/productos/:embarque_product_id', deleteProductEmbarque)
 
+router.post('/embarque/create/contenedor', createEmbarqueContenedores)
+router.get('embarque/contenedores/:embarque_id', getEmbarqueContenedores)
 
 export default router;

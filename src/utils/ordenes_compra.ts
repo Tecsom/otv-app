@@ -501,7 +501,8 @@ export const verifyProds = async (order_id: number, products: any[], created_at:
     const { data, error } = await supabase().from('ordenes_static_verified').insert({
       order_id,
       codigo: prod.codigo,
-      created_at
+      created_at,
+      quantity: prod.cantidad
     });
     if (error) {
       console.log(error);

@@ -1,5 +1,12 @@
 import { fetchData, isoDateToFormatted } from '../helpers.js';
 
+const badgeType = {
+  pendiente: 'secondary',
+  embarque: 'info',
+  cancelada: 'danger',
+  finalizada: 'success'
+};
+
 $(() => {
   init();
 });
@@ -37,6 +44,78 @@ async function init() {
     placeholder: 'Selecciona una orden'
   });
 
+  const $fecha_entrega = $('#fecha_entrega');
+  $fecha_entrega.flatpickr({
+    // EN ESTA PARTE ES DONDE SE REGISTRA EL EVENTO
+    onChange: function (selectedDates, dateStr, instance) {
+      $fecha_entrega.data({ value: selectedDates[0] });
+    },
+    // FIN EVENTO
+    minDate: 'today',
+    dateFormat: 'd/m/Y',
+    //maxDate: 'today',
+    locale: {
+      firstDayOfWeek: 1,
+      weekdays: {
+        shorthand: ['Do', 'Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sa'],
+        longhand: ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado']
+      },
+      months: {
+        shorthand: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Оct', 'Nov', 'Dic'],
+        longhand: [
+          'Enero',
+          'Febrero',
+          'Мarzo',
+          'Abril',
+          'Mayo',
+          'Junio',
+          'Julio',
+          'Agosto',
+          'Septiembre',
+          'Octubre',
+          'Noviembre',
+          'Diciembre'
+        ]
+      }
+    }
+  });
+
+  const $fecha_embarque = $('#fecha_embarque');
+  $fecha_embarque.flatpickr({
+    // EN ESTA PARTE ES DONDE SE REGISTRA EL EVENTO
+    onChange: function (selectedDates, dateStr, instance) {
+      console.log(selectedDates);
+      $fecha_embarque.data({ value: selectedDates[0] });
+    },
+    // FIN EVENTO
+    minDate: 'today',
+    dateFormat: 'd/m/Y',
+    //maxDate: 'today',
+    locale: {
+      firstDayOfWeek: 1,
+      weekdays: {
+        shorthand: ['Do', 'Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sa'],
+        longhand: ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado']
+      },
+      months: {
+        shorthand: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Оct', 'Nov', 'Dic'],
+        longhand: [
+          'Enero',
+          'Febrero',
+          'Мarzo',
+          'Abril',
+          'Mayo',
+          'Junio',
+          'Julio',
+          'Agosto',
+          'Septiembre',
+          'Octubre',
+          'Noviembre',
+          'Diciembre'
+        ]
+      }
+    }
+  });
   loadEmbarques();
 
   $('#container-data').addClass('d-none');
@@ -57,9 +136,10 @@ async function loadEmbarques() {
   const $container = $('#embarques_container');
 
   const embarques = await getEmbarques();
+  console.log(embarques.data[0]);
 
   for (let embarque of embarques.data) {
-    const uniqueFolio = Math.random().toFixed(3);
+    const uniqueFolio = addLeadingZeros(embarque.folio_unico, 5);
 
     const $newdiv1 = $(`
     <div class="embarque_container_child card-body border  cursor-pointer" embarque_id="${embarque.id}" id="order_${uniqueFolio}" folio="${embarque.id}">
@@ -67,7 +147,7 @@ async function loadEmbarques() {
         <div class="col-md-12">
           <div class="d-flex align-items-center justify-content-between p-2 pb-0">
             <span class="badge bg-label-dark">${uniqueFolio}</span>
-            <span class="text-capitalize badge bg-secondary">Pendiente</span>
+            <span class="text-capitalize badge bg-${badgeType[embarque.estado]}">${embarque.estado}</span>
           </div>
         </div>
         <div class="col-md-12">
@@ -91,27 +171,46 @@ async function loadEmbarques() {
 
 $('#create_embarque').on('submit', async function (e) {
   e.preventDefault();
-
   //Variables para post
+  $('#create_embarque_button').prop('disabled', true);
+
   const $descripcion = $('#descripcion_embarque');
   const $tipo_contenedor = $('#tipo_contenedor');
+  const $fecha_embarque = $('#fecha_embarque').data().value;
+  const $fecha_entrega = $('#fecha_entrega').data().value;
+
+  const fecha_embarque = new Date($fecha_embarque);
+  const fecha_entrega = new Date($fecha_entrega);
+
+  fecha_embarque.setUTCHours(fecha_embarque.getUTCHours() - 6);
+  const isoStringEmbarque = fecha_embarque.toISOString();
+
+  fecha_entrega.setUTCHours(fecha_entrega.getUTCHours() - 6);
+  const isoStringEntrega = fecha_entrega.toISOString();
 
   const descripcion = $descripcion.val().trim();
   const tipo_contenedor = $tipo_contenedor.val().trim();
 
-  if (descripcion == '') {
+  if (descripcion == '' || fecha_embarque == '' || fecha_entrega == '') {
     toastr.error('Completar los campos para crear el embarque');
+    $('#create_embarque_button').prop('disabled', false);
+
     return;
   }
 
+  console.log(fecha_entrega);
+
   const result = await fetchData('/embarque/create', 'POST', {
     descripcion: descripcion,
-    tipo_contenedor: tipo_contenedor
+    tipo_contenedor: tipo_contenedor,
+    fecha_embarque: isoStringEmbarque,
+    fecha_entrega: isoStringEntrega
   });
 
   const apiResult = result.data;
 
   if (apiResult.status == false) {
+    $('#create_embarque_button').prop('disabled', false);
     toastr.error(apiResult.data, 'Ocurrió un error');
     return;
   }
@@ -132,10 +231,10 @@ $('#embarques_container').on('click', '.embarque_container_child', async functio
 
   loadProducts(data);
 
-  $('#data-folio').text($embarque.attr('folio'));
+  $('#data-folio').text(addLeadingZeros(data.folio_unico, 5));
   $('#data-fecha-creacion').text(isoDateToFormatted(data.created_at));
 
-  $('#data-client-data').text('Cliente 1');
+  $('#data-description-data').text(data.descripcion);
   $('#client_id').text('1');
   $('#client_currency').text('MXN');
 
@@ -276,11 +375,20 @@ $('#uploadContainerType').on('click', async function () {
 });
 //FIN PARTE DE EDITAR EL TIPO DE CONTENEDOR
 
+//agregar campo de fecha de embarque y fecha de entrega al crear un nuevo embarque, actualizar UI, cambiar diseño y logica en la parte de contenedores
+
 // SECCIÓN EN LA QUE SE ABRE MODAL PARA SELECCIONAR ORDENES Y CARGADO DE ORDENES A <select></select>
 $('#addProductsButton').on('click', async function () {
   $('#addProductsModal').modal('show');
 
-  const ordenes = await fetchData('/embarques/ordenes', 'GET', {});
+  let ordenes = await fetchData('/embarques/ordenes', 'GET', {});
+
+  const dataTable = $('#embarque-product-table').DataTable().data().toArray();
+
+  ordenes = ordenes.data.filter(item => {
+    const productIds = item.order_id.productos.map(producto => producto.id);
+    return !productIds.every(productId => dataTable.some(dataItem => dataItem.producto_id == productId));
+  });
 
   if (ordenes.status == false) {
     toastr.error('Error al obtener las ordenes');
@@ -291,8 +399,10 @@ $('#addProductsButton').on('click', async function () {
 
   $('#add_product_select').append('<option value=""></option>');
 
-  ordenes.data.forEach(function (item) {
-    const option = $(`<option value="${item.id}">Folio unico: ${item.codigo} </option>`);
+  console.log(ordenes);
+
+  ordenes.forEach(function (item) {
+    const option = $(`<option value="${item.id}">Folio unico: ${item.folio} </option>`);
     option.data('productos', item.order_id.productos || item.productos);
     $('#add_product_select').append(option);
   });
@@ -304,9 +414,7 @@ $('#addProductsButton').on('click', async function () {
 // SECCIÓN DE MODAL PARA AGREGAR Y RECUPERAR LOS DATOS DE LAS ORDENES
 $('#add_product_select').on('change', function () {
   const selectedOption = $(this).find('option:selected');
-  const data = selectedOption.data('productos');
-
-  console.log('DATA', data);
+  let data = selectedOption.data('productos');
 
   if (!data) {
     $('#confirm_add_products').prop('disabled', true);
@@ -317,6 +425,10 @@ $('#add_product_select').on('change', function () {
   if (!data || !Array.isArray(data)) {
     return;
   }
+
+  const dataTable = $('#embarque-product-table').DataTable().data().toArray();
+
+  data = data.filter(item => !dataTable.some(dataItem => dataItem.producto_id == item.id));
 
   const dataForTable = data.map(function (item) {
     return {
@@ -392,10 +504,6 @@ $('#add_product_select').on('change', function () {
   });
 
   $('#productos_table thead, tbody').off('change');
-
-  $('#productos_table thead, tbody').on('change', 'input[type="checkbox"]', function () {
-    const dataCheck = $('#productos_table').DataTable().rows({ selected: true }).data().toArray();
-  });
 });
 // FIN DE LA SECCIÓN DE RECUPARA LOS DATOS DE LAS ORDENES
 
@@ -403,11 +511,7 @@ $('#add_product_select').on('change', function () {
 $('#confirm_add_products').on('click', async function () {
   const data = $('#container-reporte').data();
 
-  console.log(data);
-
   const selectedProducts = $('#productos_table').DataTable().rows({ selected: true }).data().toArray();
-
-  console.log('SELECTED PRODUCTS', selectedProducts);
 
   if (selectedProducts.length == 0) {
     toastr.error('Selecciona al menos un producto');
@@ -422,8 +526,6 @@ $('#confirm_add_products').on('click', async function () {
       estado: true,
       order_id: product.order_id
     });
-
-    console.log(result);
   }
 
   loadProducts(data);
@@ -435,8 +537,6 @@ $('#confirm_add_products').on('click', async function () {
 //METODO PARA CARGAR LA TABLA DE PRODUCTOS EN EL APARTADO DE CONTENEDORES
 const loadProducts = async data => {
   const result = await fetchData('/embarques/' + data.id + '/productos/', 'GET', {});
-
-  console.log(result);
 
   if (result.status == false) {
     toastr.error('Error al obtener los productos');
@@ -451,9 +551,11 @@ const loadProducts = async data => {
       estado: producto.order_products.piezas.cliente_id.estado,
       cliente: producto.order_products.piezas.cliente_id.nombre || '',
       opciones: `
-      <div class="d-inline-block text-nowrap">
+      <div class="d-inline-block text-nowrap" id="embarque-producto-table">
         <button class="btn btn-sm btn-icon delete-icon eliminar-producto" title="Eliminar" data-bs-toggle="tooltip" data-bs-placement="top"><i class="ti ti-trash-x"></i></button>
-      </div>`
+      </div>`,
+      producto: producto.order_products.piezas.numero_parte,
+      numero_orden: producto.order_id
     };
   });
 
@@ -463,9 +565,9 @@ const loadProducts = async data => {
     searching: false,
     lengthChange: false,
     columns: [
-      { data: 'id', title: 'ID' },
+      { data: 'numero_orden', title: '# Orden' },
       { data: 'cliente', title: 'Cliente' },
-      { data: 'producto_id', title: 'Producto ID' },
+      { data: 'producto', title: 'Producto' },
       { data: 'cantidad', title: 'Cantidad' },
       { data: 'estado', title: 'Estado' },
       { data: 'opciones', title: 'Opciones' }
@@ -486,4 +588,34 @@ $('#addProductsModal').on('hidden.bs.modal', function () {
   let table = $('#productos_table').DataTable();
   table.clear().draw();
   table.destroy();
+});
+
+function addLeadingZeros(number, length) {
+  let numStr = String(number);
+
+  let zerosToAdd = Math.max(length - numStr.length, 0);
+
+  return '0'.repeat(zerosToAdd) + numStr;
+}
+
+$('#embarque-product-table').on('click', '.eliminar-producto', async function (e) {
+  $('#delete_product_modal').modal('show');
+});
+
+$('#confirm_delete_product').on('click', async function (e) {
+  const dataContainer = $('#container-reporte').data();
+
+  const data = $('#embarque-product-table').DataTable().row($('.eliminar-producto').closest('tr')).data();
+
+  const result = await fetchData('/embarque/productos/' + data.id, 'DELETE', {});
+
+  if (result.status == false) {
+    toastr.error('Error al eliminar el producto');
+    return;
+  }
+
+  toastr.success('Producto eliminado con éxito');
+
+  $('#delete_product_modal').modal('hide');
+  await loadProducts(dataContainer);
 });
