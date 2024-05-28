@@ -1,0 +1,273 @@
+<style>
+  table .btn {
+    box-shadow: none !important;
+  }
+
+  table td {
+    cursor: pointer !important;
+  }
+</style>
+<link rel="stylesheet" href="/public/assets/vendor/css/pages/app-chat.css" />
+
+<div class="container-xxl flex-grow-1 container-p-y">
+  <div class="d-flex justify-content-between align-items-center pb-2 border-bottom">
+    <div class="d-flex align-items-center gap-2">
+      <h4 class="mb-0">
+        <span class="text-muted fw-light"><a class="text-muted" href="/inventario">Productos</a> /</span>
+        <span id="client_name_title"> <%= productData.name %> </span>
+      </h4>
+    </div>
+
+    <div>
+      <button
+        class="btn btn-label-primary dropdown-toggle"
+        type="button"
+        id="dropdownMenuButton"
+        data-bs-toggle="dropdown"
+        aria-haspopup="true"
+        aria-expanded="false">
+        Opciones
+      </button>
+      <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
+        <li>
+          <a
+            data-bs-toggle="modal"
+            data-bs-target="#modal_edit_product"
+            class="dropdown-item d-flex align-items-center gap-2"
+            href="javascript:void(0);"
+            ><i class="ti ti-edit ti-xs me-1"></i>Editar</a
+          >
+        </li>
+        <li>
+          <a
+            class="dropdown-item d-flex align-items-center gap-2"
+            href="javascript:void(0);"
+            data-bs-toggle="modal"
+            data-bs-target="#delete_product_modal"
+            ><i class="ti ti-trash-x ti-xs me-1"></i>Eliminar</a
+          >
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="row pt-3">
+    <!-- User Sidebar -->
+    <div class="col-xl-4 col-lg-5 col-md-5 order-1 order-md-0">
+      <!-- User Card -->
+      <div class="card mb-4">
+        <div class="card-body">
+          <p class="small text-uppercase text-muted mb-0">Detalles</p>
+          <div class="info-container pt-2">
+            <ul class="list-unstyled">
+              <li class="mb-2">
+                <span class="fw-medium me-1">Nombre:</span>
+                <span id="details_client_name"> <%= productData.name %> </span>
+              </li>
+              <li class="mb-2">
+                <span class="fw-medium me-1">Descripción:</span>
+                <span id="details_client_rfc"> <%= productData.description ?? "" %> </span>
+              </li>
+              <li class="mb-2 pt-1">
+                <span class="fw-medium me-1">Stock:</span>
+                <span id="details_client_state"> <%= productData.stock ?? 0%> </span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-xl-8 col-lg-7 col-md-7 order-0 order-md-1">
+      <div class="card">
+        <div class="card-header pt-1">
+          <ul class="nav nav-tabs card-header-tabs" role="tablist">
+            <li class="nav-item" role="presentation">
+              <button
+                type="button"
+                class="nav-link active"
+                role="tab"
+                data-bs-toggle="tab"
+                data-bs-target="#navs_catalogo"
+                aria-controls="navs_catalogo"
+                aria-selected="true">
+                <i class="ti ti-box ti-xs me-1"></i>
+                Productos
+              </button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button
+                type="button"
+                class="nav-link"
+                role="tab"
+                data-bs-toggle="tab"
+                data-bs-target="#navs_historial"
+                aria-controls="navs_historial"
+                aria-selected="false"
+                tabindex="-1">
+                <i class="ti ti-clock ti-xs me-1"></i>
+                Historial
+              </button>
+            </li>
+          </ul>
+        </div>
+        <div class="card-body">
+          <div class="tab-content p-0 pt-3">
+            <div class="tab-pane fade show active" id="navs_catalogo" role="tabpanel">
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="d-flex justify-content-between align-items-center gap-2">
+                    <div class="flex-grow-1">
+                      <input
+                        id="search_equipment"
+                        class="form-control"
+                        type="search"
+                        placeholder="Buscar individual..." />
+                    </div>
+                    <!--<button type="button" class="btn btn-icon me-2 btn-label-primary waves-effect">
+                      <span class="ti ti-filter"></span>
+                    </button>-->
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="d-flex justify-content-end align-items-center">
+                    <button
+                      type="button"
+                      class="btn btn-label-success waves-effect waves-light"
+                      data-bs-toggle="modal"
+                      data-bs-target="#modal_create_individual_product">
+                      <span class="tf-icons ti-xs ti ti-plus me-1"></span>Nuevo
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div class="table-responsive border-top mt-3">
+                <!--TABLE HERE-->
+                <div id="clientes_table_wrapper" class="dataTables_wrapper dt-bootstrap5 no-footer">
+                  <table id="individual-product-table" class="table table-striped w-100 table-hover table-sm"></table>
+                </div>
+              </div>
+            </div>
+            <div class="tab-pane fade" id="navs_historial" role="tabpanel">Historial de órdenes de compra</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!--/ User Content -->
+  </div>
+</div>
+
+<!--! Modal editar producto -->
+<div class="modal fade modal_product" id="modal_edit_product" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal_product" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Editar producto</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="edit-product-form" class="row g-3">
+          <div class="col-md-12">
+            <label for="product_name_edit" class="form-label required">Nombre</label>
+            <input
+              type="text"
+              id="product_name_edit"
+              name="name"
+              class="form-control"
+              value="<%= productData.name %>" />
+          </div>
+          <div class="col-md-12">
+            <label for="product_description_edit" class="form-label">Descripción</label>
+            <input
+              type="text"
+              id="product_description_edit"
+              class="form-control"
+              name="description"
+              value="<%= productData.description %>" />
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button id="confirm_edit_product" type="submit" form="edit-product-form" class="btn btn-success">
+          Guardar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--! MODAL DELETE PRODUCTO -->
+<div class="modal fade" id="delete_product_modal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-sm" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel1">Eliminar producto</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-12">
+            <p>Esta acción es irreversible, las órdenes de compra continuarán siendo visibles.</p>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer d-block">
+        <div class="d-flex justify-content-end">
+          <button id="delete_product_button" class="btn btn-danger">Eliminar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!--! MODAL DELETE pieza -->
+<div class="modal fade" id="delete_pieza_modal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-sm" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel1">Eliminar Pieza</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-12">
+            <p>Esta acción es irreversible, permanecerá su información en las órdenes de compra finalizadas.</p>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer d-block">
+        <div class="d-flex justify-content-end">
+          <button id="delete_pieza_btn" class="btn btn-danger">Eliminar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- MODAL ADD INDIVIDUAL PRODUCT -->
+<div class="modal fade" id="modal_create_individual_product" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-sm" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Entrada</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="create_individual_product_form" class="row g-3">
+          <div class="col-md-12">
+            <label for="quantity_ins" class="form-label required">Cantidad</label>
+            <input type="number" id="quantity_ins" min="1" class="form-control" />
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button id="confirm_new_individual" type="submit" form="create_individual_product_form" class="btn btn-success">
+          Guardar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  var productData = JSON.parse('<%- JSON.stringify(productData) %>') ?? {};
+</script>
+<script src="/public/scripts/inventory/product.js" type="module"></script>
+<script src="/public/scripts/inventory/individual-product.js" type="module"></script>

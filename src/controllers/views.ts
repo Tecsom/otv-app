@@ -7,6 +7,7 @@ import { getFilePublicURL } from '@/utils/storage';
 import { getUsuarios } from '@/utils/usuarios';
 import { getCheckerPassword } from '@/utils/settings';
 import storage from 'node-persist';
+import { getProductById } from '@/utils/inventory';
 
 export const renderHomePage = (_: Request, res: Response) => res.render('Home.ejs');
 export const renderUnidadesMedida = (_: Request, res: Response) => res.render('unidadesMedida.ejs');
@@ -73,4 +74,14 @@ export const renderConfiguracion = async (_: Request, res: Response) => {
   res.render('configuracion.ejs', { usuarios, password, defaultScannerPort });
 };
 export const renderInventarios = async (_: Request, res: Response) => res.render('inventarios.ejs');
+export const renderProductoInventarios = async (req: Request, res: Response) => {
+  const { product_id } = req.params;
+
+  try {
+    const productData = await getProductById(product_id);
+    return res.render('inventarios-producto.ejs', { productData });
+  } catch (error) {
+    res.status(404).render('404.ejs');
+  }
+};
 export const renderEmbarques = async (_: Request, res: Response) => res.render('embarques.ejs');

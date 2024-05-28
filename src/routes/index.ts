@@ -5,6 +5,15 @@ import OrdenesCompra from './ordenes_compra';
 import SettingsRoutes from './settings';
 import UsuariosRoutes from './usuarios';
 import authRoutes from './auth';
+import InventoryRoutes from './inventory';
 
 export const viewsRoutes = [ViewsRoutes];
-export const apiRoutes = [ScannerRoutes, ClientesRoutes, OrdenesCompra, SettingsRoutes, UsuariosRoutes, authRoutes];
+export const apiRoutes = [
+  ScannerRoutes,
+  ClientesRoutes,
+  OrdenesCompra,
+  SettingsRoutes,
+  UsuariosRoutes,
+  authRoutes,
+  InventoryRoutes
+];
