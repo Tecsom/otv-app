@@ -135,7 +135,7 @@
                       class="btn btn-label-success waves-effect waves-light"
                       data-bs-toggle="modal"
                       data-bs-target="#modal_create_individual_product">
-                      <span class="tf-icons ti-xs ti ti-plus me-1"></span>Nuevo
+                      <span class="tf-icons ti-xs ti ti-plus me-1"></span>Entrada
                     </button>
                   </div>
                 </div>
@@ -260,6 +260,30 @@
       <div class="modal-footer">
         <button id="confirm_new_individual" type="submit" form="create_individual_product_form" class="btn btn-success">
           Guardar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- MODAL OUTPUT PRODUCT -->
+<div class="modal fade" id="modal_output_product" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-sm" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Salida</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="output_product_form" class="row g-3">
+          <div class="col-md-12">
+            <label for="quantity_output" class="form-label required">Cantidad</label>
+            <input type="number" id="quantity_output" min="1" class="form-control" />
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button id="confirm_new_individual" type="submit" form="output_product_form" class="btn btn-danger">
+          Salida
         </button>
       </div>
     </div>

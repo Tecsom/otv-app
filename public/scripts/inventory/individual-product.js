@@ -2,6 +2,10 @@ import { fetchData, loadingButton } from '/public/scripts/helpers.js';
 
 const product_id = window.location.pathname.split('/').pop();
 
+const delete_button = `
+    <button class="btn btn-danger btn-sm open-output-modal" >Salida</button>
+    `;
+
 const individual_product_table = $('#individual-product-table').DataTable({
   columns: [
     { data: 'code', title: 'Código', orderable: true },
@@ -14,6 +18,9 @@ const individual_product_table = $('#individual-product-table').DataTable({
         const percentage = remaining * 100;
         return percentage.toFixed(2) + '%';
       }
+    },
+    {
+      defaultContent: delete_button
     }
   ],
   dom: 'rtp',
@@ -57,3 +64,29 @@ const loadIndividualProducts = async () => {
     individual_product_table.draw();
   }
 };
+
+$('#individual-product-table').on('click', '.open-output-modal', function () {
+  $('#modal_output_product').modal('show');
+  const data = individual_product_table.row($(this).parents('tr')).data();
+  $('#modal_output_product').data('individual_product_id', data.id);
+});
+
+$('#output_product_form').submit(async function (e) {
+  e.preventDefault();
+  const individual_product_id = $('#modal_output_product').data('individual_product_id');
+  const quantity_b100 = parseFloat($('#quantity_output').val());
+  const quantity = quantity_b100 / 100;
+  // const button = new loadingButton($('#confirm_output_product'));
+  // button.start();
+  // const res = await fetchData(`/inventory/${product_id}/individual/${individual_product_id}/output`, 'POST', {
+  //   quantity
+  // });
+  // button.stop();
+  // if (res.status === true) {
+  //   await loadIndividualProducts();
+  //   $('#modal_output_product').modal('hide');
+  //   $('#output_product_form').trigger('reset');
+  //   toastr.success('Salida realizada exitosamente', 'Salida realizada');
+  //   return;
+  // }
+});
