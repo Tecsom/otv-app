@@ -23,6 +23,7 @@ $('#confirm_generate_order').on('click', async function () {
   const table_data = $('#ordenes_table').data();
   try {
     const data = await generateOrder();
+    console.log(data);
     $('#data-folio').text(data.folio_unico);
 
     toastr.success('Orden generada correctamente');
