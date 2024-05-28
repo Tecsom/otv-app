@@ -90,6 +90,7 @@ export const updtEmbarque = async (payload: Embarque, embarque_id: number): Prom
 export const delEmbarque = async (embarque_id: number): Promise<ApiResult> => {
 
     const { error: error } = await supabase().from('embarque_products').delete().eq('embarque_id', embarque_id);
+    await supabase().from('embarque_contenedores').delete().eq('embarque_id', embarque_id);
     const { error: uploadError } = await supabase().from('embarques').delete().eq('id', embarque_id);
 
     if (uploadError) {
@@ -122,10 +123,10 @@ export const getOrdenesStatic = async (): Promise<OrdenesInEmbarque[]> => {
 }
 
 export const createEmbarqueProduct = async (embarque_product_body: EmbarqueProductBody): Promise<ApiResult> => {
-    console.log(embarque_product_body)
+
     const { error: uploadError, data: data } = await supabase().from('embarque_products').insert(embarque_product_body).select('*');
 
-    //const { error: error, data: dataOrden} = await supabase().from('ordenes').select('*').eq('id', embarque_product_body.product_id).single();
+    console.log(data)
 
     if (uploadError) {
         console.error("Error creating embarque product: ", uploadError.message);
@@ -144,29 +145,6 @@ export const createEmbarqueProduct = async (embarque_product_body: EmbarqueProdu
         status: true
     }
     return result;
-}
-
-export const getEmbarqueProducts = async (embarque_id: number) => {
-    const { data: embarque_products, error } = await supabase()
-    .from('embarque_products')
-    .select(`
-    id, 
-    embarque_id, 
-    producto_id,
-    order_products(pieza_id, piezas(id, numero_parte, descripcion, costo_venta, costo_produccion, cliente_id(id, nombre, identificador, domicilio, pais, estado, ciudad, correo, celular, currency))),
-    cantidad,
-    order_id,
-    last_update
-    `)
-    .eq('embarque_id', embarque_id)
-    .eq('estado', true);
-
-    if (error) {
-        console.error("Error fetching embarque products: ", error);
-        throw error;
-    }
-
-    return embarque_products;
 }
 
 export const uploadEmbarqueProducts = async (embarque_id: number, products: EmbarqueProduct[]) => {
@@ -212,8 +190,10 @@ export const deleteEmbarqueProduct = async (embarque_product_id: number) => {
     return result;
 }
 
-export const deleteProductFromEmbarque = async (embarque_product_id: number) => {
-    const { error: uploadError } = await supabase().from('embarque_products').delete().eq('id', embarque_product_id);
+export const deleteProductFromEmbarque = async (embarque_id: number, producto_id: number, order_id: number) => {
+
+    
+    const { error: uploadError } = await supabase().from('embarque_products').delete().eq('embarque_id', embarque_id).eq('producto_id', producto_id).eq('order_id', order_id);
 
     if (uploadError) {
         console.error("Error deleting embarque product: ", uploadError.message);
@@ -234,8 +214,7 @@ export const deleteProductFromEmbarque = async (embarque_product_id: number) => 
 }
 
 export const createNewEmbarqueContenedor = async (embarque_data: EmbarqueContenedor) => {
-    console.log(embarque_data)
-    const { error: uploadError, data: data } = await supabase().from('embarques').insert({ ...embarque_data}).select('*');
+    const { error: uploadError, data: data } = await supabase().from('embarque_contenedores').insert(embarque_data).select('*');
 
     if (uploadError) {
         console.error("Error creating new embarque: ", uploadError.message);
@@ -254,4 +233,39 @@ export const getContenedoresByEmbarque = async (embarque_id: number): Promise<Em
     }
 
     return data
+}
+
+export const getEmbarqueProducts = async (embarque_id: number) => {
+    const { data: embarque_products, error } = await supabase()
+    .from('embarque_products')
+    .select(`
+    id, 
+    embarque_id, 
+    producto_id,
+    order_products(pieza_id, piezas(id, numero_parte, descripcion, costo_venta, costo_produccion, cliente_id(id, nombre, identificador, domicilio, pais, estado, ciudad, correo, celular, currency))),
+    cantidad,
+    order_id,
+    last_update,
+    contenedor_id(*)
+    `)
+    .eq('embarque_id', embarque_id)
+    .eq('estado', true);
+
+    if (error) {
+        console.error("Error fetching embarque products: ", error);
+        throw error;
+    }
+
+    return embarque_products;
+}
+
+export const changeStateToEmbarque = async (embarque_id: number, estado: string) => {
+    const { error: uploadError, data: data } = await supabase().from('embarques').update({ estado: estado }).eq('id', embarque_id).single();
+
+    if (uploadError) {
+        console.error("Error changing state to embarque: ", uploadError.message);
+        throw uploadError;
+    }
+
+    return data;
 }

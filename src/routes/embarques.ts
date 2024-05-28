@@ -6,18 +6,19 @@ import {
     getOrdenes,
     indexEmbarqueProduct,
     newEmbarqueProduct,
-    showEmbarque,
+    showEmbarqueById,
     updateEmbarque,
     deleteProductEmbarque,
     createEmbarqueContenedores,
-    getEmbarqueContenedores
+    getEmbarqueContenedores,
+    EditEstadoEmbarque
 } from '../controllers/embarques'
 
 
 const router = express.Router()
 
 router.get('/embarques', getEmbarques);
-router.get('/embarque/:id', showEmbarque);
+router.get('/embarque/:id', showEmbarqueById);
 router.put('/embarque/:id', updateEmbarque);
 router.delete('/embarque/:id', deleteEmbarque);
 router.post('/embarque/create', createEmbarque)
@@ -26,9 +27,10 @@ router.get('/embarques/ordenes', getOrdenes)
 
 router.post('/embarques/productos', newEmbarqueProduct)
 router.get('/embarques/:embarque_id/productos', indexEmbarqueProduct)
-router.delete('/embarque/productos/:embarque_product_id', deleteProductEmbarque)
+router.delete('/embarque/productos', deleteProductEmbarque)
 
 router.post('/embarque/create/contenedor', createEmbarqueContenedores)
-router.get('embarque/contenedores/:embarque_id', getEmbarqueContenedores)
+router.get('/embarque/contenedores/:embarque_id', getEmbarqueContenedores)
 
+router.put('/embarque/estado/:embarque_id', EditEstadoEmbarque)
 export default router;

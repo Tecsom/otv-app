@@ -1,5 +1,13 @@
 import { fetchData, isoDateToFormatted } from '../helpers.js';
 
+var estadosMarcados = {
+  cancelada: false,
+  pendiente: true,
+  embarque: true,
+  finalizada: false
+};
+
+let contenedorId;
 const badgeType = {
   pendiente: 'secondary',
   embarque: 'info',
@@ -17,7 +25,7 @@ async function init() {
   });
 
   $('#productos_table').DataTable({
-    data: [], // Empty data
+    data: [],
     columns: [
       { title: '' },
       { title: '# Parte' },
@@ -30,7 +38,7 @@ async function init() {
     lengthChange: false,
     info: false,
     language: {
-      url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/es-ES.json'
+      url: 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/es-ES.json'
     },
     pageLength: 5,
     ordering: false,
@@ -42,6 +50,11 @@ async function init() {
   $('#add_product_select').select2({
     dropdownParent: $('#addProductsModal'),
     placeholder: 'Selecciona una orden'
+  });
+
+  $('#contenedor_add_product').select2({
+    dropdownParent: $('#addProductsModal'),
+    placeholder: 'Selecciona un contenedor'
   });
 
   const $fecha_entrega = $('#fecha_entrega');
@@ -84,7 +97,6 @@ async function init() {
   $fecha_embarque.flatpickr({
     // EN ESTA PARTE ES DONDE SE REGISTRA EL EVENTO
     onChange: function (selectedDates, dateStr, instance) {
-      console.log(selectedDates);
       $fecha_embarque.data({ value: selectedDates[0] });
     },
     // FIN EVENTO
@@ -117,8 +129,6 @@ async function init() {
     }
   });
   loadEmbarques();
-
-  $('#container-data').addClass('d-none');
 }
 
 async function getEmbarques() {
@@ -136,7 +146,6 @@ async function loadEmbarques() {
   const $container = $('#embarques_container');
 
   const embarques = await getEmbarques();
-  console.log(embarques.data[0]);
 
   for (let embarque of embarques.data) {
     const uniqueFolio = addLeadingZeros(embarque.folio_unico, 5);
@@ -156,9 +165,8 @@ async function loadEmbarques() {
         <div class="col-md-12">
           <div class="p-2 pb-1 pt-0">
             <p class="mb-0 small"><strong>Cliente: </strong>${embarque.descripcion ?? '<span style="color:Red">Sin cliente relacionado</span>'}</p>
-            <p class="mb-0 small"><strong>Folio de cliente: </strong></p>
-            <p class="mb-0 small"><strong>Fecha de entrega: </strong></p>
-            <p class="mb-0 small"><strong>Fecha de creación: ${isoDateToFormatted(embarque.created_at)}</strong></p>   
+            <p class="mb-0 small"><strong>Fecha de embarque: ${isoDateToFormatted(embarque.fecha_embarque)}</strong></p>   
+            <p class="mb-0 small"><strong>Fecha de entrega: ${isoDateToFormatted(embarque.fecha_entrega)}</strong></p>
           </div>      
         </div>
       </div>
@@ -167,6 +175,8 @@ async function loadEmbarques() {
     $newdiv1.data({ data: embarque });
     $container.append($newdiv1);
   }
+
+  actualizarVisualizacion();
 }
 
 $('#create_embarque').on('submit', async function (e) {
@@ -175,7 +185,6 @@ $('#create_embarque').on('submit', async function (e) {
   $('#create_embarque_button').prop('disabled', true);
 
   const $descripcion = $('#descripcion_embarque');
-  const $tipo_contenedor = $('#tipo_contenedor');
   const $fecha_embarque = $('#fecha_embarque').data().value;
   const $fecha_entrega = $('#fecha_entrega').data().value;
 
@@ -189,7 +198,6 @@ $('#create_embarque').on('submit', async function (e) {
   const isoStringEntrega = fecha_entrega.toISOString();
 
   const descripcion = $descripcion.val().trim();
-  const tipo_contenedor = $tipo_contenedor.val().trim();
 
   if (descripcion == '' || fecha_embarque == '' || fecha_entrega == '') {
     toastr.error('Completar los campos para crear el embarque');
@@ -198,11 +206,8 @@ $('#create_embarque').on('submit', async function (e) {
     return;
   }
 
-  console.log(fecha_entrega);
-
   const result = await fetchData('/embarque/create', 'POST', {
     descripcion: descripcion,
-    tipo_contenedor: tipo_contenedor,
     fecha_embarque: isoStringEmbarque,
     fecha_entrega: isoStringEntrega
   });
@@ -217,7 +222,6 @@ $('#create_embarque').on('submit', async function (e) {
 
   toastr.success('Creado con éxito');
   $descripcion.val('');
-  $tipo_contenedor.val('');
 
   $('#create_embarque_modal').modal('hide');
 
@@ -227,12 +231,17 @@ $('#create_embarque').on('submit', async function (e) {
 $('#embarques_container').on('click', '.embarque_container_child', async function (e) {
   const $embarque = $(this);
   const data = $embarque.data().data;
+  //const cliente_id = data?.clientes.id;
+
+  await loadProducts(data);
+
   $embarque.addClass('active-container').siblings().removeClass('active-container');
 
-  loadProducts(data);
-
   $('#data-folio').text(addLeadingZeros(data.folio_unico, 5));
-  $('#data-fecha-creacion').text(isoDateToFormatted(data.created_at));
+  $('#data-fecha-creacion').text('Fecha de creación: ' + isoDateToFormatted(data.created_at));
+
+  $('#data-status-data').text(data.estado);
+  $('#data-status-data').removeClass().addClass(`text-capitalize badge bg-${badgeType[data.estado]}`);
 
   $('#data-description-data').text(data.descripcion);
   $('#client_id').text('1');
@@ -241,13 +250,73 @@ $('#embarques_container').on('click', '.embarque_container_child', async functio
   $('#container-no-data').addClass('d-none');
   $('#container-data').removeClass('d-none');
 
+  $('#data-embarque-data').text(data.fecha_embarque ? isoDateToFormatted(data.fecha_embarque) : '-');
+  $('#data-fecha-entrega').text(data.fecha_entrega ? isoDateToFormatted(data.fecha_entrega) : '-');
+
   $('#edit_oc').removeClass('d-none');
   $('#delete_oc').removeClass('d-none');
-  $('#cancelar_oc').removeClass('d-none');
-  $('#restaurar_oc').removeClass('d-none');
   $('#data-last-update').text(data.last_update ? isoDateToFormatted(data.last_update) : '-');
   $('#input_container_type').val(data.tipo_contenedor);
   $('#container-reporte').data(data);
+
+  if (data.estado == 'embarque') {
+    $('#delete_oc').addClass('d-none');
+    $('#edit_oc').addClass('d-none');
+    $('#restaurar_oc').addClass('d-none');
+    $('#cancelar_oc').removeClass('d-none');
+    $('#finalizar_oc').removeClass('d-none');
+
+    $('#create_container_modal').prop('disabled', true);
+    $('#add_product_container_modal').prop('disabled', true);
+
+    $('#contenedores_table').DataTable().column(3).visible(false);
+
+    $('#generate_embarque').addClass('d-none');
+  } else if (data.estado == 'finalizada') {
+    $('#delete_oc').addClass('d-none');
+    $('#edit_oc').addClass('d-none');
+    $('#cancelar_oc').addClass('d-none');
+    $('#restaurar_oc').addClass('d-none');
+    $('#finalizar_oc').addClass('d-none');
+
+    $('#create_container_modal').prop('disabled', true);
+    $('#add_product_container_modal').prop('disabled', true);
+    $('#generate_embarque').addClass('d-none');
+    $('#contenedores_table').DataTable().column(3).visible(false);
+  } else if (data.estado == 'cancelada') {
+    $('#delete_oc').addClass('d-none');
+    $('#edit_oc').addClass('d-none');
+    $('#cancelar_oc').addClass('d-none');
+    $('#finalizar_oc').addClass('d-none');
+    $('#restaurar_oc').removeClass('d-none');
+
+    $('#add_product_container_modal').prop('disabled', true);
+    $('#create_container_modal').prop('disabled', true);
+
+    $('#generate_embarque').addClass('d-none');
+    $('#contenedores_table').DataTable().column(3).visible(false);
+  } else {
+    $('#add_product_container_modal').prop('disabled', false);
+    $('#create_container_modal').prop('disabled', false);
+
+    $('#delete_oc').removeClass('d-none');
+    $('#edit_oc').removeClass('d-none');
+    $('#cancelar_oc').addClass('d-none');
+    $('#finalizar_oc').addClass('d-none');
+    $('#restaurar_oc').addClass('d-none');
+
+    $('#generate_embarque').removeClass('d-none');
+    $('#contenedores_table').DataTable().column(3).visible(true);
+  }
+
+  //const profile_pic_res = await fetchData(`/clientes/${cliente_id}/profile-photo`);
+  //if (profile_pic_res.status === true) {
+  //  $('#profile-pic').attr('src', profile_pic_res.data);
+  //  $('#client_avatar').addClass('d-none');
+  //  $('#profile-pic').removeClass('d-none');
+  //}
+
+  await loadProducts(data);
 });
 
 $('#addEmbarquesButton').on('click', function () {
@@ -308,10 +377,7 @@ $('#edit_embarque_form').on('submit', async function (e) {
   const embarque_id = data.id;
 
   const $descripcion = $('#edit_descripcion_embarque');
-  const $tipo_contenedor = $('#edit_container_type');
-
   const descripcion = $descripcion.val().trim();
-  const tipo_contenedor = $tipo_contenedor.val().trim();
 
   const last_update = new Date().toISOString();
 
@@ -322,11 +388,8 @@ $('#edit_embarque_form').on('submit', async function (e) {
 
   const result = await fetchData('/embarque/' + embarque_id, 'PUT', {
     descripcion: descripcion,
-    tipo_contenedor: tipo_contenedor,
     last_update: last_update
   });
-
-  $('#input_container_type').val(tipo_contenedor);
 
   if (result.status == false) {
     toastr.error(result.data);
@@ -338,6 +401,7 @@ $('#edit_embarque_form').on('submit', async function (e) {
 
   $('#data-last-update').text(isoDateToFormatted(last_update));
 
+  $('#data-description-data').text(descripcion);
   await loadEmbarques();
 });
 // FIN PARTE DE EDICION DE EMBARQUES
@@ -378,12 +442,13 @@ $('#uploadContainerType').on('click', async function () {
 //agregar campo de fecha de embarque y fecha de entrega al crear un nuevo embarque, actualizar UI, cambiar diseño y logica en la parte de contenedores
 
 // SECCIÓN EN LA QUE SE ABRE MODAL PARA SELECCIONAR ORDENES Y CARGADO DE ORDENES A <select></select>
-$('#addProductsButton').on('click', async function () {
+$('#add_product_container_modal').on('click', async function () {
   $('#addProductsModal').modal('show');
+  const embarque_data = $('#container-reporte').data();
 
   let ordenes = await fetchData('/embarques/ordenes', 'GET', {});
 
-  const dataTable = $('#embarque-product-table').DataTable().data().toArray();
+  const dataTable = $('#contenedores_table').DataTable().data().toArray();
 
   ordenes = ordenes.data.filter(item => {
     const productIds = item.order_id.productos.map(producto => producto.id);
@@ -399,8 +464,6 @@ $('#addProductsButton').on('click', async function () {
 
   $('#add_product_select').append('<option value=""></option>');
 
-  console.log(ordenes);
-
   ordenes.forEach(function (item) {
     const option = $(`<option value="${item.id}">Folio unico: ${item.folio} </option>`);
     option.data('productos', item.order_id.productos || item.productos);
@@ -408,10 +471,34 @@ $('#addProductsButton').on('click', async function () {
   });
 
   $('#add_product_select').trigger('change');
+
+  const contenedores = await fetchData('/embarque/contenedores/' + embarque_data.id, 'GET', {});
+
+  if (contenedores.status == false) {
+    toastr.error('Error al obtener los contenedores');
+    return;
+  }
+
+  $('#contenedor_add_product').empty();
+
+  $('#contenedor_add_product').append('<option value=""></option>');
+
+  contenedores.data.forEach(function (item) {
+    const option = $(`<option value="${item.id}">${item.nombre_contenedor}</option>`);
+    option.data('contenedor', item);
+    $('#contenedor_add_product').append(option);
+  });
 });
 // FIN DE LA SECCIÓN DE MODAL PARA SELECCIONAR ORDENES
 
 // SECCIÓN DE MODAL PARA AGREGAR Y RECUPERAR LOS DATOS DE LAS ORDENES
+$('#contenedor_add_product').on('change', function () {
+  const selectedOption = $(this).find('option:selected');
+  let data = selectedOption.data('contenedor');
+
+  contenedorId = data.id;
+});
+
 $('#add_product_select').on('change', function () {
   const selectedOption = $(this).find('option:selected');
   let data = selectedOption.data('productos');
@@ -426,7 +513,7 @@ $('#add_product_select').on('change', function () {
     return;
   }
 
-  const dataTable = $('#embarque-product-table').DataTable().data().toArray();
+  const dataTable = $('#contenedores_table').DataTable().data().toArray();
 
   data = data.filter(item => !dataTable.some(dataItem => dataItem.producto_id == item.id));
 
@@ -495,7 +582,7 @@ $('#add_product_select').on('change', function () {
     dom: 'rtp',
     paging: false,
     language: {
-      url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/es-ES.json'
+      url: 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/es-ES.json'
     },
     order: [[0, 'asc']],
     searching: false,
@@ -505,7 +592,7 @@ $('#add_product_select').on('change', function () {
 
   $('#productos_table thead, tbody').off('change');
 });
-// FIN DE LA SECCIÓN DE RECUPARA LOS DATOS DE LAS ORDENES
+//FIN DE LA SECCIÓN DE RECUPARA LOS DATOS DE LAS ORDENES
 
 // INSERTAR DATOS A LA TABLA DE EMBARQUES_PRODUCTS
 $('#confirm_add_products').on('click', async function () {
@@ -517,71 +604,49 @@ $('#confirm_add_products').on('click', async function () {
     toastr.error('Selecciona al menos un producto');
     return;
   }
+  if ($('#contenedor_add_product').val() == '') {
+    toastr.error('Selecciona un contenedor');
+    return;
+  }
 
   for (let product of selectedProducts) {
-    const result = await fetchData('/embarques/productos', 'POST', {
+    let result = await fetchData('/embarques/productos', 'POST', {
       embarque_id: data.id,
       producto_id: product.id,
       cantidad: product.quantity,
       estado: true,
-      order_id: product.order_id
+      order_id: product.order_id,
+      contenedor_id: contenedorId
     });
+    console.log(result);
   }
-
-  loadProducts(data);
 
   toastr.success('Productos agregados con éxito');
   $('#addProductsModal').modal('hide');
+  await loadProducts(data);
 });
 
-//METODO PARA CARGAR LA TABLA DE PRODUCTOS EN EL APARTADO DE CONTENEDORES
+// METODO PARA CARGAR LA TABLA DE PRODUCTOS EN EL APARTADO DE CONTENEDORES
 const loadProducts = async data => {
-  const result = await fetchData('/embarques/' + data.id + '/productos/', 'GET', {});
+  const response = await fetchData(`/embarques/${data.id}/productos`, 'GET', {});
 
-  if (result.status == false) {
-    toastr.error('Error al obtener los productos');
-    return;
-  }
+  console.log('LOAD PRODUCTO', response);
 
-  const productos = result.data.map(producto => {
+  const contenedors_data_table = response.data.map(contenedor => {
+    console.log(contenedor);
     return {
-      id: producto.id,
-      producto_id: producto.producto_id,
-      cantidad: producto.cantidad,
-      estado: producto.order_products.piezas.cliente_id.estado,
-      cliente: producto.order_products.piezas.cliente_id.nombre || '',
-      opciones: `
-      <div class="d-inline-block text-nowrap" id="embarque-producto-table">
-        <button class="btn btn-sm btn-icon delete-icon eliminar-producto" title="Eliminar" data-bs-toggle="tooltip" data-bs-placement="top"><i class="ti ti-trash-x"></i></button>
-      </div>`,
-      producto: producto.order_products.piezas.numero_parte,
-      numero_orden: producto.order_id
+      nombre_contenedor: contenedor.contenedor_id.nombre_contenedor,
+      codigo_contenedor: contenedor.contenedor_id.codigo,
+      cantidad: contenedor.cantidad,
+      producto: contenedor.order_products.piezas.numero_parte,
+      descripcion_producto: contenedor.order_products.piezas.descripcion,
+      producto_id: contenedor.producto_id,
+      order_id: contenedor.order_id,
+      embarque_id: contenedor.embarque_id
     };
   });
 
-  $('#embarque-product-table').DataTable({
-    data: productos,
-    paging: true,
-    searching: false,
-    lengthChange: false,
-    columns: [
-      { data: 'numero_orden', title: '# Orden' },
-      { data: 'cliente', title: 'Cliente' },
-      { data: 'producto', title: 'Producto' },
-      { data: 'cantidad', title: 'Cantidad' },
-      { data: 'estado', title: 'Estado' },
-      { data: 'opciones', title: 'Opciones' }
-    ],
-    info: false,
-    language: {
-      url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/es-ES.json'
-    },
-    pageLength: 5,
-    ordering: false,
-    select: false,
-    destroy: true,
-    autoWidth: true
-  });
+  contenedores_table.clear().rows.add(contenedors_data_table).draw();
 };
 
 $('#addProductsModal').on('hidden.bs.modal', function () {
@@ -598,16 +663,25 @@ function addLeadingZeros(number, length) {
   return '0'.repeat(zerosToAdd) + numStr;
 }
 
-$('#embarque-product-table').on('click', '.eliminar-producto', async function (e) {
+$('#contenedores_table').on('click', '.eliminar-producto', async function (e) {
   $('#delete_product_modal').modal('show');
 });
 
 $('#confirm_delete_product').on('click', async function (e) {
   const dataContainer = $('#container-reporte').data();
 
-  const data = $('#embarque-product-table').DataTable().row($('.eliminar-producto').closest('tr')).data();
+  const data = $('#contenedores_table').DataTable().row($('.eliminar-producto').closest('tr')).data();
+  console.log(data);
 
-  const result = await fetchData('/embarque/productos/' + data.id, 'DELETE', {});
+  console.log('embarque_id:', data.embarque_id);
+  console.log('producto_id:', data.producto_id);
+  console.log('order_id:', data.order_id);
+
+  const result = await fetchData('/embarque/productos', 'DELETE', {
+    embarque_id: data.embarque_id,
+    producto_id: data.producto_id,
+    order_id: data.order_id
+  });
 
   if (result.status == false) {
     toastr.error('Error al eliminar el producto');
@@ -617,5 +691,194 @@ $('#confirm_delete_product').on('click', async function (e) {
   toastr.success('Producto eliminado con éxito');
 
   $('#delete_product_modal').modal('hide');
+
   await loadProducts(dataContainer);
+});
+
+$('#create_container_modal').on('click', function () {
+  $('#addContainerEmbarque').modal('show');
+});
+
+$('#generate_embarque').on('click', async function () {
+  const data = $('#contenedores_table').DataTable().data().toArray();
+
+  if (data.length == 0) {
+    toastr.error('Agrega al menos un producto al embarque');
+    return;
+  }
+  $('#generate_embarque_modal').modal('show');
+});
+
+$('#confirm_generate_embarque').on('click', async function () {
+  cambiarStatus('embarque');
+
+  $('#generate_embarque_modal').modal('hide');
+
+  $('#data-status-data').text('embarque');
+  $('#data-status-data').removeClass().addClass(`text-capitalize badge bg-info`);
+  $('#contenedores_table').DataTable().column(3).visible(false);
+  $('#create_container_modal').prop('disabled', true);
+  $('#add_product_container_modal').prop('disabled', true);
+  $('#generate_embarque').addClass('d-none');
+  $('#delete_oc').addClass('d-none');
+  $('#edit_oc').addClass('d-none');
+  $('#cancelar_oc').removeClass('d-none');
+  $('#finalizar_oc').removeClass('d-none');
+
+  toastr.success('Embarque generado con éxito');
+
+  await loadEmbarques();
+});
+
+$('#confirm_add_container').on('click', async function () {
+  const data_contenedor = $('#container-reporte').data();
+  const $nombre_contenedor = $('#nombre_contenedor');
+  const $codigo_contenedor = $('#codigo_contenedor');
+
+  const nombre_contenedor = $nombre_contenedor.val().trim();
+  const codigo_contenedor = $codigo_contenedor.val().trim();
+
+  if (nombre_contenedor == '' || codigo_contenedor == '') {
+    toastr.error('Completar los campos para generar el contenedor');
+    return;
+  }
+
+  try {
+    await fetchData('/embarque/create/contenedor', 'POST', {
+      nombre_contenedor: nombre_contenedor,
+      codigo: codigo_contenedor,
+      embarque_id: data_contenedor.id
+    });
+
+    $nombre_contenedor.val('');
+    $codigo_contenedor.val('');
+    toastr.success('Contenedor generado con éxito');
+    $('#addContainerEmbarque').modal('hide');
+    return;
+  } catch (error) {
+    console.log(error);
+    toastr.warning('Error al generar el contenedor');
+  }
+});
+
+async function cambiarStatus(estado) {
+  const data = $('#container-reporte').data();
+
+  console.log(data);
+
+  const result = await fetchData('/embarque/estado/' + data.id, 'PUT', {
+    estado: estado
+  });
+
+  if (result.status == false) {
+    toastr.error('Error al cambiar el estado del embarque');
+    return;
+  }
+
+  loadEmbarques();
+}
+
+$('#restaurar_oc').on('click', async function () {});
+
+$('#confirm_cancel_order').on('click', async function () {
+  cambiarStatus('cancelada');
+
+  $('#cancel_order_modal').modal('hide');
+
+  $('#data-status-data').text('cancelada');
+  $('#data-status-data').removeClass().addClass(`text-capitalize badge bg-danger`);
+  $('#contenedores_table').DataTable().column(3).visible(false);
+  $('#create_container_modal').prop('disabled', true);
+  $('#add_product_container_modal').prop('disabled', true);
+  $('#generate_embarque').addClass('d-none');
+  $('#delete_oc').addClass('d-none');
+  $('#edit_oc').addClass('d-none');
+  $('#cancelar_oc').addClass('d-none');
+  $('#finalizar_oc').addClass('d-none');
+  $('#restaurar_oc').removeClass('d-none');
+
+  toastr.success('Embarque cancelado con éxito');
+});
+
+$('#search-report-filter').on('keyup', function () {
+  var value = $(this).val().toLowerCase();
+  $('#embarques_container .embarque_container_child').filter(function () {
+    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
+  });
+});
+
+// Función para actualizar la visualización de los elementos basada en los estados marcados
+function actualizarVisualizacion() {
+  $('#embarques_container .embarque_container_child').each(function () {
+    var estado = $(this).data().data.estado.toLowerCase();
+    $(this).toggle(estadosMarcados[estado]);
+  });
+}
+
+$('#check_cancelada').on('change', function () {
+  estadosMarcados['cancelada'] = this.checked;
+  actualizarVisualizacion();
+});
+
+$('#check_pendiente').on('change', function () {
+  estadosMarcados['pendiente'] = this.checked;
+  actualizarVisualizacion();
+});
+
+$('#check_completada').on('change', function () {
+  estadosMarcados['finalizada'] = this.checked;
+  actualizarVisualizacion();
+});
+
+$('#check_embarque').on('change', function () {
+  estadosMarcados['embarque'] = this.checked;
+  actualizarVisualizacion();
+});
+
+$('#confirm_restore_order').on('click', async function () {
+  await cambiarStatus('pendiente');
+
+  $('#restaurar_oc').addClass('d-none');
+  $('#cancelar_oc').removeClass('d-none');
+  $('#finalizar_oc').removeClass('d-none');
+  $('#generate_embarque').removeClass('d-none');
+
+  $('#data-status-data').text('pendiente');
+  $('#data-status-data').removeClass().addClass(`text-capitalize badge bg-secondary`);
+
+  $('#create_container_modal').prop('disabled', false);
+  $('#add_product_container_modal').prop('disabled', false);
+  $('#contenedores_table').DataTable().column(3).visible(true);
+
+  toastr.success('Embarque restaurado con éxito');
+  $('#restore_orden_modal').modal('hide');
+});
+
+$('#finalizar_oc').on('click', function () {
+  $('#finalizarEmbarque').modal('show');
+});
+
+$('#confirm_finish_embarque').on('click', async function () {
+  await cambiarStatus('finalizada');
+
+  $('#finalizar_oc').addClass('d-none');
+  $('#cancelar_oc').addClass('d-none');
+  $('#generate_embarque').addClass('d-none');
+  $('#edit_oc').addClass('d-none');
+  $('#delete_oc').addClass('d-none');
+  $('#restaurar_oc').addClass('d-none');
+
+  $('#data-status-data').text('finalizada');
+  $('#data-status-data').removeClass().addClass(`text-capitalize badge bg-success`);
+
+  $('#create_container_modal').prop('disabled', true);
+  $('#add_product_container_modal').prop('disabled', true);
+
+  $('#contenedores_table').DataTable().column(3).visible(false);
+
+  toastr.success('Embarque finalizado con éxito');
+
+  $('#finalizarEmbarque').modal('hide');
+
+  await loadEmbarques();
 });
