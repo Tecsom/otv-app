@@ -5,7 +5,13 @@ import type { ApiResult } from '@/types/types';
 import { deleteFolder } from './storage';
 import { getPiezaById, getPiezaWithCliente, getRevisionById } from './piezas';
 import { getRevisionesByPiezaC } from '@/controllers/clientes';
-import { deleteMovement, getMovementsByOrderId, restRemaining, upsertMovements } from './inventory';
+import {
+  deleteIndividualProduct,
+  deleteMovement,
+  getMovementsByOrderId,
+  restRemaining,
+  upsertMovements
+} from './inventory';
 
 /**
  * 
@@ -132,7 +138,7 @@ export const generarOrdenDeCompraEstatica = async (order_data: any) => {
 
     const remaining = await restRemaining(String(movement.individual_id), movement.consumed);
     if (remaining <= 0) {
-      deleteMovement(String(movement.id));
+      await deleteIndividualProduct(String(movement.individual_id));
     }
     await upsertMovements([
       {

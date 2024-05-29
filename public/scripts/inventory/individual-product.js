@@ -74,19 +74,36 @@ $('#individual-product-table').on('click', '.open-output-modal', function () {
 $('#output_product_form').submit(async function (e) {
   e.preventDefault();
   const individual_product_id = $('#modal_output_product').data('individual_product_id');
+
   const quantity_b100 = parseFloat($('#quantity_output').val());
   const quantity = quantity_b100 / 100;
-  // const button = new loadingButton($('#confirm_output_product'));
-  // button.start();
-  // const res = await fetchData(`/inventory/${product_id}/individual/${individual_product_id}/output`, 'POST', {
-  //   quantity
-  // });
-  // button.stop();
-  // if (res.status === true) {
-  //   await loadIndividualProducts();
-  //   $('#modal_output_product').modal('hide');
-  //   $('#output_product_form').trigger('reset');
-  //   toastr.success('Salida realizada exitosamente', 'Salida realizada');
-  //   return;
-  // }
+
+  const movement = {
+    individual_id: individual_product_id,
+    consumed: quantity,
+    type: 'output',
+    product_id,
+    generated: true
+  };
+
+  const button = new loadingButton($('#confirm_output_product'));
+  button.start();
+  const res = await fetchData(`/movements/output`, 'POST', movement);
+  button.stop();
+  if (res.status === true) {
+    await loadIndividualProducts();
+    $('#modal_output_product').modal('hide');
+    $('#output_product_form').trigger('reset');
+    toastr.success('Salida realizada exitosamente', 'Salida realizada');
+    return;
+  }
 });
+
+// {
+//   product_id,
+//   individual_id: individual.individual_id,
+//   type: 'output',
+//   consumed,
+//   order_id,
+//   ...(individual.id ? { id: individual.id } : {})
+// }

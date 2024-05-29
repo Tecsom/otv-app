@@ -54,9 +54,10 @@ export const updateIndividualProduct = async (product: IndividualProduct): Promi
 };
 
 export const deleteIndividualProduct = async (id: string): Promise<IndividualProduct> => {
+  //edit column deleted to true
   const { data: deletedProduct, error } = await supabase()
     .from('individual_products')
-    .delete()
+    .update({ deleted: true })
     .eq('id', id)
     .select('*')
     .single();
@@ -68,7 +69,8 @@ export const getIndividualProductsByProduct = async (product_id: string): Promis
   const { data: products, error } = await supabase()
     .from('individual_products')
     .select('*')
-    .eq('product_id', product_id);
+    .eq('product_id', product_id)
+    .eq('deleted', false);
 
   return products as IndividualProduct[];
 };
@@ -86,8 +88,6 @@ export const upsertMovements = async (movements: Movement[]): Promise<Movement[]
   if (!data) {
     return [];
   }
-
-  console.log({ data });
 
   return data as Movement[];
 };
@@ -143,12 +143,18 @@ export const checkProductStock = async (individual_id: string, consumed: number)
 
   const ungenerated_consumed = ungenerated.reduce((acc, movement) => acc + movement.consumed, 0);
   const rem = remaining_individual - consumed - ungenerated_consumed;
-  console.log({ rem, remaining_individual, consumed, ungenerated_consumed });
+
   if (remaining_individual - consumed - ungenerated_consumed < 0) {
     throw new Error('No hay suficiente stock');
   }
 
   return remaining_individual - consumed - ungenerated_consumed >= 0;
+};
+
+export const getRemaining = async (individual_id: string): Promise<number> => {
+  const individual_product = await getIndividualProductById(individual_id);
+
+  return individual_product.remaining;
 };
 
 export const getUngeneratedOutputMovements = async (individual_id: string): Promise<Movement[]> => {
@@ -164,4 +170,10 @@ export const getUngeneratedOutputMovements = async (individual_id: string): Prom
   }
 
   return movements as Movement[];
+};
+
+export const hasUngeneratedOutputMovements = async (individual_id: string): Promise<boolean> => {
+  const movements = await getUngeneratedOutputMovements(individual_id);
+
+  return movements.length > 0;
 };
