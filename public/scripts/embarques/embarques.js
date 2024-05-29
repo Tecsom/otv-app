@@ -854,6 +854,7 @@ $('#confirm_add_container').on('click', async function () {
     await loadContenedores(data_contenedor);
     return;
   } catch (error) {
+    console.log(error);
     toastr.warning('Error al generar el contenedor');
   }
 });
