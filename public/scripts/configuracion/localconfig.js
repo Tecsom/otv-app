@@ -81,3 +81,12 @@ $('#localConfigForm').on('submit', async function (e) {
 });
 
 init();
+
+$('#sync-scanner-button').on('click', async function () {
+  const res = await fetchData('/scanner/init');
+  if (!res.status) {
+    toastr.error('Ocurrió un error al sincronizar');
+    return;
+  }
+  toastr.success('Sincronización exitosa');
+});

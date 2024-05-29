@@ -189,6 +189,7 @@ $('#crear-pieza-form').on('submit', async function (e) {
     data.costo_venta == '' ||
     data.type == ''
   ) {
+    button.stop();
     toastr.warning('Rellene los campos obligatorios para crear la pieza');
     return;
   }

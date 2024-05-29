@@ -38,7 +38,7 @@ const server = appExpress.listen(PORT, async () => {
 });
 
 //if (process.env.NODE_ENV !== 'test') {
-if (false) {
+if (true) {
   const io = new Server(server);
 
   globalThis.socket_io = io;

@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { updateChekerPassword, getCheckerPassword } from './../utils/settings';
 import storage from 'node-persist';
+import { initScanner } from './scanner';
 
 export const validatePassword = async (req: Request, res: Response) => {
   const { password } = req.query as { password: string };
@@ -27,6 +28,7 @@ export const saveDefaultScannerPort = async (req: Request, res: Response) => {
   await storage.init();
 
   await storage.setItem('defaultScannerPort', port);
+  await initScanner();
 
   res.status(200).json({ result: 'OK' });
 };

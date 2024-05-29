@@ -20,6 +20,15 @@ export class Scanner {
     return this.port;
   }
 
+  async disconnect() {
+    if (!this.port) return;
+    console.log('Disconnecting port');
+    (await this.port.isOpen) && this.port.close();
+    await this.port.destroy();
+
+    this.port = null;
+  }
+
   async open() {
     if (!this.port) throw new Error('Port not connected');
     await this.port.open();

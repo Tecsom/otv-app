@@ -5,6 +5,7 @@ import { getOrdenByCodeProd } from '@/utils/ordenes_compra';
 import { session } from 'electron';
 declare global {
   var socket_io: io.Server;
+  var globalScanner: Scanner;
 }
 
 export const listPorts = async (req: Request, res: Response) => {
@@ -31,22 +32,43 @@ export const readScanner = async (req: Request, res: Response) => {
   }
 };
 
-export const initScanner = async () => {
-  try {
-    const port = await Scanner.getSelectedPort();
-    if (!port) {
-      console.error('No port selected');
-      return;
-    }
-    const scanner = new Scanner();
-
-    await scanner.connect(port);
-    await scanner.open();
-
-    scanner.scan(onScanner);
-  } catch (error: any) {
-    console.error('Error initializing scanner: ', error.message);
+export const initScanner = async (req?: Request, res?: Response) => {
+  //try to init scanner max 4 attempts
+  let attempts = 0;
+  let success = false;
+  while (attempts < 4 && !success) {
+    try {
+      success = (await initscanner()) ?? false;
+    } catch (error) {}
+    attempts++;
   }
+
+  if (success && res) {
+    res.status(200).json({ result: 'OK' });
+  } else if (res) {
+    res.status(500).json({ error: 'No scanner found' });
+  }
+};
+
+const initscanner = async () => {
+  let port;
+
+  port = await Scanner.getSelectedPort();
+  if (!port) return;
+
+  if (!globalThis.globalScanner) {
+    globalThis.globalScanner = new Scanner();
+  }
+  await globalThis.globalScanner.disconnect();
+
+  await globalThis.globalScanner.connect(port);
+
+  await globalThis.globalScanner.open();
+
+  globalThis.globalScanner.scan(onScanner);
+  console.log('initScanner');
+
+  return true;
 };
 
 const onScanner = async (data: Buffer) => {
