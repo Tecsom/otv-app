@@ -14,10 +14,9 @@ import { Request, Response } from 'express';
 export const getInventoryPaging = async (req: Request, res: Response) => {
   const queries = req.query as any;
   const { length, draw, search, start, page: pageStr } = queries as QueryTable;
-  console.log({ pageStr });
 
   const page = pageStr ? parseInt(pageStr) : Math.floor(parseInt(start ?? '0') / parseInt(length ?? '10')) + 1;
-  console.log({ page });
+
   const { error, data } = await supabase().rpc('searchinventory', {
     search: search?.value ?? search ?? '',
     page,

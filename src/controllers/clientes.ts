@@ -29,25 +29,25 @@ export const getClientesC = async (req: Request, res: Response) => {
 
 export const getClientesPagingC = async (req: Request, res: Response) => {
   const queries = req.query as any;
-  const { length, draw, search, start } = queries as QueryTable;
+  const { length, draw, search, start, page: pageStr } = queries as QueryTable;
+  const page = pageStr ? parseInt(pageStr) : Math.floor(parseInt(start ?? '0') / parseInt(length ?? '10')) + 1;
 
   const { error, data } = await supabase().rpc('searchclientes', {
     search: search?.value ?? search ?? '',
-    page: parseInt(start ?? '0') / parseInt(length ?? '10') + 1,
+    page,
     limitperpage: parseInt(length ?? '10')
   });
 
   const { error: error_totals, data: data_totals } = await supabase().rpc('searchclientes_totals', {
-    search: search?.value ?? search ?? '',
-    page: parseInt(start ?? '0') / parseInt(length ?? '10') + 1,
-    limitperpage: parseInt(length ?? '10')
+    search: search?.value ?? search ?? ''
   });
 
   res.status(200).json({
     draw,
     recordsTotal: data_totals[0].total_records,
     recordsFiltered: data_totals[0].total_records,
-    data
+    data,
+    page
   });
 };
 
@@ -106,7 +106,7 @@ export const createPiezaC = async (req: Request, res: Response) => {
   delete piezaData.archivos;
   delete piezaData.revision_nombre;
 
-  console.log(piezaData)
+  console.log(piezaData);
 
   try {
     const pieza = await createPieza(piezaData);
@@ -136,7 +136,7 @@ export const editPiezaC = async (req: Request, res: Response) => {
   try {
     const pieza = await updatePieza(piezaData.id, piezaData);
 
-    console.log(piezaData)
+    console.log(piezaData);
 
     res.status(200).json({});
   } catch (error: any) {
@@ -254,9 +254,8 @@ export const getPiezasTableC = async (req: Request, res: Response) => {
     client: parseInt(client_id as string)
   });
 
-
   data.forEach((e: Pieza) => {
-    e.type = e.type == 'bulk' ? "A granel" : "Individual"
+    e.type = e.type == 'bulk' ? 'A granel' : 'Individual';
   });
 
   res.status(200).json({
