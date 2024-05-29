@@ -613,7 +613,6 @@ $('#confirm_add_products').on('click', async function () {
       order_id: product.order_id,
       contenedor_id: contenedorId
     });
-    console.log(result);
   }
 
   toastr.success('Productos agregados con éxito');
@@ -629,7 +628,6 @@ const loadContenedores = async data => {
   console.log('LOAD CONTENEDOR', response);
 
   const contenedors_data_table = response.data.map(contenedor => {
-    console.log(contenedor);
     return {
       id: contenedor.id,
       nombre_contenedor: contenedor.nombre_contenedor,
@@ -791,15 +789,12 @@ $('#confirm_add_container').on('click', async function () {
     $('#addContainerEmbarque').modal('hide');
     return;
   } catch (error) {
-    console.log(error);
     toastr.warning('Error al generar el contenedor');
   }
 });
 
 async function cambiarStatus(estado) {
   const data = $('#container-reporte').data();
-
-  console.log(data);
 
   const result = await fetchData('/embarque/estado/' + data.id, 'PUT', {
     estado: estado

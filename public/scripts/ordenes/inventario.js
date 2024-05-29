@@ -162,7 +162,7 @@ $('#save_inventory').on('click', async function () {
     const individual = $(this).data('individual');
     const consumed_b100 = parseFloat($(this).find('input').val()) || 0;
     const consumed = consumed_b100 / 100;
-    console.log({ consumed });
+
     if (consumed_b100 < 0.1) {
       toastr.error('El consumo no puede ser menor a 0.1%', 'Error');
       throw 'El consumo no puede ser menor a 0.1';

@@ -379,7 +379,6 @@ async function getOrdenes() {
   const query = `?page=${page}&pageSize=${limit}&estatusFiltersStr=${estatusFilters.join(',')}&search=${search}&createdAtFilterString=${createdAtFilterString}&deliveryDateFilterString=${deliveryDateFilterString}`;
   isLoading = true;
   const ordenes = await fetchData('/ordenes/paging' + query, 'GET'); //api/ordenes
-  console.log({ ordenes });
   isLoading = false;
 
   if (!ordenes.status) {
@@ -396,7 +395,6 @@ async function getOrdenes() {
 }
 
 loadOrdenes = async () => {
-  console.log('LOADD');
   const $container = $('#ordenes_compra_container');
 
   const ordenes = await getOrdenes();
@@ -429,10 +427,8 @@ loadOrdenes = async () => {
     $container.append($newdiv1);
 
     const selected = $('#ordenes_compra_container').data('selected');
-    console.log({ orden, selected });
     if (selected && parseInt(selected) === orden.id) {
       $newdiv1.trigger('click');
-      console.log('click');
     }
   }
 };
@@ -481,8 +477,6 @@ $('#ordenes_compra_container').on('click', '.order_container_child', async funct
     .visible(data.estado === 'pendiente');
   if (data.estado === 'pendiente') $('#addProductsButton').removeClass('d-none');
   else $('#addProductsButton').addClass('d-none');
-
-  console.log($('#container_reporte'));
 
   $('#client_id').text(data.folio_id);
   $('#data-last-update').text(isoDateToFormattedWithTime(data.last_update));
@@ -569,7 +563,6 @@ $('#ordenes_compra_container').on('click', '.order_container_child', async funct
   loadFiles(data.id);
   $('#container-no-data').addClass('d-none');
   $('#container-data').removeClass('d-none');
-  console.log('llegó');
 });
 
 const renderListItem = (name, url) => {
@@ -748,8 +741,6 @@ loadProductos = async id => {
   }
 
   const tableData = $('#ordenes_table').data();
-
-  console.log(tableData);
 
   const productosTable = productos.map(product => {
     return {
@@ -1046,7 +1037,6 @@ $('#editProduct').on('submit', async function (e) {
   e.preventDefault();
   const $modal = $('#editProductModal');
   const productOrderId = $modal.data().id; // id del row
-  console.log({ productOrderId });
 
   const $revision = $('#edit_product_revision');
   const $cantidad = $('#edit_product_quantity');
@@ -1069,7 +1059,6 @@ $('#editProduct').on('submit', async function (e) {
   }
 
   const genealData = $('#ordenes_table').data();
-  console.log({ genealData });
   await loadProductos(genealData.id);
   $modal.modal('hide');
 });
@@ -1197,7 +1186,6 @@ $('#confirm_finalizar_order').on('click', async function () {
 });
 
 resetPaging = () => {
-  console.log('Reset');
   page = 1;
   loadMore = true;
 };

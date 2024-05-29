@@ -160,11 +160,11 @@ async function getOrdenes() {
   if (!loadMore) return [];
   const createdAtFilterString = createdAtFilter?.join(',') ?? '';
   const deliveryDateFilterString = deliveryDateFilter?.join(',') ?? '';
-  console.log({ deliveryDateFilterString, createdAtFilterString, loadMore, page, limit, estatusFilters, search });
+
   const query = `?page=${page}&pageSize=${limit}&estatusFiltersStr=${estatusFilters.join(',')}&search=${search}&createdAtFilterString=${createdAtFilterString}&deliveryDateFilterString=${deliveryDateFilterString}`;
   isLoading = true;
   const ordenes = await fetchData('/ordenes/paging' + query, 'GET'); //api/ordenes
-  console.log({ ordenes });
+
   isLoading = false;
 
   if (!ordenes.status) {
@@ -195,7 +195,7 @@ async function loadOrdenes() {
   for (let orden of ordenes) {
     orden.verifications = orden?.verifications?.filter(elm => elm.id);
     const uniqueFolio = orden.unique_folio ? addLeadingZeros(orden.unique_folio, 6) : 'Sin Folio';
-    console.log({ orden });
+
     const $newdiv1 = $(`
         <div class="order_container_child card-body border rounded mt-3 cursor-pointer" order_id="${orden.static_order_id}" id="order_${orden.unique_folio}">
           <div class="row g-2">
@@ -224,10 +224,9 @@ async function loadOrdenes() {
     $container.append($newdiv1);
 
     const selected = $('#ordenes_compra_container').data('selected');
-    console.log({ orden, selected });
+
     if (selected && parseInt(selected) === orden.id) {
       $newdiv1.trigger('click');
-      console.log('click');
     }
   }
 }
