@@ -190,6 +190,19 @@ $('#create_embarque').on('submit', async function (e) {
   const $fecha_embarque = $('#fecha_embarque').data().value;
   const $fecha_entrega = $('#fecha_entrega').data().value;
 
+  if (
+    $descripcion.val().trim() == '' ||
+    $fecha_embarque == '' ||
+    $fecha_embarque == undefined ||
+    $fecha_entrega == '' ||
+    $fecha_entrega == undefined
+  ) {
+    toastr.error('Completar los campos para crear el embarque');
+    $('#create_embarque_button').prop('disabled', false);
+
+    return;
+  }
+
   const fecha_embarque = new Date($fecha_embarque);
   const fecha_entrega = new Date($fecha_entrega);
 
@@ -200,13 +213,6 @@ $('#create_embarque').on('submit', async function (e) {
   const isoStringEntrega = fecha_entrega.toISOString();
 
   const descripcion = $descripcion.val().trim();
-
-  if (descripcion == '' || fecha_embarque == '' || fecha_entrega == '') {
-    toastr.error('Completar los campos para crear el embarque');
-    $('#create_embarque_button').prop('disabled', false);
-
-    return;
-  }
 
   const result = await fetchData('/embarque/create', 'POST', {
     descripcion: descripcion,
@@ -733,7 +739,7 @@ $('#confirm_update_container').on('click', async function (e) {
 
 $('#contenedores_table').on('click', '.eliminar-contenedor', async function (e) {
   $('#delete_container_modal').modal('show');
-  selectedRoWConainer = $(this).closest('tr');
+  selectedRowContainer = $(this).closest('tr');
 });
 
 $('#confirm_delete_container').on('click', async function (e) {
@@ -749,9 +755,9 @@ $('#confirm_delete_container').on('click', async function (e) {
     return;
   }
 
-  toastr.success('Producto eliminado con éxito');
+  toastr.success('Contenedor eliminado con éxito');
 
-  $('#delete_product_modal').modal('hide');
+  $('#delete_container_modal').modal('hide');
 
   await loadContenedores(dataContainer);
 });
@@ -850,12 +856,11 @@ $('#confirm_add_container').on('click', async function () {
     $nombre_contenedor.val('');
     toastr.success('Contenedor generado con éxito');
     $('#addContainerEmbarque').modal('hide');
-    await loadContenedores(data_contenedor);
-    return;
   } catch (error) {
     console.log(error);
     toastr.warning('Error al generar el contenedor');
   }
+  await loadContenedores(data_contenedor);
 });
 
 async function cambiarStatus(estado) {
