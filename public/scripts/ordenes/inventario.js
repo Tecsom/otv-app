@@ -158,6 +158,10 @@ $('#save_inventory').on('click', async function () {
   const individuals = [];
   const order_data = $('#container-reporte').data();
   const order_id = order_data.id;
+
+  //Orden de compra: ${order_data.unique_folio}
+  const description = `Consumo de inventario de la orden de compra: ${order_data.folio_id}`;
+
   $('.individual-child').each(function () {
     const individual = $(this).data('individual');
     const consumed_b100 = parseFloat($(this).find('input').val()) || 0;
@@ -174,6 +178,7 @@ $('#save_inventory').on('click', async function () {
       type: 'output',
       consumed,
       order_id,
+      description,
       ...(individual.id ? { id: individual.id } : {})
     });
   });
