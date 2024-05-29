@@ -1,6 +1,7 @@
 import { Embarque, EmbarqueContenedor, EmbarqueContenedores, EmbarqueProduct, EmbarqueProductBody, OrdenesInEmbarque } from "@/types/embarques";
 import supabase from "@/config/supabase";
 import { ApiResult } from "@/types/types";
+import { generateUid } from "./helpers";
 
 export const listEmbarques = async () => {
     const { data: Embarques, error } = await supabase().from('embarques').select('*').order('id', { ascending: false });
@@ -124,7 +125,22 @@ export const getOrdenesStatic = async (): Promise<OrdenesInEmbarque[]> => {
 
 export const createEmbarqueProduct = async (embarque_product_body: EmbarqueProductBody): Promise<ApiResult> => {
 
-    const { error: uploadError, data: data } = await supabase().from('embarque_products').insert(embarque_product_body).select('*');
+    await supabase().from('embarque_contenedores').update({
+        cantidad: embarque_product_body.cantidad_filas
+    }).eq('id', embarque_product_body.contenedor_id)
+
+    await supabase().from('ordenes').update({
+        estado: 'embarque'
+    }).eq('id', embarque_product_body.order_id)
+
+    const { error: uploadError, data: data } = await supabase().from('embarque_products').insert({
+        embarque_id: embarque_product_body.embarque_id,
+        producto_id: embarque_product_body.producto_id,
+        cantidad: embarque_product_body.cantidad,
+        estado: true,
+        order_id: embarque_product_body.order_id,
+        contenedor_id: embarque_product_body.contenedor_id
+    }).select('*');
 
     console.log(data)
 
@@ -190,13 +206,14 @@ export const deleteEmbarqueProduct = async (embarque_product_id: number) => {
     return result;
 }
 
-export const deleteProductFromEmbarque = async (contenedor_id: number, producto_id: number, order_id: number) => {
+export const deleteProductFromEmbarque = async (contenedor_productos_id: number, contenedor_id: number, cantidad: number) => {
     
-    console.log('contenedor_id:', contenedor_id);
-    console.log('producto_id:', producto_id);
-    console.log('order_id:', order_id);
+    const { data: contenedor } = await supabase().from('embarques_contenedor').select('cantidad').eq('id', contenedor_id).single()
+    await supabase().from('embarque_contenedores').update({
+        cantidad: cantidad
+    }).eq('id', contenedor_id)
 
-    const { error: uploadError } = await supabase().from('embarque_products').delete().eq('contenedor_id', contenedor_id).eq('producto_id', producto_id).eq('order_id', order_id);
+    const { error: uploadError } = await supabase().from('embarque_products').delete().eq('id', contenedor_productos_id);
 
     if (uploadError) {
         console.error("Error deleting embarque product: ", uploadError.message);
@@ -217,8 +234,14 @@ export const deleteProductFromEmbarque = async (contenedor_id: number, producto_
 }
 
 
-export const createNewEmbarqueContenedor = async (embarque_data: EmbarqueContenedor) => {
-    const { error: uploadError, data: data } = await supabase().from('embarque_contenedores').insert(embarque_data).select('*');
+export const createNewEmbarqueContenedor = async (embarque_data: EmbarqueContenedor, embarque_id: number) => {
+    const codigo = generateUid()
+    console.log(embarque_data)
+    const { error: uploadError, data: data } = await supabase().from('embarque_contenedores').insert({
+        nombre_contenedor: embarque_data.nombre_contenedor,
+        codigo: codigo,
+        embarque_id: embarque_id
+    }).select('*');
 
     if (uploadError) {
         console.error("Error creating new embarque: ", uploadError.message);

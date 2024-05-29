@@ -32,15 +32,16 @@ export type OrdenesInEmbarque = {
 
 export type EmbarqueProductBody = {
     embarque_id: number;
-    product_id: number;
+    producto_id: number;
     cantidad: number;
     estado: boolean;
     order_id: number;
+    cantidad_filas: number;
+    contenedor_id: number;
 }
 
 export type EmbarqueContenedor = {
     nombre_contenedor: string;
-    codigo: string;
 }
 
 export type EmbarqueContenedores = {
