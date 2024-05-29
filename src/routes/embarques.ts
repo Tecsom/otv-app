@@ -29,9 +29,9 @@ router.get('/embarques/ordenes', getOrdenes)
 
 router.post('/embarques/productos', newEmbarqueProduct)
 router.get('/embarques/:embarque_id/productos', indexEmbarqueProduct)
-router.delete('/embarque/productos', deleteProductEmbarque)
+router.put('/embarque/productos/:contenedor_productos_id', deleteProductEmbarque)
 
-router.post('/embarque/create/contenedor', createEmbarqueContenedores)
+router.post('/embarque/:embarque_id/contenedor', createEmbarqueContenedores)
 router.get('/embarque/contenedores/:embarque_id', getEmbarqueContenedores)
 
 router.put('/embarque/estado/:embarque_id', EditEstadoEmbarque)

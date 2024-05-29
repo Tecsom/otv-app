@@ -94,15 +94,10 @@ export const indexEmbarqueProduct = async (req: Request, res: Response) => {
 
 export const deleteProductEmbarque = async (req: Request, res: Response) => {
     try {
+        const contenedor_productos_id = req.params.contenedor_productos_id;
         const contenedor_id = req.body.contenedor_id;
-        const order_id = req.body.order_id;
-        const producto_id = req.body.producto_id;
-
-        console.log('contenedor_id:', contenedor_id);
-        console.log('producto_id:', producto_id);
-        console.log('order_id:', order_id);
-
-        const embarqueDeleted = await deleteProductFromEmbarque(parseInt(contenedor_id), parseInt(producto_id), parseInt(order_id))
+        const cantidad = req.body.cantidad;
+        const embarqueDeleted = await deleteProductFromEmbarque(parseInt(contenedor_productos_id), parseInt(contenedor_id), parseInt(cantidad))
 
         res.status(200).json({ embarqueDeleted })
     } catch (error) {
@@ -112,8 +107,9 @@ export const deleteProductEmbarque = async (req: Request, res: Response) => {
 
 export const createEmbarqueContenedores = async (req:Request, res: Response) => {
     try {
-        const embarque_data = req.body
-        const newEmbarque = createNewEmbarqueContenedor(embarque_data);
+        const contenedor_data = req.body
+        const embarque_id = req.params.embarque_id
+        const newEmbarque = createNewEmbarqueContenedor(contenedor_data, parseInt(embarque_id));
 
         res.status(201).json(newEmbarque)
     } catch (error) {

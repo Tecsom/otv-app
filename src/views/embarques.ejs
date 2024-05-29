@@ -356,7 +356,7 @@
                           <div class="col-md-12">
                             <div class="row g-2">
                               <div class="col-md-12">
-                                <table id="productos_table" class="table m-0 w-100 border-top mt-3 table-sm"></table>
+                                <table id="productos_table_tab" class="table m-0 w-100 border-top mt-3 table-sm"></table>
                               </div>
                             </div>
                           </div>
@@ -547,20 +547,16 @@
 
   <!--MODAL DE AGREGAR UN CONTENEDOR AL EMBARQUE-->
   <div class="modal fade" id="addContainerEmbarque" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+    <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title" id="exampleModalLabel1">Agregar contenedor</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body row">
-          <div class="mb-2 col-md-6">
+          <div class="mb-2 col-md-12">
             <label for="nombre_contenedor" class="required">Nombre del contenedor</label>
             <input type="text" class="form-control" id="nombre_contenedor" />
-          </div>
-          <div class="mb-2 col-md-6">
-            <label for="codigo_contenedor" class="required">Código del contenedor</label>
-            <input type="text" id="codigo_contenedor" class="form-control" />
           </div>
         </div>
         <div class="modal-footer">
@@ -630,11 +626,28 @@
       </div>
     </div>
     
+    <div class="modal fade" id="delete_producto_modal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel1">Eliminar producto</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <p>¿Estás seguro de eliminar el producto?</p>
+          </div>
+          <div class="modal-footer">
+            <button id="confirm_delete_product" type="button" class="btn btn-danger">Eliminar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div class="modal fade" id="delete_container_modal" tabindex="-1" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLabel1">Eliminar conenedor</h5>
+            <h5 class="modal-title" id="exampleModalLabel1">Eliminar contenedor</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">

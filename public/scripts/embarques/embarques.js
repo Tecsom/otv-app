@@ -7,6 +7,8 @@ var estadosMarcados = {
   finalizada: false
 };
 
+let selectedRowContainer;
+let selectedRowProduct;
 let contenedorId;
 const badgeType = {
   pendiente: 'secondary',
@@ -128,7 +130,7 @@ async function init() {
       }
     }
   });
-  loadEmbarques();
+  await loadEmbarques();
 }
 
 async function getEmbarques() {
@@ -312,6 +314,7 @@ $('#embarques_container').on('click', '.embarque_container_child', async functio
   //}
 
   await loadContenedores(data);
+  await loadProducts(data);
 });
 
 $('#addEmbarquesButton').on('click', function () {
@@ -443,13 +446,12 @@ $('#add_product_container_modal').on('click', async function () {
 
   let ordenes = await fetchData('/embarques/ordenes', 'GET', {});
 
-  const dataTable = $('#contenedores_table').DataTable().data().toArray();
+  const dataTable = $('#productos_table_tab').DataTable().data().toArray();
 
   ordenes = ordenes.data.filter(item => {
     const productIds = item.order_id.productos.map(producto => producto.id);
     return !productIds.every(productId => dataTable.some(dataItem => dataItem.producto_id == productId));
   });
-
   if (ordenes.status == false) {
     toastr.error('Error al obtener las ordenes');
     return;
@@ -508,7 +510,7 @@ $('#add_product_select').on('change', function () {
     return;
   }
 
-  const dataTable = $('#contenedores_table').DataTable().data().toArray();
+  const dataTable = $('#productos_table_tab').DataTable().data().toArray();
 
   data = data.filter(item => !dataTable.some(dataItem => dataItem.producto_id == item.id));
 
@@ -604,14 +606,26 @@ $('#confirm_add_products').on('click', async function () {
     return;
   }
 
+  const contenedorId = $('#contenedor_add_product').val();
+
+  const allRows = $('#productos_table_tab').DataTable().rows().data().toArray();
+
+  const groupRows = allRows.filter(row => row.contenedor_id == contenedorId);
+  const totalRows = groupRows.length + selectedProducts.length;
+
+  console.log(groupRows);
+  console.log(totalRows);
+
   for (let product of selectedProducts) {
+    console.log({ product });
     let result = await fetchData('/embarques/productos', 'POST', {
       embarque_id: data.id,
       producto_id: product.id,
       cantidad: product.quantity,
       estado: true,
       order_id: product.order_id,
-      contenedor_id: contenedorId
+      contenedor_id: contenedorId,
+      cantidad_filas: totalRows
     });
   }
 
@@ -632,7 +646,7 @@ const loadContenedores = async data => {
       id: contenedor.id,
       nombre_contenedor: contenedor.nombre_contenedor,
       codigo_contenedor: contenedor.codigo,
-      //cantidad: contenedor.cantidad,
+      cantidad: contenedor.cantidad,
       //producto: contenedor.order_products.piezas.numero_parte,
       //descripcion_producto: contenedor.order_products.piezas.descripcion,
       //producto_id: contenedor.producto_id,
@@ -645,11 +659,25 @@ const loadContenedores = async data => {
 };
 // METODO PARA CARGAR LA TABLA DE PRODUCTOS EN EL APARTADO DE CONTENEDORES
 const loadProducts = async data => {
-  const response = await fetchData(`/embarques/${data.id}/contenedores`, 'GET', {});
+  const response = await fetchData(`/embarques/${data.id}/productos`, 'GET', {});
 
   console.log('LOAD PRODUCTO', response);
 
-  productos_table.clear().rows.add(contenedors_data_table).draw();
+  const productos_table_data = response.data.map(producto => {
+    console.log(producto);
+    return {
+      id: producto.id,
+      nombre_producto: producto.order_products.piezas.numero_parte || '',
+      descripcion_producto: producto.order_products.piezas.descripcion || '',
+      cliente: producto.order_products.piezas.cliente_id.nombre || '',
+      contenedor: producto.contenedor_id.nombre_contenedor,
+      producto_id: producto.producto_id,
+      cantidad: producto.cantidad,
+      contenedor_id: producto.contenedor_id.id
+    };
+  });
+
+  productos_table.clear().rows.add(productos_table_data).draw();
 };
 
 $('#addProductsModal').on('hidden.bs.modal', function () {
@@ -667,7 +695,8 @@ function addLeadingZeros(number, length) {
 }
 
 $('#contenedores_table').on('click', '.editar-contenedor', async function (e) {
-  const data = $('#contenedores_table').DataTable().row($('.editar-contenedor').closest('tr')).data();
+  const data = $('#contenedores_table').DataTable().row($(this).closest('tr')).data();
+  selectedRowContainer = data;
 
   console.log(data);
   $('#nombre_contenedor_update').val(data.nombre_contenedor);
@@ -685,12 +714,9 @@ $('#confirm_update_container').on('click', async function (e) {
   }
   const dataContainer = $('#container-reporte').data();
 
-  const data = $('#contenedores_table').DataTable().row($('.editar-contenedor').closest('tr')).data();
-  console.log(data);
-
-  const result = await fetchData('/embarque/contenedor/' + data.id, 'PUT', {
+  const result = await fetchData('/embarque/contenedor/' + selectedRowContainer.id, 'PUT', {
     nombre_contenedor: nombre_contenedor,
-    codigo: data.codigo
+    codigo: selectedRowContainer.codigo
   });
 
   if (result.status == false) {
@@ -707,12 +733,13 @@ $('#confirm_update_container').on('click', async function (e) {
 
 $('#contenedores_table').on('click', '.eliminar-contenedor', async function (e) {
   $('#delete_container_modal').modal('show');
+  selectedRoWConainer = $(this).closest('tr');
 });
 
 $('#confirm_delete_container').on('click', async function (e) {
   const dataContainer = $('#container-reporte').data();
 
-  const data = $('#contenedores_table').DataTable().row($('.eliminar-contenedor').closest('tr')).data();
+  const data = $('#contenedores_table').DataTable().row(selectedRowContainer).data();
   console.log(data);
 
   const result = await fetchData('/embarque/contenedor/' + data.id, 'DELETE', {});
@@ -729,14 +756,54 @@ $('#confirm_delete_container').on('click', async function (e) {
   await loadContenedores(dataContainer);
 });
 
+$('#productos_table_tab').on('click', '.eliminar-producto', async function (e) {
+  $('#delete_producto_modal').modal('show');
+  selectedRowProduct = $(this).closest('tr');
+});
+
+$('#confirm_delete_product').on('click', async function (e) {
+  const dataContainer = $('#container-reporte').data();
+
+  const data = $('#productos_table_tab').DataTable().row(selectedRowProduct).data();
+  console.log(data);
+
+  const contenedorId = $('#contenedor_add_product').val();
+
+  console.log(contenedorId);
+
+  const allRows = $('#productos_table_tab').DataTable().rows().data().toArray();
+
+  const groupRows = allRows.filter(row => row.contenedor_id == data.contenedor_id);
+  const totalRows = groupRows.length - 1;
+
+  console.log(totalRows);
+
+  const result = await fetchData('/embarque/productos/' + data.id, 'PUT', {
+    contenedor_id: data.contenedor_id,
+    cantidad: totalRows
+  });
+
+  if (result.status == false) {
+    toastr.error('Error al eliminar el contenedor');
+    return;
+  }
+
+  toastr.success('Producto eliminado con éxito');
+
+  $('#delete_producto_modal').modal('hide');
+
+  await loadProducts(dataContainer);
+  await loadContenedores(dataContainer);
+});
+
 $('#create_container_modal').on('click', function () {
   $('#addContainerEmbarque').modal('show');
 });
 
 $('#generate_embarque').on('click', async function () {
-  const data = $('#contenedores_table').DataTable().data().toArray();
+  const allRows = $('#productos_table_tab').DataTable().rows().data().toArray();
 
-  if (data.length == 0) {
+  if (allRows.length == 0) {
     toastr.error('Agrega al menos un producto al embarque');
     return;
   }
@@ -765,30 +832,28 @@ $('#confirm_generate_embarque').on('click', async function () {
 
 $('#confirm_add_container').on('click', async function () {
   const data_contenedor = $('#container-reporte').data();
+
   const $nombre_contenedor = $('#nombre_contenedor');
-  const $codigo_contenedor = $('#codigo_contenedor');
 
   const nombre_contenedor = $nombre_contenedor.val().trim();
-  const codigo_contenedor = $codigo_contenedor.val().trim();
 
-  if (nombre_contenedor == '' || codigo_contenedor == '') {
+  if (nombre_contenedor == '') {
     toastr.error('Completar los campos para generar el contenedor');
     return;
   }
 
   try {
-    await fetchData('/embarque/create/contenedor', 'POST', {
-      nombre_contenedor: nombre_contenedor,
-      codigo: codigo_contenedor,
-      embarque_id: data_contenedor.id
+    await fetchData(`/embarque/${data_contenedor.id}/contenedor`, 'POST', {
+      nombre_contenedor: nombre_contenedor
     });
 
     $nombre_contenedor.val('');
-    $codigo_contenedor.val('');
     toastr.success('Contenedor generado con éxito');
     $('#addContainerEmbarque').modal('hide');
+    await loadContenedores(data_contenedor);
     return;
   } catch (error) {
+    console.log(error);
     toastr.warning('Error al generar el contenedor');
   }
 });
