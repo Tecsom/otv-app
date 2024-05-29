@@ -309,7 +309,7 @@ $('#btn_edit_pieza').on('click', async function () {
   $('#modal_editar_pieza').modal('show');
   $('#offcanvas_pieza').offcanvas('hide');
 
-  if (type == 'bulk') {
+  if (type == 'A granel') {
     $('#tipo_bulk_edit').attr('checked', true);
   } else {
     $('#tipo_simple_edit').attr('checked', true);

@@ -190,10 +190,13 @@ export const deleteEmbarqueProduct = async (embarque_product_id: number) => {
     return result;
 }
 
-export const deleteProductFromEmbarque = async (embarque_id: number, producto_id: number, order_id: number) => {
-
+export const deleteProductFromEmbarque = async (contenedor_id: number, producto_id: number, order_id: number) => {
     
-    const { error: uploadError } = await supabase().from('embarque_products').delete().eq('embarque_id', embarque_id).eq('producto_id', producto_id).eq('order_id', order_id);
+    console.log('contenedor_id:', contenedor_id);
+    console.log('producto_id:', producto_id);
+    console.log('order_id:', order_id);
+
+    const { error: uploadError } = await supabase().from('embarque_products').delete().eq('contenedor_id', contenedor_id).eq('producto_id', producto_id).eq('order_id', order_id);
 
     if (uploadError) {
         console.error("Error deleting embarque product: ", uploadError.message);
@@ -212,6 +215,7 @@ export const deleteProductFromEmbarque = async (embarque_id: number, producto_id
     }
     return result;
 }
+
 
 export const createNewEmbarqueContenedor = async (embarque_data: EmbarqueContenedor) => {
     const { error: uploadError, data: data } = await supabase().from('embarque_contenedores').insert(embarque_data).select('*');
@@ -257,6 +261,40 @@ export const getEmbarqueProducts = async (embarque_id: number) => {
     }
 
     return embarque_products;
+}
+
+export const getContainersByEmbarque = async (embarque_id: number) => {
+
+    const { data, error } = await supabase().from('embarque_contenedores').select('*').eq('embarque_id', embarque_id);
+
+    if(error) {
+        console.error("Error fetching containers by embarque: ", error);
+        throw error;
+    }
+
+    return data;
+}
+
+export const deleteContainerInEmbarque = async (contenedor_id: number) => {
+    const { error: uploadError } = await supabase().from('embarque_contenedores').delete().eq('id', contenedor_id);
+
+    if (uploadError) {
+        console.error("Error deleting container in embarque: ", uploadError.message);
+        throw uploadError;
+    }
+
+    return true;
+}
+
+export const updateContainerInEmbarque = async (contenedor_id: number, payload: EmbarqueContenedor) => {
+    const { error: uploadError, data: data } = await supabase().from('embarque_contenedores').update(payload).eq('id', contenedor_id).single();
+
+    if (uploadError) {
+        console.error("Error updating container in embarque: ", uploadError.message);
+        throw uploadError;
+    }
+
+    return data;
 }
 
 export const changeStateToEmbarque = async (embarque_id: number, estado: string) => {

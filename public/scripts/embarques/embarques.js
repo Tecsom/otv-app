@@ -164,7 +164,7 @@ async function loadEmbarques() {
         </div>
         <div class="col-md-12">
           <div class="p-2 pb-1 pt-0">
-            <p class="mb-0 small"><strong>Cliente: </strong>${embarque.descripcion ?? '<span style="color:Red">Sin cliente relacionado</span>'}</p>
+            <p class="mb-0 small"><strong>Descripción: </strong>${embarque.descripcion ?? '<span style="color:Red">Sin cliente relacionado</span>'}</p>
             <p class="mb-0 small"><strong>Fecha de embarque: ${isoDateToFormatted(embarque.fecha_embarque)}</strong></p>   
             <p class="mb-0 small"><strong>Fecha de entrega: ${isoDateToFormatted(embarque.fecha_entrega)}</strong></p>
           </div>      
@@ -233,7 +233,7 @@ $('#embarques_container').on('click', '.embarque_container_child', async functio
   const data = $embarque.data().data;
   //const cliente_id = data?.clientes.id;
 
-  await loadProducts(data);
+  await loadContenedores(data);
 
   $embarque.addClass('active-container').siblings().removeClass('active-container');
 
@@ -269,8 +269,6 @@ $('#embarques_container').on('click', '.embarque_container_child', async functio
     $('#create_container_modal').prop('disabled', true);
     $('#add_product_container_modal').prop('disabled', true);
 
-    $('#contenedores_table').DataTable().column(3).visible(false);
-
     $('#generate_embarque').addClass('d-none');
   } else if (data.estado == 'finalizada') {
     $('#delete_oc').addClass('d-none');
@@ -282,7 +280,6 @@ $('#embarques_container').on('click', '.embarque_container_child', async functio
     $('#create_container_modal').prop('disabled', true);
     $('#add_product_container_modal').prop('disabled', true);
     $('#generate_embarque').addClass('d-none');
-    $('#contenedores_table').DataTable().column(3).visible(false);
   } else if (data.estado == 'cancelada') {
     $('#delete_oc').addClass('d-none');
     $('#edit_oc').addClass('d-none');
@@ -294,7 +291,6 @@ $('#embarques_container').on('click', '.embarque_container_child', async functio
     $('#create_container_modal').prop('disabled', true);
 
     $('#generate_embarque').addClass('d-none');
-    $('#contenedores_table').DataTable().column(3).visible(false);
   } else {
     $('#add_product_container_modal').prop('disabled', false);
     $('#create_container_modal').prop('disabled', false);
@@ -306,7 +302,6 @@ $('#embarques_container').on('click', '.embarque_container_child', async functio
     $('#restaurar_oc').addClass('d-none');
 
     $('#generate_embarque').removeClass('d-none');
-    $('#contenedores_table').DataTable().column(3).visible(true);
   }
 
   //const profile_pic_res = await fetchData(`/clientes/${cliente_id}/profile-photo`);
@@ -316,7 +311,7 @@ $('#embarques_container').on('click', '.embarque_container_child', async functio
   //  $('#profile-pic').removeClass('d-none');
   //}
 
-  await loadProducts(data);
+  await loadContenedores(data);
 });
 
 $('#addEmbarquesButton').on('click', function () {
@@ -623,30 +618,40 @@ $('#confirm_add_products').on('click', async function () {
 
   toastr.success('Productos agregados con éxito');
   $('#addProductsModal').modal('hide');
+  await loadContenedores(data);
   await loadProducts(data);
 });
 
-// METODO PARA CARGAR LA TABLA DE PRODUCTOS EN EL APARTADO DE CONTENEDORES
-const loadProducts = async data => {
-  const response = await fetchData(`/embarques/${data.id}/productos`, 'GET', {});
+// METODO PARA CARGAR LA TABLA DE CONTENEDORES EN EL APARTADO DE CONTENEDORES
+const loadContenedores = async data => {
+  const response = await fetchData(`/embarques/contenedores/` + data.id, 'GET', {});
 
-  console.log('LOAD PRODUCTO', response);
+  console.log('LOAD CONTENEDOR', response);
 
   const contenedors_data_table = response.data.map(contenedor => {
     console.log(contenedor);
     return {
-      nombre_contenedor: contenedor.contenedor_id.nombre_contenedor,
-      codigo_contenedor: contenedor.contenedor_id.codigo,
-      cantidad: contenedor.cantidad,
-      producto: contenedor.order_products.piezas.numero_parte,
-      descripcion_producto: contenedor.order_products.piezas.descripcion,
-      producto_id: contenedor.producto_id,
-      order_id: contenedor.order_id,
+      id: contenedor.id,
+      nombre_contenedor: contenedor.nombre_contenedor,
+      codigo_contenedor: contenedor.codigo,
+      //cantidad: contenedor.cantidad,
+      //producto: contenedor.order_products.piezas.numero_parte,
+      //descripcion_producto: contenedor.order_products.piezas.descripcion,
+      //producto_id: contenedor.producto_id,
+      //order_id: contenedor.order_id,
       embarque_id: contenedor.embarque_id
     };
   });
 
   contenedores_table.clear().rows.add(contenedors_data_table).draw();
+};
+// METODO PARA CARGAR LA TABLA DE PRODUCTOS EN EL APARTADO DE CONTENEDORES
+const loadProducts = async data => {
+  const response = await fetchData(`/embarques/${data.id}/contenedores`, 'GET', {});
+
+  console.log('LOAD PRODUCTO', response);
+
+  productos_table.clear().rows.add(contenedors_data_table).draw();
 };
 
 $('#addProductsModal').on('hidden.bs.modal', function () {
@@ -663,28 +668,59 @@ function addLeadingZeros(number, length) {
   return '0'.repeat(zerosToAdd) + numStr;
 }
 
-$('#contenedores_table').on('click', '.eliminar-producto', async function (e) {
-  $('#delete_product_modal').modal('show');
+$('#contenedores_table').on('click', '.editar-contenedor', async function (e) {
+  const data = $('#contenedores_table').DataTable().row($('.editar-contenedor').closest('tr')).data();
+
+  console.log(data);
+  $('#nombre_contenedor_update').val(data.nombre_contenedor);
+
+  $('#update_container_modal').modal('show');
 });
 
-$('#confirm_delete_product').on('click', async function (e) {
+$('#confirm_update_container').on('click', async function (e) {
+  const $nombre_contenedor = $('#nombre_contenedor_update');
+  const nombre_contenedor = $nombre_contenedor.val().trim();
+
+  if (nombre_contenedor == '') {
+    toastr.error('Completar los campos para editar el contenedor');
+    return;
+  }
   const dataContainer = $('#container-reporte').data();
 
-  const data = $('#contenedores_table').DataTable().row($('.eliminar-producto').closest('tr')).data();
+  const data = $('#contenedores_table').DataTable().row($('.editar-contenedor').closest('tr')).data();
   console.log(data);
 
-  console.log('embarque_id:', data.embarque_id);
-  console.log('producto_id:', data.producto_id);
-  console.log('order_id:', data.order_id);
-
-  const result = await fetchData('/embarque/productos', 'DELETE', {
-    embarque_id: data.embarque_id,
-    producto_id: data.producto_id,
-    order_id: data.order_id
+  const result = await fetchData('/embarque/contenedor/' + data.id, 'PUT', {
+    nombre_contenedor: nombre_contenedor,
+    codigo: data.codigo
   });
 
   if (result.status == false) {
-    toastr.error('Error al eliminar el producto');
+    toastr.error('Error al eliminar el contenedor');
+    return;
+  }
+
+  toastr.success('Producto eliminado con éxito');
+
+  $('#update_container_modal').modal('hide');
+
+  await loadContenedores(dataContainer);
+});
+
+$('#contenedores_table').on('click', '.eliminar-contenedor', async function (e) {
+  $('#delete_container_modal').modal('show');
+});
+
+$('#confirm_delete_container').on('click', async function (e) {
+  const dataContainer = $('#container-reporte').data();
+
+  const data = $('#contenedores_table').DataTable().row($('.eliminar-contenedor').closest('tr')).data();
+  console.log(data);
+
+  const result = await fetchData('/embarque/contenedor/' + data.id, 'DELETE', {});
+
+  if (result.status == false) {
+    toastr.error('Error al eliminar el contenedor');
     return;
   }
 
@@ -692,7 +728,7 @@ $('#confirm_delete_product').on('click', async function (e) {
 
   $('#delete_product_modal').modal('hide');
 
-  await loadProducts(dataContainer);
+  await loadContenedores(dataContainer);
 });
 
 $('#create_container_modal').on('click', function () {
@@ -716,7 +752,6 @@ $('#confirm_generate_embarque').on('click', async function () {
 
   $('#data-status-data').text('embarque');
   $('#data-status-data').removeClass().addClass(`text-capitalize badge bg-info`);
-  $('#contenedores_table').DataTable().column(3).visible(false);
   $('#create_container_modal').prop('disabled', true);
   $('#add_product_container_modal').prop('disabled', true);
   $('#generate_embarque').addClass('d-none');
@@ -787,7 +822,6 @@ $('#confirm_cancel_order').on('click', async function () {
 
   $('#data-status-data').text('cancelada');
   $('#data-status-data').removeClass().addClass(`text-capitalize badge bg-danger`);
-  $('#contenedores_table').DataTable().column(3).visible(false);
   $('#create_container_modal').prop('disabled', true);
   $('#add_product_container_modal').prop('disabled', true);
   $('#generate_embarque').addClass('d-none');
@@ -848,7 +882,6 @@ $('#confirm_restore_order').on('click', async function () {
 
   $('#create_container_modal').prop('disabled', false);
   $('#add_product_container_modal').prop('disabled', false);
-  $('#contenedores_table').DataTable().column(3).visible(true);
 
   toastr.success('Embarque restaurado con éxito');
   $('#restore_orden_modal').modal('hide');
@@ -873,8 +906,6 @@ $('#confirm_finish_embarque').on('click', async function () {
 
   $('#create_container_modal').prop('disabled', true);
   $('#add_product_container_modal').prop('disabled', true);
-
-  $('#contenedores_table').DataTable().column(3).visible(false);
 
   toastr.success('Embarque finalizado con éxito');
 
