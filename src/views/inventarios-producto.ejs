@@ -70,7 +70,7 @@
               </li>
               <li class="mb-2 pt-1">
                 <span class="fw-medium me-1">Stock:</span>
-                <span id="details_client_state"> <%= productData.stock ?? 0%> </span>
+                <span id="total_quantity"> <%= productData.stock ?? 0%> </span>
               </li>
             </ul>
           </div>
@@ -147,7 +147,9 @@
                 </div>
               </div>
             </div>
-            <div class="tab-pane fade" id="navs_historial" role="tabpanel">Historial de órdenes de compra</div>
+            <div class="tab-pane fade" id="navs_historial" role="tabpanel">
+              <table id="historial_table" class="table table-striped w-100 table-hover table-sm"></table>
+            </div>
           </div>
         </div>
       </div>
@@ -255,6 +257,10 @@
             <label for="quantity_ins" class="form-label required">Cantidad</label>
             <input type="number" id="quantity_ins" min="1" class="form-control" />
           </div>
+          <div class="col-md-12">
+            <label for="description_input" class="form-label">Descripción</label>
+            <input type="text" id="description_input" class="form-control" />
+          </div>
         </form>
       </div>
       <div class="modal-footer">
@@ -278,6 +284,10 @@
           <div class="col-md-12">
             <label for="quantity_output" class="form-label required">Cantidad</label>
             <input type="number" id="quantity_output" min="1" class="form-control" />
+          </div>
+          <div class="col-md-12">
+            <label for="description_output" class="form-label">Descripción</label>
+            <input type="text" id="description_output" class="form-control" />
           </div>
         </form>
       </div>

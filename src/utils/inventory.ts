@@ -25,9 +25,27 @@ export const updateProduct = async (product: Product): Promise<Product> => {
 };
 
 export const deleteProduct = async (id: string): Promise<Product> => {
-  const { data: deletedProduct, error } = await supabase().from('inventory').delete().eq('id', id).select('*').single();
+  //set deleted column to true
+  const { data: deletedProduct, error } = await supabase()
+    .from('inventory')
+    .update({ deleted: true })
+    .eq('id', id)
+    .select('*')
+    .single();
+
+  await deleteIndividualsByProduct(id);
 
   return deletedProduct as Product;
+};
+
+export const deleteIndividualsByProduct = async (product_id: string): Promise<IndividualProduct[]> => {
+  const { data: deletedProducts, error } = await supabase()
+    .from('individual_products')
+    .update({ deleted: true })
+    .eq('product_id', product_id)
+    .select('*');
+
+  return deletedProducts as IndividualProduct[];
 };
 
 export const createIndividualProduct = async (product: IndividualProduct): Promise<IndividualProduct> => {
@@ -40,6 +58,20 @@ export const getIndividualProductById = async (id: string): Promise<IndividualPr
   const { data: product, error } = await supabase().from('individual_products').select('*').eq('id', id).single();
 
   return product as IndividualProduct;
+};
+
+export const getTotalIndividualsByProduct = async (product_id: string): Promise<number> => {
+  const { data: products, error } = await supabase()
+    .from('individual_products')
+    .select('*')
+    .eq('product_id', product_id)
+    .eq('deleted', false);
+
+  if (error) {
+    throw error;
+  }
+
+  return products.length;
 };
 
 export const updateIndividualProduct = async (product: IndividualProduct): Promise<IndividualProduct> => {

@@ -6,8 +6,10 @@ import {
   createProduct,
   deleteProduct,
   getIndividualProductsByProduct,
+  getTotalIndividualsByProduct,
   updateIndividualProduct,
-  updateProduct
+  updateProduct,
+  upsertMovements
 } from '@/utils/inventory';
 import { Request, Response } from 'express';
 
@@ -76,6 +78,7 @@ export const deleteProductController = async (req: Request, res: Response) => {
 
 export const createIndividualProductController = async (req: Request, res: Response) => {
   const quantity = req.body.quantity;
+  const description = req.body.description;
   const product_id = parseInt(req.params.product_id);
 
   if (!quantity) return res.status(400).json({ error: 'Falta la cantidad' });
@@ -87,7 +90,10 @@ export const createIndividualProductController = async (req: Request, res: Respo
         code,
         product_id
       } as IndividualProduct;
-      await createIndividualProduct(product);
+      const individual_prod = await createIndividualProduct(product);
+      await upsertMovements([
+        { product_id, individual_id: individual_prod.id, type: 'input', consumed: 0, description, generated: true }
+      ]);
     }
 
     res.status(200).json({});
@@ -155,4 +161,49 @@ const generateUid = () => {
   const length = 7;
   for (let i = length; i > 0; --i) result += chars[Math.floor(Math.random() * chars.length)];
   return result;
+};
+
+export const getTotalIndividualsByProductController = async (req: Request, res: Response) => {
+  const { product_id } = req.params;
+
+  try {
+    const total = await getTotalIndividualsByProduct(product_id);
+
+    res.status(200).json(total);
+  } catch (error) {
+    res.status(400).json({ error: 'Error obteniendo el total' });
+  }
+};
+
+export const historialMovimientos = async (req: Request, res: Response) => {
+  console.log('entra');
+  const queries = req.query as any;
+  const { length: lengthStr, draw, start, page: pageStr } = queries as QueryTable;
+  const product_id = req.params.product_id;
+
+  const length = parseInt(lengthStr ?? '10');
+  const page = pageStr ? parseInt(pageStr) : Math.floor(parseInt(start ?? '0') / length) + 1;
+
+  const from = page * length - length;
+  const to = page * length - 1;
+
+  const { data, error } = await supabase()
+    .from('movements')
+    .select()
+    .eq('product_id', product_id)
+    .order('created_at', { ascending: false })
+    .range(from, to);
+
+  const { data: dataTotals, error: errorTotals } = await supabase()
+    .from('movements')
+    .select('id')
+    .eq('product_id', product_id);
+
+  res.status(200).json({
+    draw,
+    data,
+    page,
+    recordsTotal: dataTotals?.length,
+    recordsFiltered: dataTotals?.length
+  });
 };

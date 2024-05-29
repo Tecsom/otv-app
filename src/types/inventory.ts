@@ -4,6 +4,7 @@ export type Product = {
   name: string;
   stock: number;
   description: string;
+  deleted?: boolean;
 };
 
 export type IndividualProduct = {
@@ -15,12 +16,13 @@ export type IndividualProduct = {
 };
 
 export type Movement = {
-  id: number;
-  created_at: string; // ISO date string
+  id?: number;
+  created_at?: string; // ISO date string
   product_id: number;
   individual_id: number | null;
   type: 'input' | 'output';
   consumed: number;
-  order_id: number;
+  order_id?: number;
   generated?: boolean;
+  description?: string;
 };

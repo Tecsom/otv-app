@@ -35,11 +35,13 @@ const individual_product_table = $('#individual-product-table').DataTable({
 $('#create_individual_product_form').submit(async function (e) {
   e.preventDefault();
   const quantity = parseFloat($('#quantity_ins').val());
+  const description = $('#description_input').val();
 
   const button = new loadingButton($('#confirm_new_individual'));
   button.start();
   const res = await fetchData('/inventory/' + product_id + '/individual', 'POST', {
-    quantity
+    quantity,
+    description
   });
   button.stop();
   if (res.status === true) {
@@ -78,12 +80,15 @@ $('#output_product_form').submit(async function (e) {
   const quantity_b100 = parseFloat($('#quantity_output').val());
   const quantity = quantity_b100 / 100;
 
+  const description = $('#description_output').val();
+
   const movement = {
     individual_id: individual_product_id,
     consumed: quantity,
     type: 'output',
     product_id,
-    generated: true
+    generated: true,
+    description
   };
 
   const button = new loadingButton($('#confirm_output_product'));
@@ -96,6 +101,15 @@ $('#output_product_form').submit(async function (e) {
     $('#output_product_form').trigger('reset');
     toastr.success('Salida realizada exitosamente', 'Salida realizada');
     return;
+  }
+});
+
+$(document).ready(async function () {
+  // /inventory/:product_id/individual/totals
+  const res = await fetchData(`/inventory/${product_id}/individual/totals`);
+  console.log({ res });
+  if (res.status === true) {
+    $('#total_quantity').text(res.data);
   }
 });
 
