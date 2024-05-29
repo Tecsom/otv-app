@@ -126,8 +126,6 @@ table_piezas.on('click', '.btn-ver-codigos', function (e) {
   let row = table_piezas.row(tr);
   const data = row.data();
 
-  console.log(data);
-
   const full_codigos = ordenData.codigos;
   const codigos = full_codigos.filter(codigo => data.codigos.includes(codigo.code));
   const codigos_html = codigos
@@ -193,7 +191,7 @@ $('#startVerificacion').on('click', function () {
 $('#table_piezas_oc').on('click', '.btn-opciones-pieza', async function () {
   const data = table_piezas.row($(this).parents('tr')).data();
   const producto = data;
-  console.log({ producto, data });
+
   $('#pieza_numero_parte').text(producto.numero_parte);
   $('#pieza_numero_parte_title').text(producto.numero_parte);
   $('#pieza_revision').text(producto.revisiones.nombre);
@@ -219,7 +217,6 @@ $('#table_piezas_oc').on('click', '.btn-opciones-pieza', async function () {
 $('#pieza_files_list').on('click', 'button', async function () {
   const url = $(this).attr('signed-url');
   const filename = $(this).attr('file-name');
-  console.log({ url, filename });
 
   const response = await fetch(url);
 
@@ -305,9 +302,7 @@ const resetVerifications = () => {
 
 const socket = io.connect();
 socket.on('scanner', data => {
-  console.log({ verification_mode });
   if (verification_mode === true) {
-    console.log({ data });
     verificarPieza(data);
   }
 });
@@ -319,7 +314,6 @@ const verificarPieza = async codigo => {
   productoByCode = ordenData.productos.find(product => product.codigos.find(code => code === codigo));
 
   codigoVerificador = codigo;
-  console.log('PRODUCTO', productoByCode);
 
   if (!exists) {
     console.error('Pieza no encontrada');
@@ -344,7 +338,6 @@ const verificarPieza = async codigo => {
 
 $('#boton_mandar_cantidad').on('click', function () {
   if ($('#check_quantity').val() > productoByCode.quantity) {
-    console.log('cantidad mala ');
     toastr.error('La cantidad ingresada es mayor a la cantidad de la pieza');
     return false;
   }
@@ -361,7 +354,6 @@ $('#boton_mandar_cantidad').on('click', function () {
 });
 
 const verify = codigo => {
-  console.log(codigo);
   table_verificadas.rows
     .add([
       {

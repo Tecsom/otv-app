@@ -618,7 +618,6 @@ $('#confirm_add_products').on('click', async function () {
       order_id: product.order_id,
       contenedor_id: contenedorId
     });
-    console.log(result);
   }
 
   toastr.success('Productos agregados con éxito');
@@ -630,10 +629,7 @@ $('#confirm_add_products').on('click', async function () {
 const loadProducts = async data => {
   const response = await fetchData(`/embarques/${data.id}/productos`, 'GET', {});
 
-  console.log('LOAD PRODUCTO', response);
-
   const contenedors_data_table = response.data.map(contenedor => {
-    console.log(contenedor);
     return {
       nombre_contenedor: contenedor.contenedor_id.nombre_contenedor,
       codigo_contenedor: contenedor.contenedor_id.codigo,
@@ -671,11 +667,6 @@ $('#confirm_delete_product').on('click', async function (e) {
   const dataContainer = $('#container-reporte').data();
 
   const data = $('#contenedores_table').DataTable().row($('.eliminar-producto').closest('tr')).data();
-  console.log(data);
-
-  console.log('embarque_id:', data.embarque_id);
-  console.log('producto_id:', data.producto_id);
-  console.log('order_id:', data.order_id);
 
   const result = await fetchData('/embarque/productos', 'DELETE', {
     embarque_id: data.embarque_id,
@@ -756,15 +747,12 @@ $('#confirm_add_container').on('click', async function () {
     $('#addContainerEmbarque').modal('hide');
     return;
   } catch (error) {
-    console.log(error);
     toastr.warning('Error al generar el contenedor');
   }
 });
 
 async function cambiarStatus(estado) {
   const data = $('#container-reporte').data();
-
-  console.log(data);
 
   const result = await fetchData('/embarque/estado/' + data.id, 'PUT', {
     estado: estado

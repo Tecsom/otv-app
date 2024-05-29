@@ -9,7 +9,6 @@ const badgeType = {
 };
 
 loadOrdenes = async () => {
-  console.log('LOADD');
   const $container = $('#ordenes_compra_container');
 
   const ordenes = await getOrdenes();
@@ -42,10 +41,9 @@ loadOrdenes = async () => {
     $container.append($newdiv1);
 
     const selected = $('#ordenes_compra_container').data('selected');
-    console.log({ orden, selected });
+
     if (selected && parseInt(selected) === orden.id) {
       $newdiv1.trigger('click');
-      console.log('click');
     }
   }
 };
@@ -53,7 +51,7 @@ loadOrdenes = async () => {
 async function getOrdenes() {
   // page, pageSize, search
   if (!loadMore) return [];
-  console.log('searchhh');
+
   const createdAtFilterString = createdAtFilter?.join(',') ?? '';
   const deliveryDateFilterString = deliveryDateFilter?.join(',') ?? '';
   const query = `?page=${page}&pageSize=${limit}&estatusFiltersStr=${estatusFilters.join(',')}&search=${search}&createdAtFilterString=${createdAtFilterString}&deliveryDateFilterString=${deliveryDateFilterString}`;

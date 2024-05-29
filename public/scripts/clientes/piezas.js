@@ -193,7 +193,6 @@ $('#crear-pieza-form').on('submit', async function (e) {
     return;
   }
 
-  console.log(data);
   const accepted_images = dropzoneImages.getAcceptedFiles();
   const accepted_files = dropzoneFiles.getAcceptedFiles();
 
@@ -255,7 +254,6 @@ piezas_table.on('click', 'tbody tr', async function () {
 });
 
 const loadFilesList = async (cliente_id, pieza_id, revision_id) => {
-  console.log('load');
   const res = await fetchData(`/clientes/${cliente_id}/piezas/${pieza_id}/revisiones/${revision_id}/files`);
   if (!res.status) {
     toastr.error(res.message, 'Error obteniendo los archivos');
@@ -503,7 +501,7 @@ $('#delete_revision_btn').on('click', async function () {
   button.start();
   const pieza_id = $('#offcanvas_pieza').attr('data-pieza-id');
   const revision_id = select_revision.val();
-  console.log(`/clientes/${clientData.id}/piezas/${pieza_id}/revisiones/${revision_id}`);
+
   const res = await fetchData(`/clientes/${clientData.id}/piezas/${pieza_id}/revisiones/${revision_id}`, 'DELETE');
   button.stop();
   if (res.status === true) {

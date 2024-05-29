@@ -52,7 +52,6 @@ export const createPieza = async (pieza: Pieza): Promise<Pieza | null> => {
 export const updatePieza = async (id: number, pieza: Pieza): Promise<Pieza | null> => {
   const { data, error } = await supabase().from('piezas').update(pieza).eq('id', id).select('*').single();
 
-  console.log(data)
   if (error) {
     console.error('Error updating pieza:', error.message);
     throw error;

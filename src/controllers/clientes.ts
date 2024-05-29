@@ -88,7 +88,6 @@ export const updateClienteC = async (req: Request, res: Response) => {
     const cliente = await updateCliente(clienteData, id);
     res.status(200).json(cliente);
   } catch (error: any) {
-    console.log({ error });
     res.status(500).json(error);
   }
 };
@@ -105,8 +104,6 @@ export const createPiezaC = async (req: Request, res: Response) => {
   delete piezaData.imagenes;
   delete piezaData.archivos;
   delete piezaData.revision_nombre;
-
-  console.log(piezaData);
 
   try {
     const pieza = await createPieza(piezaData);
@@ -135,8 +132,6 @@ export const editPiezaC = async (req: Request, res: Response) => {
 
   try {
     const pieza = await updatePieza(piezaData.id, piezaData);
-
-    console.log(piezaData);
 
     res.status(200).json({});
   } catch (error: any) {
@@ -207,7 +202,6 @@ export const updateRevisionC = async (req: Request, res: Response) => {
   const { cliente_id, pieza_id, revision_id } = req.params;
   const { archivos, imagenes, nombre } = req.body;
   try {
-    console.log(req.body);
     await updateRevision(parseInt(revision_id), nombre);
     await deleteFolder('clientes', `${cliente_id}/${pieza_id}/${revision_id}`);
     await uploadRevisionFiles(parseInt(cliente_id), parseInt(pieza_id), parseInt(revision_id), archivos);
@@ -223,7 +217,6 @@ export const createRevisionC = async (req: Request, res: Response) => {
   const body_data = req.body;
   let { archivos, imagenes, ...revisionData } = body_data;
   try {
-    console.log({ body_data });
     const revision = await createRevision(parseInt(pieza_id), revisionData);
     if (!revision?.id) throw new Error('Error al crear la revisión');
     await uploadRevisionFiles(parseInt(cliente_id), parseInt(pieza_id), revision.id, archivos);
@@ -302,7 +295,6 @@ export const updateProfilePhotoC = async (req: Request, res: Response) => {
 
     res.status(200).json({ message: 'Foto de perfil actualizada', status: true });
   } catch (error: any) {
-    console.log({ error });
     res.status(500).json(error);
   }
 };

@@ -42,11 +42,11 @@ verificaciones_table.on('click', 'tr', async function () {
   // verifications.forEach(verification => {
   //   const codigos = codigos_table.rows().data().toArray();
 
-  //   console.log({ codigos, verification });
+  //
 
   //   const numero_parte = codigos.find(codigo => codigo.code === verification.codigo).numero_parte;
 
-  //   console.log({ numero_parte });
+  //
   //   $('#list-verifications').append(`
   //     <li class="list-group-item d-flex justify-content-between align-items-center flex-row">
   //       <span>${verification.codigo}</span>
