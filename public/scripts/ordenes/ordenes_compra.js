@@ -135,21 +135,18 @@ const $clients = $('#select_client').select2({
     dataType: 'json',
     delay: 250,
     data: function (params) {
-      return {
-        search: params.term,
-        length: 10,
-        draw: 1,
-        start: 0
-      };
+      return { search: params.term, length: 10, draw: 1, start: params.page || 1, page: params.page || 1 };
     },
-    processResults: function (data) {
+    processResults: function (data, params) {
       return {
-        results: data.data.map(client => {
-          return {
-            id: client.id,
-            text: client.nombre
-          };
-        })
+        results: data.data.map(prod => ({
+          id: prod.id,
+          text: prod.nombre,
+          ...prod
+        })),
+        pagination: {
+          more: data.data.length === 10
+        }
       };
     },
     cache: true
@@ -382,7 +379,7 @@ async function getOrdenes() {
   const query = `?page=${page}&pageSize=${limit}&estatusFiltersStr=${estatusFilters.join(',')}&search=${search}&createdAtFilterString=${createdAtFilterString}&deliveryDateFilterString=${deliveryDateFilterString}`;
   isLoading = true;
   const ordenes = await fetchData('/ordenes/paging' + query, 'GET'); //api/ordenes
-  console.log({ordenes})
+  console.log({ ordenes });
   isLoading = false;
 
   if (!ordenes.status) {
