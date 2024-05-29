@@ -1,6 +1,7 @@
 import supabase from '@/config/supabase';
 import { IndividualProduct, Product } from '@/types/inventory';
 import { QueryTable } from '@/types/types';
+import { generateUid } from '@/utils/helpers';
 import {
   createIndividualProduct,
   createProduct,
@@ -152,15 +153,6 @@ export const getIndividualProductsPaging = async (req: Request, res: Response) =
     data,
     page
   });
-};
-
-//function generates uid 7chars from 0-1 AZ az
-const generateUid = () => {
-  const chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
-  let result = '';
-  const length = 7;
-  for (let i = length; i > 0; --i) result += chars[Math.floor(Math.random() * chars.length)];
-  return result;
 };
 
 export const getTotalIndividualsByProductController = async (req: Request, res: Response) => {
