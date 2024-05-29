@@ -659,7 +659,7 @@ const loadContenedores = async data => {
 const loadProducts = async data => {
   const response = await fetchData(`/embarques/${data.id}/productos`, 'GET', {});
 
-  console.log('LOAD PRODUCTO', response);
+  console.log('LOAD CONTENEDOR', response);
 
   const productos_table_data = response.data.map(producto => {
     console.log(producto);
