@@ -38,6 +38,7 @@ export type EmbarqueProductBody = {
     order_id: number;
     cantidad_filas: number;
     contenedor_id: number;
+    
 }
 
 export type EmbarqueContenedor = {
@@ -48,6 +49,24 @@ export type EmbarqueContenedores = {
     id: number;
     nombre_contenedor: string;
     codigo: string;
+    embarque_id: number;
+    created_at: string;
+}
+
+export type DestinoPost = {
+    ubicacion: string;
+    correo: string;
+    telefono: string;
+    cliente_id: number;
+    embarque_id: number;
+}
+
+export type Destino = {
+    id: number;
+    ubicacion: string;
+    correo: string;
+    telefono: string;
+    cliente_id: number;
     embarque_id: number;
     created_at: string;
 }

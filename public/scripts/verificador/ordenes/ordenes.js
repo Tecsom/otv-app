@@ -1,6 +1,7 @@
 import { fetchData, loadingButton, isoDateToFormatted, isoDateToFormattedWithTime } from '/public/scripts/helpers.js';
 
 let verificadas_array = [];
+let quantityOfProduct;
 let productoByCode;
 let codigoVerificador;
 $('#exit-checker').on('click', async function () {
@@ -316,7 +317,7 @@ const verificarPieza = async codigo => {
   codigoVerificador = codigo;
 
   if (!exists) {
-    console.error('Pieza no encontrada');
+    toastr.error('Pieza no encontrada');
     return;
   }
 
@@ -333,10 +334,13 @@ const verificarPieza = async codigo => {
 
   productoByCode.quantity = 1;
 
+  console.log(productoByCode);
+
   verify(codigo);
 };
 
 $('#boton_mandar_cantidad').on('click', function () {
+  console.log(productoByCode.quantity);
   if ($('#check_quantity').val() > productoByCode.quantity) {
     toastr.error('La cantidad ingresada es mayor a la cantidad de la pieza');
     return false;
@@ -350,6 +354,7 @@ $('#boton_mandar_cantidad').on('click', function () {
     return false;
   }
   $('#ask_quantity').modal('hide');
+  console.log(productoByCode);
   verify(codigoVerificador);
 });
 
@@ -374,10 +379,22 @@ const verify = codigo => {
   if (!verificadas_array.includes(codigo)) {
     verificadas_array.push(codigo);
 
-    const piezas_verificadas = verificadas_array.length;
-    const piezas_totales = ordenData.codigos.length;
+    console.log(productoByCode);
 
-    const progress = (piezas_verificadas / piezas_totales) * 100;
+    let progress;
+
+    // Si el producto es de tipo 'bulk', actualiza el progreso en base a la cantidad
+    if (productoByCode.tipo === 'bulk') {
+      const cantidadVerificada = productoByCode.quantity;
+      const cantidadTotal = productoByCode.cantidad;
+
+      progress = (cantidadVerificada / cantidadTotal) * 100;
+    } else {
+      const piezas_verificadas = verificadas_array.length;
+      const piezas_totales = ordenData.codigos.length;
+
+      progress = (piezas_verificadas / piezas_totales) * 100;
+    }
 
     $('#progress_verificacion').css('width', `${progress}%`);
     $('#progress_verificacion').text(`Progreso de verificación (${progress.toFixed(2)}%)`);
@@ -394,6 +411,8 @@ $('#save_verification_modal_btn').on('click', async function () {
     toastr.error('No se ha verificado ninguna pieza');
     return;
   }
+
+  console.log(piezas_verificadas);
 
   const created_at = new Date().toISOString();
   const data = {
@@ -457,6 +476,7 @@ const updateGeneralProgress = () => {
   const piezas_verificadas = order_data.codigos.filter(pieza => pieza.verified === true).length;
 
   const progress = (piezas_verificadas / piezas) * 100;
+
   $('#progress_general').css('width', `${progress}%`);
   $('#progress_general').text(`Progreso general (${progress.toFixed(2)}%)`);
 };

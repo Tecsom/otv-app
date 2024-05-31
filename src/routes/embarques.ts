@@ -13,7 +13,12 @@ import {
     getEmbarqueContenedores,
     EditEstadoEmbarque,
     deleteContenedorEmbarque,
-    updateContenedorEmbarque
+    updateContenedorEmbarque,
+    getProductosInOrderByEmbarque,
+    postDestinos,
+    getDestinoEmbarque,
+    deleteDestinoEmbarque,
+    
 } from '../controllers/embarques'
 
 
@@ -39,5 +44,12 @@ router.put('/embarque/estado/:embarque_id', EditEstadoEmbarque)
 router.get('/embarques/contenedores/:embarque_id', getEmbarqueContenedores )
 router.delete('/embarque/contenedor/:contenedor_id', deleteContenedorEmbarque)
 router.put('/embarque/contenedor/:contenedor_id', updateContenedorEmbarque)
+
+router.get('/ordenes/embarques/:order_id', getProductosInOrderByEmbarque)
+
+
+router.get('/destinos/:embarque_id', getDestinoEmbarque) 
+router.post('/destinos/create', postDestinos)
+router.delete('/destinos/:destino_id', deleteDestinoEmbarque)
 
 export default router;

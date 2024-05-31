@@ -271,6 +271,34 @@ async function init() {
   });
 }
 
+const loadProductosEmbarque = async id => {
+  const embarques = await fetchData(`/ordenes/embarques/${id}`, 'GET');
+  if (!embarques.status) {
+    toastr.error('Ocurrió un error al cargar los embarques');
+    return;
+  }
+
+  console.log(embarques);
+
+  const embarquesData = embarques.data;
+
+  console.log(embarquesData);
+
+  const data_for_table = embarquesData.map(embarque => {
+    return {
+      contenedor: embarque.contenedor_id.nombre_contenedor,
+      producto: embarque.order_products.piezas.numero_parte,
+      fecha_embarque: isoDateToFormatted(embarque.created_at),
+      codigo: embarque.contenedor_id.codigo,
+      codigo_contenedor: `${embarque.contenedor_id.nombre_contenedor} ${embarque.contenedor_id.codigo}`
+    };
+  });
+
+  embarques_table.clear().draw();
+
+  embarques_table.rows.add(data_for_table).draw();
+};
+
 $('.filter-checkbox').on('change', function () {
   const checked = $(this).prop('checked');
   const value = $(this).val();
@@ -559,8 +587,11 @@ $('#ordenes_compra_container').on('click', '.order_container_child', async funct
   $('#ordenes_compra_container .order_container_child').removeClass('bg-label-primary');
   $(this).addClass('bg-label-primary');
 
+  console.log(data.id);
+
   loadProductos(data.id);
   loadFiles(data.id);
+  loadProductosEmbarque(data.id);
   $('#container-no-data').addClass('d-none');
   $('#container-data').removeClass('d-none');
 });

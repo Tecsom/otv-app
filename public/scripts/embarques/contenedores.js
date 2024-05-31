@@ -46,7 +46,26 @@ productos_table = $('#productos_table_tab').DataTable({
   rowGroup: {
     dataSrc: 'contenedor',
     startRender: function (rows, group) {
-      return group + ' (' + rows.count() + ')';
+      return group;
     }
+  }
+});
+
+destinos_table = $('#destinos_table').DataTable({
+  columns: [
+    { title: 'cliente', data: 'cliente' },
+    { title: 'ubicacion', data: 'domicilio' },
+    { title: 'correo', data: 'correo' },
+    { title: 'telefono', data: 'telefono' },
+    { title: 'acciones', defaultContent: defaultOptionsProducts, width: '30px' }
+  ],
+  orderable: false,
+  lengthChange: false,
+  info: false,
+  searching: false,
+  ordering: false,
+  destroy: true,
+  language: {
+    url: 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/es-ES.json'
   }
 });

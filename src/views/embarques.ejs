@@ -291,14 +291,14 @@
                     <div class="row">
                       <div class="col-md-12">
                         <div class="d-flex justify-content-end">
-                          <button id="addEmbarquesButton" type="button" class="btn btn-label-primary">
-                            <span class="tf-icons ti-xs ti ti-plus me-1"> </span>Añadir
+                          <button id="addDestinationButton" type="button" class="btn btn-label-primary">
+                            <span class="tf-icons ti-xs ti ti-plus me-1"></span>Añadir
                           </button>
                         </div>
                       </div>
                       <div class="col-md-12">
                         <div class="border-top mt-2">
-                          <table id="ordenes_table" class="table w-100"></table>
+                          <table id="destinos_table" class="table w-100"></table>
                         </div>
                       </div>
                     </div>
@@ -409,7 +409,7 @@
               <input type="text" id="descripcion_embarque" name="nombre" class="form-control" />
             </div>
             <div class="col-md-6">
-              <label for="fecha_embarque" class="form-label">Fecha de embarque</label>
+              <label for="fecha_embarque" class="form-label required">Fecha de embarque</label>
               <input
                 type="hidden"
                 class="form-control flatpickr-input required date_pick"
@@ -417,7 +417,7 @@
                 id="fecha_embarque" />
             </div>
             <div class="col-md-6">
-              <label for="fecha_entrega" class="form-label">Fecha de entrega</label>
+              <label for="fecha_entrega" class="form-label required">Fecha de entrega</label>
               <input
                 type="hidden"
                 class="form-control flatpickr-input required date_pick"
@@ -578,7 +578,7 @@
             <label for="contenedor_add_product" class="required">Selecciona un contenedor</label>
             <select name="contenedor_add_product" id="contenedor_add_product" class="form-select"></select>
           </div>
-          <label for="order_venta" class="required">Selecciona una orden de venta</label>
+          <label for="order_venta" class="required">Selecciona una orden de compra</label>
           <select name="client" id="add_product_select" class="form-select"></select>
           <table id="productos_table" class="table w-100"></table>
         </div>
@@ -605,7 +605,7 @@
       </div>
     </div>
   </div>
-    <!--MODAL VERIFICAR ELIMINADO-->
+    <!--MODAL EDITAR DATOS CONTENEDOR-->
     <div class="modal fade" id="update_container_modal" tabindex="-1" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
         <div class="modal-content">
@@ -626,6 +626,7 @@
       </div>
     </div>
     
+    <!--MODAL ELIMINAR PRODUCTO DE CONTENEDOR-->
     <div class="modal fade" id="delete_producto_modal" tabindex="-1" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
         <div class="modal-content">
@@ -642,7 +643,7 @@
         </div>
       </div>
     </div>
-
+    <!--MODAL ELIMINAR CONTENEDOR-->
     <div class="modal fade" id="delete_container_modal" tabindex="-1" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
         <div class="modal-content">
@@ -659,6 +660,55 @@
         </div>
       </div>
     </div>
+    <!--MODAL AÑADIR DESTINO-->
+    <div class="modal fade" id="add_destination_modal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-md" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel1">Agregar cliente</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body row">
+            <div class="mb-2 col-md-12">
+              <label for="cliente" class="required">Cliente</label>
+              <select name="cliente" id="clientes_select" class="form-select"></select>
+            </div>
+            <div class="mb-2 col-md-12">
+              <label for="direccion_destino" class="required">Direccion</label>
+              <input type="text" class="form-control" id="direccion_destino" />
+            </div>
+            <!--<div class="mb-2 col-md-6">
+              <label for="correo_cliente" class="required">Correo</label>
+              <input type="text" class="form-control" id="correo_cliente" />
+            </div>
+            <div class="mb-2 col-md-6">
+              <label for="telefono_cliente" class="required">Telefono</label>
+              <input type="text" class="form-control" id="telefono_cliente" />
+            </div>-->
+          </div>
+          <div class="modal-footer">
+            <button id="confirm_add_cliente" type="button" class="btn btn-success">Agregar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!--MODAL ELIMINAR DESTINO-->
+    <div class="modal fade" id="delete_destination_modal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel1">Eliminar destino</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body row">
+            <p>¿Estás seguro de eliminar el destino?</p>
+          </div>
+          <div class="modal-footer">
+            <button id="confirm_delete_destino" type="button" class="btn btn-danger">Eliminar</button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
   
 
@@ -667,6 +717,7 @@
           var loadFiles;
           var contenedores_table;
           var productos_table;
+          var destinos_table;
           var verificaciones_table;
           var loadEmbarques = () => {};
         </script>
@@ -674,4 +725,3 @@
         <script src="/public/scripts/embarques/embarques.js" type="module"></script>
         <script src="/public/scripts/embarques/embarques-products-table.js" type="module"></script>
         <script src="/public/scripts/embarques/contenedores.js" type="module"></script>
-      </div>

@@ -431,7 +431,9 @@
                       id="verificaciones_table"
                       class="table m-0 w-100 border-top mt-3 table-sm table-hover table-striped"></table>
                   </div>
-                  <div class="tab-pane fade" id="navs_embarques" role="tabpanel">Embarques asignados</div>
+                  <div class="tab-pane fade" id="navs_embarques" role="tabpanel">
+                    <table id="embarque_table_nav" class="table table-sm"></table>
+                  </div>
                   <div class="tab-pane fade" id="navs_inventario" role="tabpanel">
                     <div class="row">
                       <div class="col-md-12 d-flex justify-content-end">
@@ -756,6 +758,7 @@
       var loadFiles;
       var codigos_table;
       var verificaciones_table;
+      var embarques_table;
       var loadProductos = () => {};
       var loadOrdenes;
       var resetPaging;
@@ -767,5 +770,6 @@
     <script src="/public/scripts/ordenes/orden_compra.js" type="module"></script>
     <script src="/public/scripts/ordenes/verifications.js" type="module"></script>
     <script src="/public/scripts/ordenes/inventario.js" type="module"></script>
+    <script src="/public/scripts/ordenes/embarque-table.js" type="module"></script>
   </div>
 </div>

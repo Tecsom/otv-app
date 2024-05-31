@@ -7,6 +7,7 @@ var estadosMarcados = {
   finalizada: false
 };
 
+let selectedRowDestination;
 let selectedRowContainer;
 let selectedRowProduct;
 let contenedorId;
@@ -57,6 +58,11 @@ async function init() {
   $('#contenedor_add_product').select2({
     dropdownParent: $('#addProductsModal'),
     placeholder: 'Selecciona un contenedor'
+  });
+
+  $('#clientes_select').select2({
+    placeholder: 'Selecciona un cliente',
+    dropdownParent: $('#add_destination_modal')
   });
 
   const $fecha_entrega = $('#fecha_entrega');
@@ -150,7 +156,7 @@ async function loadEmbarques() {
   const embarques = await getEmbarques();
 
   for (let embarque of embarques.data) {
-    const uniqueFolio = addLeadingZeros(embarque.folio_unico, 5);
+    const uniqueFolio = addLeadingZeros(embarque.folio_unico, 6);
 
     const $newdiv1 = $(`
     <div class="embarque_container_child card-body border  cursor-pointer" embarque_id="${embarque.id}" id="order_${uniqueFolio}" folio="${embarque.id}">
@@ -232,6 +238,7 @@ $('#create_embarque').on('submit', async function (e) {
   $descripcion.val('');
 
   $('#create_embarque_modal').modal('hide');
+  $('#create_embarque_button').prop('disabled', false);
 
   await loadEmbarques();
 });
@@ -245,7 +252,7 @@ $('#embarques_container').on('click', '.embarque_container_child', async functio
 
   $embarque.addClass('active-container').siblings().removeClass('active-container');
 
-  $('#data-folio').text(addLeadingZeros(data.folio_unico, 5));
+  $('#data-folio').text(addLeadingZeros(data.folio_unico, 6));
   $('#data-fecha-creacion').text('Fecha de creación: ' + isoDateToFormatted(data.created_at));
 
   $('#data-status-data').text(data.estado);
@@ -276,29 +283,43 @@ $('#embarques_container').on('click', '.embarque_container_child', async functio
 
     $('#create_container_modal').prop('disabled', true);
     $('#add_product_container_modal').prop('disabled', true);
+    $('#addDestinationButton').addClass('d-none');
 
     $('#generate_embarque').addClass('d-none');
+    $('#productos_table_tab').DataTable().column(4).visible(false);
+    $('#contenedores_table').DataTable().column(3).visible(false);
+    $('#destinos_table').DataTable().column(4).visible(false);
   } else if (data.estado == 'finalizada') {
     $('#delete_oc').addClass('d-none');
     $('#edit_oc').addClass('d-none');
     $('#cancelar_oc').addClass('d-none');
     $('#restaurar_oc').addClass('d-none');
     $('#finalizar_oc').addClass('d-none');
+    $('#addDestinationButton').addClass('d-none');
 
     $('#create_container_modal').prop('disabled', true);
     $('#add_product_container_modal').prop('disabled', true);
     $('#generate_embarque').addClass('d-none');
+    $('.eliminar-producto').addClass('d-none');
+    $('#productos_table_tab').DataTable().column(4).visible(false);
+    $('#contenedores_table').DataTable().column(3).visible(false);
+    $('#destinos_table').DataTable().column(4).visible(false);
   } else if (data.estado == 'cancelada') {
     $('#delete_oc').addClass('d-none');
     $('#edit_oc').addClass('d-none');
     $('#cancelar_oc').addClass('d-none');
     $('#finalizar_oc').addClass('d-none');
     $('#restaurar_oc').removeClass('d-none');
+    $('#addDestinationButton').addClass('d-none');
 
     $('#add_product_container_modal').prop('disabled', true);
     $('#create_container_modal').prop('disabled', true);
 
     $('#generate_embarque').addClass('d-none');
+    $('.eliminar-producto').addClass('d-none');
+    $('#productos_table_tab').DataTable().column(4).visible(false);
+    $('#contenedores_table').DataTable().column(3).visible(false);
+    $('#destinos_table').DataTable().column(4).visible(false);
   } else {
     $('#add_product_container_modal').prop('disabled', false);
     $('#create_container_modal').prop('disabled', false);
@@ -309,7 +330,11 @@ $('#embarques_container').on('click', '.embarque_container_child', async functio
     $('#finalizar_oc').addClass('d-none');
     $('#restaurar_oc').addClass('d-none');
 
+    $('#addDestinationButton').removeClass('d-none');
     $('#generate_embarque').removeClass('d-none');
+    $('#productos_table_tab').DataTable().column(4).visible(true);
+    $('#contenedores_table').DataTable().column(3).visible(true);
+    $('#destinos_table').DataTable().column(4).visible(true);
   }
 
   //const profile_pic_res = await fetchData(`/clientes/${cliente_id}/profile-photo`);
@@ -321,12 +346,8 @@ $('#embarques_container').on('click', '.embarque_container_child', async functio
 
   await loadContenedores(data);
   await loadProducts(data);
+  await loadDestinos();
 });
-
-$('#addEmbarquesButton').on('click', function () {
-  $('#addEmbarqueModal').modal('show');
-});
-
 //PARTE PARA ELIMINAR LOS EMBARQUES
 $('#delete_oc').on('click', function () {
   $('#delete_embarque_modal').modal('show');
@@ -677,7 +698,8 @@ const loadProducts = async data => {
       contenedor: producto.contenedor_id.nombre_contenedor,
       producto_id: producto.producto_id,
       cantidad: producto.cantidad,
-      contenedor_id: producto.contenedor_id.id
+      contenedor_id: producto.contenedor_id.id,
+      order_id: producto.order_id
     };
   });
 
@@ -699,10 +721,11 @@ function addLeadingZeros(number, length) {
 }
 
 $('#contenedores_table').on('click', '.editar-contenedor', async function (e) {
-  const data = $('#contenedores_table').DataTable().row($(this).closest('tr')).data();
-  selectedRowContainer = data;
+  selectedRowContainer = $(this).closest('tr');
 
-  console.log(data);
+  const data = $('#contenedores_table').DataTable().row(selectedRowContainer).data();
+
+  console.log({ selectedRowContainer });
   $('#nombre_contenedor_update').val(data.nombre_contenedor);
 
   $('#update_container_modal').modal('show');
@@ -718,12 +741,14 @@ $('#confirm_update_container').on('click', async function (e) {
   }
   const dataContainer = $('#container-reporte').data();
 
-  const data = $('#contenedores_table').DataTable().row($('.eliminar-producto').closest('tr')).data();
+  const data = $('#contenedores_table').DataTable().row(selectedRowContainer).data();
 
-  const result = await fetchData('/embarque/productos', 'DELETE', {
-    embarque_id: data.embarque_id,
-    producto_id: data.producto_id,
-    order_id: data.order_id
+  console.log(data);
+
+  console.log(dataContainer);
+
+  const result = await fetchData('/embarque/contenedor/' + data.id, 'PUT', {
+    nombre_contenedor: nombre_contenedor
   });
 
   if (result.status == false) {
@@ -731,7 +756,7 @@ $('#confirm_update_container').on('click', async function (e) {
     return;
   }
 
-  toastr.success('Producto eliminado con éxito');
+  toastr.success('Contenedor editado con éxito');
 
   $('#update_container_modal').modal('hide');
 
@@ -809,11 +834,12 @@ $('#create_container_modal').on('click', function () {
 
 $('#generate_embarque').on('click', async function () {
   const allRows = $('#productos_table_tab').DataTable().rows().data().toArray();
-
-  if (allRows.length == 0) {
+  const rowsDestinos = $('#destinos_table').DataTable().rows().data().toArray();
+  if (allRows.length == 0 || rowsDestinos.length == 0) {
     toastr.error('Agrega al menos un producto al embarque');
     return;
   }
+
   $('#generate_embarque_modal').modal('show');
 });
 
@@ -831,6 +857,9 @@ $('#confirm_generate_embarque').on('click', async function () {
   $('#edit_oc').addClass('d-none');
   $('#cancelar_oc').removeClass('d-none');
   $('#finalizar_oc').removeClass('d-none');
+  $('#productos_table_tab').DataTable().column(4).visible(false);
+  $('#contenedores_table').DataTable().column(3).visible(false);
+  $('#destinos_table').DataTable().column(4).visible(false);
 
   toastr.success('Embarque generado con éxito');
 
@@ -865,15 +894,21 @@ $('#confirm_add_container').on('click', async function () {
 });
 
 async function cambiarStatus(estado) {
+  const table_prods_data = $('#productos_table_tab').DataTable().rows().data().toArray();
   const data = $('#container-reporte').data();
 
-  const result = await fetchData('/embarque/estado/' + data.id, 'PUT', {
-    estado: estado
-  });
+  console.log(table_prods_data);
 
-  if (result.status == false) {
-    toastr.error('Error al cambiar el estado del embarque');
-    return;
+  for (let product of table_prods_data) {
+    const result = await fetchData('/embarque/estado/' + data.id, 'PUT', {
+      estado: estado,
+      order_id: product.order_id
+    });
+
+    if (result.status == false) {
+      toastr.error('Error al cambiar el estado del embarque');
+      return;
+    }
   }
 
   loadEmbarques();
@@ -884,6 +919,7 @@ $('#restaurar_oc').on('click', async function () {});
 $('#confirm_cancel_order').on('click', async function () {
   cambiarStatus('cancelada');
 
+  $('#productos_table_tab').DataTable().column(4).visible(false);
   $('#cancel_order_modal').modal('hide');
 
   $('#data-status-data').text('cancelada');
@@ -896,6 +932,9 @@ $('#confirm_cancel_order').on('click', async function () {
   $('#cancelar_oc').addClass('d-none');
   $('#finalizar_oc').addClass('d-none');
   $('#restaurar_oc').removeClass('d-none');
+  $('#productos_table_tab').DataTable().column(4).visible(false);
+  $('#contenedores_table').DataTable().column(3).visible(false);
+  $('#destinos_table').DataTable().column(4).visible(false);
 
   toastr.success('Embarque cancelado con éxito');
 });
@@ -938,6 +977,9 @@ $('#check_embarque').on('change', function () {
 $('#confirm_restore_order').on('click', async function () {
   await cambiarStatus('pendiente');
 
+  $('#productos_table_tab').DataTable().column(4).visible(true);
+  $('#contenedores_table').DataTable().column(3).visible(true);
+  $('#destinos_table').DataTable().column(4).visible(true);
   $('#restaurar_oc').addClass('d-none');
   $('#cancelar_oc').removeClass('d-none');
   $('#finalizar_oc').removeClass('d-none');
@@ -960,6 +1002,7 @@ $('#finalizar_oc').on('click', function () {
 $('#confirm_finish_embarque').on('click', async function () {
   await cambiarStatus('finalizada');
 
+  $('#productos_table_tab');
   $('#finalizar_oc').addClass('d-none');
   $('#cancelar_oc').addClass('d-none');
   $('#generate_embarque').addClass('d-none');
@@ -972,6 +1015,10 @@ $('#confirm_finish_embarque').on('click', async function () {
 
   $('#create_container_modal').prop('disabled', true);
   $('#add_product_container_modal').prop('disabled', true);
+  $('#productos_table_tab').DataTable().column(4).visible(false);
+  $('#addDestinationButton').addClass('d-none');
+  $('#contenedores_table').DataTable().column(3).visible(false);
+  $('#destinos_table').DataTable().column(4).visible(false);
 
   toastr.success('Embarque finalizado con éxito');
 
@@ -979,3 +1026,102 @@ $('#confirm_finish_embarque').on('click', async function () {
 
   await loadEmbarques();
 });
+
+$('#addDestinationButton').on('click', async function () {
+  $('#add_destination_modal').modal('show');
+
+  $('#direccion_destino').val('');
+  $('#correo_cliente').val('');
+  $('#telefono_cliente').val('');
+
+  const result = await fetchData('/clientes', 'GET', {});
+
+  if (result.status == false) {
+    toastr.error('Error al obtener los clientes');
+    return;
+  }
+
+  $('#clientes_select').empty();
+
+  $('#clientes_select').append('<option value=""></option>');
+
+  result.data.forEach(function (item) {
+    const option = $(`<option value="${item.id}">${item.nombre}</option>`);
+    option.data('cliente', item);
+    $('#clientes_select').append(option);
+  });
+});
+
+$('#clientes_select').on('change', function () {
+  const selectedOption = $(this).find('option:selected');
+  let data = selectedOption.data('cliente');
+
+  $('#direccion_destino').val(`${data.ciudad} ${data.estado}, ${data.pais}  ${data.domicilio}`);
+  $('#correo_cliente').val(data.correo);
+  $('#telefono_cliente').val(data.telefono);
+});
+
+$('#confirm_add_cliente').on('click', async function () {
+  const selectedOption = $('#clientes_select').find('option:selected');
+  let data = selectedOption.data('cliente');
+  console.log(data);
+
+  const result = await fetchData('/destinos/create', 'POST', {
+    ubicacion: `${data.ciudad} ${data.estado}, ${data.pais}  ${data.domicilio}`,
+    correo: data.correo,
+    telefono: data.telefono,
+    cliente_id: data.id,
+    embarque_id: $('#container-reporte').data().id
+  });
+
+  await loadDestinos();
+
+  toastr.success('Destino agregado con éxito');
+  $('#add_destination_modal').modal('hide');
+});
+
+$('#destinos_table').on('click', '.eliminar-producto', function () {
+  selectedRowDestination = $(this).closest('tr');
+
+  console.log(selectedRowDestination);
+  $('#delete_destination_modal').modal('show');
+});
+
+$('#confirm_delete_destino').on('click', async function () {
+  const data = $('#destinos_table').DataTable().row(selectedRowDestination).data();
+  console.log(data);
+  const result = await fetchData('/destinos/' + data.id, 'DELETE', {});
+
+  if (result.status == false) {
+    toastr.error('Error al eliminar el destino');
+    return;
+  }
+
+  toastr.success('Destino eliminado con éxito');
+
+  $('#delete_destination_modal').modal('hide');
+
+  await loadDestinos();
+});
+
+//$("#destinos_table").on('click', '', '')
+
+async function loadDestinos() {
+  const data = $('#container-reporte').data();
+
+  const response = await fetchData(`/destinos/${data.id}`, 'GET', {});
+
+  console.log(response);
+
+  const destinos_data_table = response.data.map(destino => {
+    return {
+      id: destino.id,
+      cliente: destino.cliente_id.nombre,
+      domicilio: destino.ubicacion,
+      telefono: destino.telefono,
+      correo: destino.correo
+    };
+  });
+
+  destinos_table.clear().rows.add(destinos_data_table).draw();
+}
