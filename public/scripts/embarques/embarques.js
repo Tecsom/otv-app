@@ -664,7 +664,10 @@ $('#confirm_add_products').on('click', async function () {
 
 // METODO PARA CARGAR LA TABLA DE CONTENEDORES EN EL APARTADO DE CONTENEDORES
 const loadContenedores = async data => {
-  const response = await fetchData(`/embarques/contenedores/` + data.id, 'GET', {});
+  console.log(data);
+  const response = await fetchData(`/embarques/contenedores/${data.id}`, 'GET', {});
+
+  console.log(response.data);
 
   const contenedors_data_table = response.data.map(contenedor => {
     return {
@@ -781,11 +784,11 @@ $('#confirm_delete_container').on('click', async function (e) {
     return;
   }
 
+  await loadContenedores(dataContainer);
+
   toastr.success('Contenedor eliminado con éxito');
 
   $('#delete_container_modal').modal('hide');
-
-  await loadContenedores(dataContainer);
 });
 
 $('#productos_table_tab').on('click', '.eliminar-producto', async function (e) {
@@ -835,8 +838,12 @@ $('#create_container_modal').on('click', function () {
 $('#generate_embarque').on('click', async function () {
   const allRows = $('#productos_table_tab').DataTable().rows().data().toArray();
   const rowsDestinos = $('#destinos_table').DataTable().rows().data().toArray();
-  if (allRows.length == 0 || rowsDestinos.length == 0) {
+  if (allRows.length == 0) {
     toastr.error('Agrega al menos un producto al embarque');
+    return;
+  }
+  if (rowsDestinos.length == 0) {
+    toastr.error('Agrega al menos un destino al embarque');
     return;
   }
 
@@ -878,19 +885,20 @@ $('#confirm_add_container').on('click', async function () {
     return;
   }
 
-  try {
-    await fetchData(`/embarque/${data_contenedor.id}/contenedor`, 'POST', {
-      nombre_contenedor: nombre_contenedor
-    });
+  const response = await fetchData(`/embarque/${data_contenedor.id}/contenedor`, 'POST', {
+    nombre_contenedor: nombre_contenedor
+  });
 
-    $nombre_contenedor.val('');
-    toastr.success('Contenedor generado con éxito');
-    $('#addContainerEmbarque').modal('hide');
-  } catch (error) {
-    console.log(error);
-    toastr.warning('Error al generar el contenedor');
+  if (response.status == false) {
+    toastr.error('Error al generar el contenedor');
+    return;
   }
+
   await loadContenedores(data_contenedor);
+  $nombre_contenedor.val('');
+  toastr.success('Contenedor generado con éxito');
+
+  $('#addContainerEmbarque').modal('hide');
 });
 
 async function cambiarStatus(estado) {
@@ -1034,6 +1042,8 @@ $('#addDestinationButton').on('click', async function () {
   $('#correo_cliente').val('');
   $('#telefono_cliente').val('');
 
+  const dataTable = $('#destinos_table').DataTable().data().toArray();
+
   const result = await fetchData('/clientes', 'GET', {});
 
   if (result.status == false) {
@@ -1041,11 +1051,15 @@ $('#addDestinationButton').on('click', async function () {
     return;
   }
 
+  console.log(result);
+
+  const filteredData = result.data.filter(destino => !dataTable.some(dataItem => dataItem.id == destino.id));
+
   $('#clientes_select').empty();
 
   $('#clientes_select').append('<option value=""></option>');
 
-  result.data.forEach(function (item) {
+  filteredData.forEach(function (item) {
     const option = $(`<option value="${item.id}">${item.nombre}</option>`);
     option.data('cliente', item);
     $('#clientes_select').append(option);

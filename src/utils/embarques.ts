@@ -244,9 +244,8 @@ export const deleteProductFromEmbarque = async (contenedor_productos_id: number,
 }
 
 
-export const createNewEmbarqueContenedor = async (embarque_data: EmbarqueContenedor, embarque_id: number) => {
-    const codigo = generateUid()
-    console.log(embarque_data)
+export const createNewEmbarqueContenedor = async (embarque_data: EmbarqueContenedor, embarque_id: number): Promise<ApiResult> => {
+    const codigo = generateUid();
     const { error: uploadError, data: data } = await supabase().from('embarque_contenedores').insert({
         nombre_contenedor: embarque_data.nombre_contenedor,
         codigo: codigo,
@@ -255,10 +254,21 @@ export const createNewEmbarqueContenedor = async (embarque_data: EmbarqueContene
 
     if (uploadError) {
         console.error("Error creating new embarque: ", uploadError.message);
-        throw uploadError;
+        const error: ApiResult = {
+            data: uploadError,
+            message: uploadError.message,
+            status: false
+        }
+        return error;
     }
 
-    return data;
+    const result: ApiResult = {
+        data,
+        message: 'Contenedor creado con éxito',
+        status: true
+    }
+
+    return result;
 }
 
 export const getContenedoresByEmbarque = async (embarque_id: number): Promise<EmbarqueContenedores[]> => {
@@ -268,7 +278,7 @@ export const getContenedoresByEmbarque = async (embarque_id: number): Promise<Em
         console.log(error)
         throw error
     }
-
+    
     return data
 }
 

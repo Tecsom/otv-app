@@ -40,7 +40,7 @@ export const getOrdenesCompra = async () => {
 export const getStaticOrden = async (id: number) => {
   let { data: orden, error } = await supabase()
     .from('ordenes_static')
-    .select('*, ordenes_static_verified(order_id, id, created_at, codigo)')
+    .select('*, ordenes_static_verified(order_id, id, created_at, codigo, quantity)')
     .eq('id', id)
     .single();
 

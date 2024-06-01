@@ -53,7 +53,7 @@ export const createEmbarque = async (req: Request, res: Response) => {
         const embarque_data = req.body;
         const nuevoEmbarque = await newEmbarque(embarque_data);
 
-        res.status(201).json({ nuevoEmbarque })
+        res.status(200).json({ nuevoEmbarque })
 
     } catch (error) {
         res.status(500).json(error)
@@ -74,7 +74,7 @@ export const newEmbarqueProduct = async (req: Request, res: Response) => {
     try {
         const newEmbarqueProducto = await createEmbarqueProduct(req.body);
 
-        res.status(201).json({newEmbarqueProducto})
+        res.status(200).json({newEmbarqueProducto})
     } catch (error) {
         console.error(error)
         throw error
@@ -111,7 +111,7 @@ export const createEmbarqueContenedores = async (req:Request, res: Response) => 
         const embarque_id = req.params.embarque_id
         const newEmbarque = createNewEmbarqueContenedor(contenedor_data, parseInt(embarque_id));
 
-        res.status(201).json(newEmbarque)
+        res.status(200).json(newEmbarque)
     } catch (error) {
         res.status(500).json(error)
     }

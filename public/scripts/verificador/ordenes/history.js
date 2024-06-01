@@ -107,6 +107,8 @@ $('#ordenes_compra_container').on('click', '.order_container_child', async funct
 
   ordenData = res.data;
 
+  console.log(ordenData);
+
   $('#ordenes_compra_container').data('selected', static_order_id);
 
   $('.order_container_child').removeClass('selected');

@@ -1,7 +1,8 @@
 import { fetchData, loadingButton, isoDateToFormatted, isoDateToFormattedWithTime } from '/public/scripts/helpers.js';
 
+let cantidadProductos;
+let cantidadIngresada;
 let verificadas_array = [];
-let quantityOfProduct;
 let productoByCode;
 let codigoVerificador;
 $('#exit-checker').on('click', async function () {
@@ -70,12 +71,20 @@ table_piezas = $('#table_piezas_oc').DataTable({
         //verificaciones unicas por pieza
         const verificaciones = ordenData.ordenes_static_verified.filter(ver => row.codigos.includes(ver.codigo));
         const verificaciones_unicas = verificaciones.reduce((acc, ver) => {
+          console.log(ver);
           if (!acc.includes(ver.codigo)) {
-            acc.push(ver.codigo);
+            acc.push({ codigo: ver.codigo, cantidad: ver.quantity });
           }
           return acc;
         }, []);
-        return `${verificaciones_unicas.length} de ${row.codigos.length}`;
+        if (row.type === 'bulk') {
+          console.log(verificaciones_unicas);
+          console.log(row);
+          return `${verificaciones_unicas.map(item => {
+            return item.cantidad;
+          })} de ${row.quantity}`;
+        }
+        return `${verificaciones_unicas.length || 0} de ${row.codigos.length}`;
       }
     },
     { defaultContent: optiones_html, title: 'Opciones' }
@@ -354,7 +363,7 @@ $('#boton_mandar_cantidad').on('click', function () {
     return false;
   }
   $('#ask_quantity').modal('hide');
-  console.log(productoByCode);
+  cantidadIngresada = Number($('#check_quantity').val());
   verify(codigoVerificador);
 });
 
@@ -363,7 +372,7 @@ const verify = codigo => {
     .add([
       {
         codigo,
-        cantidad: productoByCode.quantity
+        cantidad: cantidadIngresada
       }
     ])
     .draw();
@@ -382,17 +391,15 @@ const verify = codigo => {
     console.log(productoByCode);
 
     let progress;
-
-    // Si el producto es de tipo 'bulk', actualiza el progreso en base a la cantidad
-    if (productoByCode.tipo === 'bulk') {
-      const cantidadVerificada = productoByCode.quantity;
-      const cantidadTotal = productoByCode.cantidad;
-
-      progress = (cantidadVerificada / cantidadTotal) * 100;
+    console.log(productoByCode);
+    if (productoByCode.type === 'bulk') {
+      const cantidadTotal = productoByCode.quantity;
+      progress = (cantidadIngresada / cantidadTotal) * 100;
+      progress /= 2;
+      console.log(progress);
     } else {
       const piezas_verificadas = verificadas_array.length;
       const piezas_totales = ordenData.codigos.length;
-
       progress = (piezas_verificadas / piezas_totales) * 100;
     }
 
@@ -472,8 +479,23 @@ $('#save_verification_btn').on('click', async function () {
 
 const updateGeneralProgress = () => {
   const order_data = ordenData;
-  const piezas = order_data.codigos.length;
-  const piezas_verificadas = order_data.codigos.filter(pieza => pieza.verified === true).length;
+  let piezas = 0;
+  let piezas_verificadas = 0;
+
+  for (const producto of order_data.codigos) {
+    if (producto.tipo === 'bulk') {
+      const ordenVerificada = order_data.ordenes_verified.find(orden => orden.codigo === producto.code);
+      if (ordenVerificada) {
+        piezas_verificadas += ordenVerificada.quantity; // Usa la cantidad verificada de la orden
+      }
+      piezas += producto.quantity; // Usa la cantidad total del producto
+    } else {
+      if (producto.verified) {
+        piezas_verificadas++;
+      }
+      piezas++;
+    }
+  }
 
   const progress = (piezas_verificadas / piezas) * 100;
 
