@@ -18,6 +18,8 @@ import {
     postDestinos,
     getDestinoEmbarque,
     deleteDestinoEmbarque,
+    createCodigoContenedor,
+    getAllEmbarqueContenedorCodigo,
     
 } from '../controllers/embarques'
 
@@ -51,5 +53,8 @@ router.get('/ordenes/embarques/:order_id', getProductosInOrderByEmbarque)
 router.get('/destinos/:embarque_id', getDestinoEmbarque) 
 router.post('/destinos/create', postDestinos)
 router.delete('/destinos/:destino_id', deleteDestinoEmbarque)
+
+router.post('/embarque/codigo/contenedor', createCodigoContenedor)
+router.get('/embarque/codigo/contenedor/:embarque_id', getAllEmbarqueContenedorCodigo)
 
 export default router;

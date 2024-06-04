@@ -2,9 +2,9 @@ import { fetchData, loadingButton, isoDateToFormatted, isoDateToFormattedWithTim
 
 let cantidadProductos;
 let cantidadIngresada;
-let verificadas_array = [];
 let productoByCode;
 let codigoVerificador;
+let verificadas_array = [];
 $('#exit-checker').on('click', async function () {
   $('#modal_quit_checker').modal('show');
 });
@@ -78,11 +78,15 @@ table_piezas = $('#table_piezas_oc').DataTable({
           return acc;
         }, []);
         if (row.type === 'bulk') {
-          console.log(verificaciones_unicas);
-          console.log(row);
-          return `${verificaciones_unicas.map(item => {
-            return item.cantidad;
-          })} de ${row.quantity}`;
+          if (verificaciones_unicas.length == 0) {
+            return `${verificaciones_unicas.length || 0} de ${row.quantity}`;
+          } else {
+            return `${(verificaciones_unicas.length = 0
+              ? 0
+              : verificaciones_unicas.map(item => {
+                  return item.cantidad;
+                }))} de ${row.quantity}`;
+          }
         }
         return `${verificaciones_unicas.length || 0} de ${row.codigos.length}`;
       }
@@ -349,7 +353,7 @@ const verificarPieza = async codigo => {
 };
 
 $('#boton_mandar_cantidad').on('click', function () {
-  console.log(productoByCode.quantity);
+  console.log(productoByCode);
   if ($('#check_quantity').val() > productoByCode.quantity) {
     toastr.error('La cantidad ingresada es mayor a la cantidad de la pieza');
     return false;
@@ -367,12 +371,14 @@ $('#boton_mandar_cantidad').on('click', function () {
   verify(codigoVerificador);
 });
 
+let totalProgress = 0;
+
 const verify = codigo => {
   table_verificadas.rows
     .add([
       {
         codigo,
-        cantidad: cantidadIngresada
+        cantidad: productoByCode.type === 'bulk' ? cantidadIngresada : 1
       }
     ])
     .draw();
@@ -380,10 +386,21 @@ const verify = codigo => {
   //remove from table_not_verificadas
   table_not_verificadas.rows().every(function () {
     const row = this.data();
-    if (row?.code === codigo) {
-      this.remove().draw();
+    if (productoByCode.quantity === cantidadIngresada && productoByCode.type === 'bulk') {
+      if (row?.code === codigo) {
+        this.remove().draw();
+      }
+    } else {
+      if (row?.code === codigo) {
+        this.remove().draw();
+      }
     }
   });
+
+  cantidadProductos =
+    table_verificadas.rows().data().toArray().length + table_not_verificadas.rows().data().toArray().length;
+
+  console.log(cantidadProductos);
 
   if (!verificadas_array.includes(codigo)) {
     verificadas_array.push(codigo);
@@ -395,16 +412,17 @@ const verify = codigo => {
     if (productoByCode.type === 'bulk') {
       const cantidadTotal = productoByCode.quantity;
       progress = (cantidadIngresada / cantidadTotal) * 100;
-      progress /= 2;
-      console.log(progress);
+      progress /= cantidadProductos;
     } else {
-      const piezas_verificadas = verificadas_array.length;
-      const piezas_totales = ordenData.codigos.length;
-      progress = (piezas_verificadas / piezas_totales) * 100;
+      progress = 100 / cantidadProductos;
     }
 
-    $('#progress_verificacion').css('width', `${progress}%`);
-    $('#progress_verificacion').text(`Progreso de verificación (${progress.toFixed(2)}%)`);
+    totalProgress += progress;
+
+    console.log(totalProgress);
+
+    $('#progress_verificacion').css('width', `${totalProgress}%`);
+    $('#progress_verificacion').text(`Progreso de verificación (${totalProgress.toFixed(2)}%)`);
   }
 };
 
@@ -419,15 +437,15 @@ $('#save_verification_modal_btn').on('click', async function () {
     return;
   }
 
-  console.log(piezas_verificadas);
-
   const created_at = new Date().toISOString();
+
   const data = {
     order_id,
     piezas_verificadas,
     created_at
   };
 
+  console.log(data);
   button.start();
   const response = await fetchData('/ordenes/verificar', 'POST', data);
   button.stop();
@@ -486,9 +504,9 @@ const updateGeneralProgress = () => {
     if (producto.tipo === 'bulk') {
       const ordenVerificada = order_data.ordenes_verified.find(orden => orden.codigo === producto.code);
       if (ordenVerificada) {
-        piezas_verificadas += ordenVerificada.quantity; // Usa la cantidad verificada de la orden
+        piezas_verificadas += ordenVerificada.quantity;
       }
-      piezas += producto.quantity; // Usa la cantidad total del producto
+      piezas += producto.quantity;
     } else {
       if (producto.verified) {
         piezas_verificadas++;

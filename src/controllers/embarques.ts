@@ -1,6 +1,6 @@
 import { Request, Response } from 'express'
-import { Embarque } from '@/types/embarques'
-import { newEmbarque, createEmbarqueProduct, delEmbarque, getEmbarqueProducts, getOrdenesStatic, listEmbarques, getEmbarqueById, updtEmbarque, deleteProductFromEmbarque, createNewEmbarqueContenedor, getContenedoresByEmbarque, changeStateToEmbarque, deleteContainerInEmbarque, updateContainerInEmbarque, getProductsInOrdenCompra, postNewDestino, getDestinosPorEmbarque, deleteDestino } from '@/utils/embarques';
+import { CreateCodigo, Embarque } from '@/types/embarques'
+import { newEmbarque, createEmbarqueProduct, delEmbarque, getEmbarqueProducts, getOrdenesStatic, listEmbarques, getEmbarqueById, updtEmbarque, deleteProductFromEmbarque, createNewEmbarqueContenedor, getContenedoresByEmbarque, changeStateToEmbarque, deleteContainerInEmbarque, updateContainerInEmbarque, getProductsInOrdenCompra, postNewDestino, getDestinosPorEmbarque, deleteDestino, generateContenedorCode, getCodigosContenedores } from '@/utils/embarques';
 
 export const getEmbarques = async (req: Request, res: Response) => {
 
@@ -221,6 +221,26 @@ export const deleteDestinoEmbarque = async (req:Request, res: Response) =>{
 
         const destino_id = req.params.destino_id;
         const data = await deleteDestino(parseInt(destino_id));
+        res.status(200).json(data);
+    } catch (error) {
+        res.status(500).json(error);
+    }
+}
+
+export const createCodigoContenedor = async(req: Request, res: Response) => {
+    try {
+        const payload = req.body;
+        const data = await generateContenedorCode(payload);
+        res.status(200).json(data);
+    } catch (error) {
+        res.status(500).json(error);
+    }
+}
+
+export const getAllEmbarqueContenedorCodigo = async (req: Request, res: Response) => {
+    try {
+        const embarque_id = req.params.embarque_id;
+        const data = await getCodigosContenedores(parseInt(embarque_id));
         res.status(200).json(data);
     } catch (error) {
         res.status(500).json(error);

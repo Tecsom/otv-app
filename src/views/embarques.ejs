@@ -265,7 +265,7 @@
                       aria-controls="productos_tab"
                       aria-selected="false"
                       tabindex="-1">
-                      <i class="ti ti-brand-databricks"></i>
+                      <i class="ti ti-packages ti-xs me-1"></i>
                       Productos
                     </button>
                   </li>
@@ -379,8 +379,15 @@
                     </div>
                   </div>
                   <div class="tab-pane fade" id="navs_codigos" role="tabpanel">
-                    <table
-                      id="codigos_table" class="table m-0 w-100 border-top mt-3 table-sm table-hover table-striped"></table>
+                    <div>
+                      <p class="mb-0">
+                        <strong>Tipo de código: </strong><span id="code_type">-</span>
+                      </p>
+                      <p class="mb-0">
+                        <strong>Total de códigos: </strong><span id="code_total">-</span>
+                      </p>
+                    </div>
+                    <table id="codigos_table" class="table m-0 w-100 border-top mt-3 table-sm table-hover table-striped"></table>
                   </div>
                   <div class="tab-pane fade" id="navs_verificaciones" role="tabpanel">
                     <div class="py-1">

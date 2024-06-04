@@ -70,3 +70,8 @@ export type Destino = {
     embarque_id: number;
     created_at: string;
 }
+
+export type CreateCodigo = {
+    contenedor_id: number;
+    code: string;
+}

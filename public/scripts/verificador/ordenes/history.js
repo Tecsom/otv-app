@@ -92,6 +92,7 @@ const checkIfHasBottomReached = el => {
 };
 
 $('#ordenes_compra_container').on('click', '.order_container_child', async function () {
+  $(this).addClass('active').siblings().removeClass('active');
   $('#cancel_verification_modal').modal('hide');
   $('#save_verification_btn').addClass('d-none');
   $('#cancel_verificacion_btn').addClass('d-none');

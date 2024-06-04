@@ -1,4 +1,4 @@
-import { Destino, DestinoPost, Embarque, EmbarqueContenedor, EmbarqueContenedores, EmbarqueProduct, EmbarqueProductBody, OrdenesInEmbarque } from "@/types/embarques";
+import { CreateCodigo, Destino, DestinoPost, Embarque, EmbarqueContenedor, EmbarqueContenedores, EmbarqueProduct, EmbarqueProductBody, OrdenesInEmbarque } from "@/types/embarques";
 import supabase from "@/config/supabase";
 import { ApiResult } from "@/types/types";
 import { generateUid } from "./helpers";
@@ -446,4 +446,33 @@ export const deleteDestino = async (destino_id: number): Promise<ApiResult> => {
     }
 
     return result;
+}
+
+export const generateContenedorCode = async (payload: CreateCodigo) => {
+    const { data: data, error: error } = await supabase().from('embarque_contenedor_codes').insert({
+        contenedor_id: payload.contenedor_id,
+        code: payload.code
+    })
+
+    console.log(payload)
+
+    if(error) {
+        console.error("Error generating code: ", error);
+        throw error;
+    }
+    return data
+}
+
+export const getCodigosContenedores = async (embarque_id: number) => {
+    const { data, error } = await supabase()
+        .from('embarque_contenedor_codes')
+        .select('*, contenedor_id(*, embarque_id(*, id))')
+        .eq('contenedor_id.embarque_id.id', embarque_id);
+
+    if(error) {
+        console.error("Error fetching container codes: ", error);
+        throw error;
+    }
+
+    return data;
 }

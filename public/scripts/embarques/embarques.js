@@ -836,6 +836,12 @@ $('#create_container_modal').on('click', function () {
 });
 
 $('#generate_embarque').on('click', async function () {
+  $('#generate_embarque_modal').modal('show');
+});
+
+$('#confirm_generate_embarque').on('click', async function () {
+  const contenedor_data = $('#contenedores_table').DataTable().rows().data().toArray();
+
   const allRows = $('#productos_table_tab').DataTable().rows().data().toArray();
   const rowsDestinos = $('#destinos_table').DataTable().rows().data().toArray();
   if (allRows.length == 0) {
@@ -846,14 +852,6 @@ $('#generate_embarque').on('click', async function () {
     toastr.error('Agrega al menos un destino al embarque');
     return;
   }
-
-  $('#generate_embarque_modal').modal('show');
-});
-
-$('#confirm_generate_embarque').on('click', async function () {
-  cambiarStatus('embarque');
-
-  $('#generate_embarque_modal').modal('hide');
 
   $('#data-status-data').text('embarque');
   $('#data-status-data').removeClass().addClass(`text-capitalize badge bg-info`);
@@ -868,9 +866,24 @@ $('#confirm_generate_embarque').on('click', async function () {
   $('#contenedores_table').DataTable().column(3).visible(false);
   $('#destinos_table').DataTable().column(4).visible(false);
 
-  toastr.success('Embarque generado con éxito');
+  console.log(contenedor_data);
+
+  contenedor_data.forEach(async contenedor => {
+    const result = await fetchData('/embarque/codigo/contenedor', 'POST', {
+      code: contenedor.codigo_contenedor,
+      contenedor_id: contenedor.embarque_id
+    });
+
+    console.log(result);
+  });
 
   await loadEmbarques();
+  await loadCodigos();
+  await cambiarStatus('embarque');
+
+  toastr.success('Embarque generado con éxito');
+
+  $('#generate_embarque_modal').modal('hide');
 });
 
 $('#confirm_add_container').on('click', async function () {
@@ -904,8 +917,6 @@ $('#confirm_add_container').on('click', async function () {
 async function cambiarStatus(estado) {
   const table_prods_data = $('#productos_table_tab').DataTable().rows().data().toArray();
   const data = $('#container-reporte').data();
-
-  console.log(table_prods_data);
 
   for (let product of table_prods_data) {
     const result = await fetchData('/embarque/estado/' + data.id, 'PUT', {
@@ -1138,4 +1149,42 @@ async function loadDestinos() {
   });
 
   destinos_table.clear().rows.add(destinos_data_table).draw();
+}
+
+async function generateRandomCode(contenedor_id) {
+  let code = '';
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  const length = 10;
+
+  for (let i = 0; i < length; i++) {
+    const randomIndex = Math.floor(Math.random() * characters.length);
+    code += characters.charAt(randomIndex);
+  }
+
+  const result = await fetchData('/embarque/codigo/contenedor', 'POST', {
+    codigo: code,
+    contenedor_id: contenedor_id
+  });
+
+  if (result.status == false) {
+    toastr.error('Error al generar el código');
+    return;
+  }
+}
+
+async function loadCodigos() {
+  const id = $('#container-reporte').data().id;
+  const response = await fetchData('/embarque/codigo/contenedor/' + id, 'GET', {});
+
+  console.log(response);
+
+  //const codigos_data = response.data.map(codigo => {
+  //  return {
+  //    id: codigo.id,
+  //    codigo: codigo.codigo,
+  //    descripcion: codigo.descripcion
+  //  };
+  //});
+
+  //codigos_table.clear().rows.add(codigos_data).draw();
 }
