@@ -14,7 +14,7 @@ contenedores_table = $('#contenedores_table').DataTable({
   columns: [
     { title: 'nombre', data: 'nombre_contenedor' },
     { title: 'codigo', data: 'codigo_contenedor' },
-    { title: 'cantidad', data: 'cantidad' },
+    { title: '# productos', data: 'cantidad' },
     { title: 'acciones', defaultContent: defaultOptions, width: '30px' }
   ],
   pageLength: 5,

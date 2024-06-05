@@ -30,22 +30,22 @@ $('#select_verificaciones').on('change', async function () {
 });
 
 loadVerificaciones = async () => {
-  //  select_verifications.empty();
-  //  const codes_verfications = ordenData.ordenes_static_verified;
-  //
-  //  //group verifications by created_at
-  //  const verifications = codes_verfications.reduce((acc, verification) => {
-  //    const key = verification.created_at;
-  //    if (!acc[key]) {
-  //      acc[key] = [];
-  //    }
-  //    acc[key].push(verification);
-  //    return acc;
-  //  }, {});
-  //
-  //  for (const key in verifications) {
-  //    select_verifications.append(new Option(isoDateToFormattedWithTime(key), key, false, false));
-  //  }
-  //
-  //  select_verifications.val(null).trigger('change');
+  select_verifications.empty();
+  const codes_verfications = embarqueData.embarque_contenedor_verified;
+
+  //group verifications by created_at
+  const verifications = codes_verfications.reduce((acc, verification) => {
+    const key = verification.created_at;
+    if (!acc[key]) {
+      acc[key] = [];
+    }
+    acc[key].push(verification);
+    return acc;
+  }, {});
+
+  for (const key in verifications) {
+    select_verifications.append(new Option(isoDateToFormattedWithTime(key), key, false, false));
+  }
+
+  select_verifications.val(null).trigger('change');
 };

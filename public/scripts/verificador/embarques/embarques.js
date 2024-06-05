@@ -1,5 +1,6 @@
-import { fetchData, isoDateToFormatted } from '../../helpers.js';
+import { fetchData, isoDateToFormatted, loadingButton, isoDateToFormattedWithTime } from '../../helpers.js';
 
+let data_table_productos;
 let verificadas_array = [];
 
 $(() => {
@@ -37,6 +38,7 @@ async function init() {
           const verificaciones_unicas = verificaciones.reduce((acc, ver) => {
             if (!acc.includes(ver.codigo)) {
               acc.push(ver.codigo);
+              row.verified = true;
             }
             return acc;
           }, []);
@@ -71,7 +73,78 @@ async function init() {
     info: false,
     autoWidth: false
   });
+
+  $('#container_products_table').DataTable({
+    data: [],
+    language: {
+      url: 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/es-ES.json'
+    },
+    columns: [
+      { title: 'folio', data: 'unique_folio' },
+      { title: 'folio cliente', data: 'folio_id' },
+      { title: 'tipo de pieza', data: 'tipo_pieza' },
+      { title: 'nombre pieza', data: 'numero_parte' },
+      { title: 'costo produccion', data: 'costo_produccion' },
+      { title: 'costo venta', data: 'costo_venta' }
+    ],
+    searching: false,
+    paging: false,
+    info: false,
+    autoWidth: true
+  });
+
+  $('#container_clients_table').DataTable({
+    data: [],
+    language: {
+      url: 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/es-ES.json'
+    },
+    columns: [
+      { title: 'cliente', data: 'cliente' },
+      { title: 'ciudad', data: 'ciudad' },
+      { title: 'pais', data: 'pais' },
+      { title: 'estado', data: 'estado' },
+      { title: 'celular', data: 'celular' }
+    ],
+    searching: false,
+    paging: false,
+    info: false,
+    autoWidth: true
+  });
 }
+
+$('#embarques_container').on('click', '.embarque_container_child', async function () {
+  $(this).addClass('active').siblings().removeClass('active');
+  $('#cancel_verification_modal').modal('hide');
+  $('#save_verification_btn').addClass('d-none');
+  $('#cancel_verificacion_btn').addClass('d-none');
+  $('#startVerificacion').removeClass('d-none');
+  $('#select_verificaciones ~ span').removeClass('d-none');
+  verification_mode = false;
+
+  const $this = $(this);
+
+  const data = $this.data('data');
+  const res = await fetchData('/embarques/all/' + data.id, 'GET', {});
+
+  console.log(res);
+
+  if (!res.status) return toastr.error('Ocurrió un error al obtener la orden');
+
+  embarqueData = res.data;
+
+  console.log(embarqueData);
+
+  $('#embarques_container').data('selected', data.id);
+
+  $('.embarque_container_child').removeClass('selected');
+  $this.addClass('selected');
+
+  $('#oc_modal').modal('show');
+  loadEmbarqueData();
+  loadVerificaciones();
+  updateGeneralProgress();
+  $('#container-buttons-verification').removeClass('d-none');
+});
 
 loadEmbarqueData = async () => {
   table_piezas.clear().draw();
@@ -79,11 +152,34 @@ loadEmbarqueData = async () => {
   $('#fecha_entrega_em').text(isoDateToFormatted(embarqueData.embarques.fecha_entrega) ?? 'Sin fecha de entrega');
   $('#embarque').text(embarqueData?.embarques.descripcion);
 
-  const data_table_piezas = embarqueData.embarque_contenedores.map(contenedor => {
+  console.log(embarqueData);
+
+  let data_table_piezas = embarqueData.embarque_contenedores.map(contenedor => {
     return {
       codigo: contenedor.codigo,
       id: contenedor.id,
-      nombre: contenedor.nombre_contenedor
+      nombre: contenedor.nombre_contenedor,
+      cantidad: contenedor.cantidad
+    };
+  });
+
+  data_table_productos = embarqueData.embarque_products.map(productos => {
+    return {
+      contenedor_id: productos.contenedor_id,
+      tipo_pieza: productos.producto_id.pieza_id.type,
+      numero_parte: productos.producto_id.pieza_id.numero_parte,
+      costo_produccion: '$' + productos.producto_id.pieza_id.costo_produccion,
+      costo_venta: '$' + productos.producto_id.pieza_id.costo_venta,
+
+      cliente_id: productos.order_id.client_id.id,
+      cliente: productos.order_id.client_id.nombre,
+      ciudad: productos.order_id.client_id.ciudad,
+      pais: productos.order_id.client_id.pais,
+      estado: productos.order_id.client_id.estado,
+      celular: productos.order_id.client_id.celular,
+
+      folio_id: productos.order_id.folio_id,
+      unique_folio: productos.order_id.unique_folio
     };
   });
 
@@ -101,6 +197,8 @@ loadEmbarqueData = async () => {
   // }
 
   table_piezas.rows.add(data_table_piezas).draw();
+  $('#container_products_table').DataTable().clear().rows.add(data_table_productos).draw();
+  $('#container_clients_table').DataTable().clear().rows.add(data_table_productos).draw();
   updateGeneralProgress();
 };
 
@@ -140,11 +238,31 @@ $('#start_verificacion_btn').on('click', function () {
 
 $('#table_piezas_oc').on('click', '.btn-opciones-pieza', async function () {
   const data = table_piezas.row($(this).parents('tr')).data();
-  const producto = data;
 
-  $('#pieza_numero_parte').text(producto.nombre);
-  $('#pieza_numero_parte_title').text(producto.nombre);
-  $('#pieza_descripcion').text(producto.codigo);
+  console.log(data);
+
+  const data_products = data_table_productos;
+
+  const dataFiltered = data_products.filter(cont => cont.contenedor_id === data.id);
+
+  const clientData = data_products
+    .filter(cont => cont.contenedor_id === data.id)
+    .reduce((acc, product) => {
+      console.log({ product });
+      if (!acc[product.cliente_id]) {
+        acc[product.cliente_id] = product;
+      }
+      return acc;
+    }, {});
+
+  const clientDataArray = Object.values(clientData);
+
+  $('#container_products_table').DataTable().clear().rows.add(dataFiltered).draw();
+  $('#container_clients_table').DataTable().clear().rows.add(clientDataArray).draw();
+
+  $('#pieza_numero_parte').text(data.nombre);
+  $('#pieza_numero_parte_title').text(data.nombre);
+  $('#pieza_descripcion').text(data.codigo);
   $('#modal_view_pieza').modal('show');
 });
 
@@ -218,19 +336,14 @@ const verificarPieza = async codigo => {
   const isVerified = verificadas_array.includes(codigo);
 
   if (!exists) {
-    toastr.error('Pieza no encontrada');
+    toastr.error('Codigo de embarque no encontrado o invalido');
     return;
   }
 
   if (isVerified) {
-    toastr.warning('Pieza ya verificada');
+    toastr.warning('Codigo ya verificado');
     return;
   }
-  verify(codigo);
-};
-
-const verify = codigo => {
-  console.log(codigo);
   table_verificadas.rows
     .add([
       {
@@ -248,7 +361,7 @@ const verify = codigo => {
   if (!verificadas_array.includes(codigo)) {
     verificadas_array.push(codigo);
     const piezas_verificadas = verificadas_array.length;
-    const piezas_totales = embrarqueData.embarque_contenedor_codes.length;
+    const piezas_totales = embarqueData.embarque_contenedor_codes.length;
     const progress = (piezas_verificadas / piezas_totales) * 100;
     $('#progress_verificacion').css('width', `${progress}%`);
     $('#progress_verificacion').text(`Progreso de verificación (${progress.toFixed(2)}%)`);
@@ -277,11 +390,77 @@ const resetVerifications = () => {
 
 const updateGeneralProgress = () => {
   const embarque_data = embarqueData;
+  console.log(embarque_data.embarque_contenedor_codes);
   const piezas = embarque_data.embarque_contenedor_codes.length;
   console.log({ piezas });
-  const piezas_verificadas = embarque_data.embarque_contenedor_codes.filter(pieza => pieza.verified === true).length;
+  const piezas_verificadas = embarque_data.embarque_contenedor_verified.filter(pieza => pieza).length;
   console.log({ piezas_verificadas });
   const progress = (piezas_verificadas / piezas) * 100;
   $('#progress_general').css('width', `${progress}%`);
   $('#progress_general').text(`Progreso general (${progress.toFixed(2)}%)`);
 };
+
+$('#save_verification_modal_btn').on('click', async function () {
+  const piezas_verificadas = table_verificadas.rows().data().toArray();
+
+  const embarque_id = embarqueData.embarques.id;
+  const button = new loadingButton($(this), 'Guardando...');
+
+  if (piezas_verificadas.length === 0) {
+    toastr.error('No se ha verificado ninguna pieza');
+    return;
+  }
+
+  const created_at = new Date().toISOString();
+
+  const data = {
+    embarque_id: embarque_id,
+    piezas_verificadas
+  };
+
+  console.log(data);
+  button.start();
+  const response = await fetchData('/embarques/verificar', 'POST', data);
+  button.stop();
+
+  if (response.status === true) {
+    toastr.success('Piezas verificadas correctamente');
+    verification_mode = false;
+    resetVerifications();
+    $('#save_verification_btn').addClass('d-none');
+    $('#cancel_verificacion_btn').addClass('d-none');
+    $('#startVerificacion').removeClass('d-none');
+    $('#start_verificacion').modal('hide');
+
+    $('#container_general').removeClass('d-none');
+    $('#container_verificacion').addClass('d-none');
+
+    $('#container_piezas_table').removeClass('d-none');
+    $('#container_verificaciones_table').addClass('d-none');
+
+    verificadas_array = [];
+    embarqueData.embarque_contenedor_codes = embarqueData.embarque_contenedor_codes.map(pieza => {
+      if (piezas_verificadas.find(pieza_verificada => pieza_verificada.codigo === pieza.code)) {
+        console.log(pieza);
+        pieza.verified = true;
+      }
+      return pieza;
+    });
+
+    for (const cod of piezas_verificadas) {
+      embarqueData.embarque_contenedor_verified.push({
+        created_at,
+        codigo: cod.codigo
+      });
+    }
+
+    $('#select_verificaciones ~ span').removeClass('d-none');
+    $('#select_verificaciones').empty();
+    $('#select_verificaciones').append(new Option(isoDateToFormattedWithTime(created_at), created_at, false, false));
+    updateGeneralProgress();
+    $('#save_verification_modal').modal('hide');
+    $(".embarque_container_child[embarque_id='" + embarqueData.embarques.id + "']").click();
+  } else {
+    toastr.error('Error al verificar piezas');
+  }
+});

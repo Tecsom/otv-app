@@ -21,6 +21,8 @@ import {
     createCodigoContenedor,
     getAllEmbarqueContenedorCodigo,
     getAllDataFromEmbarque,
+    verifyContainersEmbarque,
+    getContainersVerified,
     
 } from '../controllers/embarques'
 
@@ -59,5 +61,8 @@ router.delete('/destinos/:destino_id', deleteDestinoEmbarque)
 
 router.post('/embarques/codigo/contenedor', createCodigoContenedor)
 router.get('/embarque/codigo/contenedor/:embarque_id', getAllEmbarqueContenedorCodigo)
+
+router.post('/embarques/verificar', verifyContainersEmbarque)
+router.get('/embarques/verificaciones/:embarque_id', getContainersVerified)
 
 export default router;

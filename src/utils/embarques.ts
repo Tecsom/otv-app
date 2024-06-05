@@ -250,7 +250,7 @@ export const createNewEmbarqueContenedor = async (embarque_data: EmbarqueContene
         nombre_contenedor: embarque_data.nombre_contenedor,
         codigo: codigo,
         embarque_id: embarque_id
-    }).select('*');
+    });
 
     if (uploadError) {
         console.error("Error creating new embarque: ", uploadError.message);
@@ -271,14 +271,16 @@ export const createNewEmbarqueContenedor = async (embarque_data: EmbarqueContene
     return result;
 }
 
-export const getContenedoresByEmbarque = async (embarque_id: number): Promise<EmbarqueContenedores[]> => {
+export const getContenedoresByEmbarque = async (embarque_id: number) => {
     const { data: data, error: error} = await supabase().from('embarque_contenedores').select('*, embarque_id(*)').eq('embarque_id', embarque_id).order('id', {ascending: true});
-
+    
+    
     if(error) {
         console.log(error)
         throw error
     }
     
+    console.log(data)
     return data
 }
 
@@ -487,7 +489,7 @@ export const getEmbarqueData = async (embarque_id: number) => {
         throw errorEmbarque;
     }
 
-    const { data: embarque_products, error: error_products } = await supabase().from('embarque_products').select('*').eq('embarque_id', embarque_id).eq('estado', true);
+    const { data: embarque_products, error: error_products } = await supabase().from('embarque_products').select('*, order_id(*, client_id(*)), producto_id(*, pieza_id(*))').eq('embarque_id', embarque_id).eq('estado', true);
     
     if (error_products) {
         console.error("Error fetching shipment products: ", error_products);
@@ -525,4 +527,35 @@ export const getEmbarqueData = async (embarque_id: number) => {
     }
 
     return returnData;
+}
+
+export const verifyContainers = async (embarque_id: number, containers: any[]) : Promise<ApiResult> => {
+    console.log(containers)
+    for (const container of containers) {
+            const { data, error } = await supabase().from('embarque_contenedores_verified').insert({
+            embarque_id: embarque_id,
+            codigo: container.codigo,
+        });
+        if (error) {
+            console.log(error);
+            throw new Error('Error verificando contenedores');
+        }
+    }
+    const result: ApiResult = {
+        data: null,
+        message: 'Contenedores verificados',
+        status: true
+    };
+    return result;
+};
+
+export const getVerificationsContainer = async (embarque_id: number) => {
+    const { data, error } = await supabase().from('embarque_contenedores_verified').select('*, embarques(*, embarque_contenedores(*))').eq('embarque_id', embarque_id)
+
+    if (error) {
+        console.log(error)
+        throw error;
+    }
+
+    return data
 }

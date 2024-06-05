@@ -1,4 +1,4 @@
-import { fetchData, isoDateToFormatted } from '../helpers.js';
+import { fetchData, isoDateToFormatted, isoDateToFormattedWithTime } from '../helpers.js';
 
 var estadosMarcados = {
   proceso: true,
@@ -58,6 +58,31 @@ async function init() {
     select: false,
     destroy: true,
     paging: false
+  });
+
+  $('#verificaciones_table').DataTable({
+    data: [],
+    columns: [
+      { title: 'nombre contenedor', data: 'nombre_contenedor' },
+      {
+        title: 'fecha verificacion',
+        data: 'created_at',
+        render: function (row) {
+          return isoDateToFormattedWithTime(row);
+        }
+      },
+      { title: 'codigo', data: 'codigo_contenedor' }
+    ],
+    pageLength: 5,
+    ordering: false,
+    select: false,
+    destroy: true,
+    searching: false,
+    lengthChange: false,
+    info: false,
+    language: {
+      url: 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/es-ES.json'
+    }
   });
 
   $('#add_product_select').select2({
@@ -288,18 +313,33 @@ $('#embarques_container').on('click', '.embarque_container_child', async functio
   $('#input_container_type').val(data.tipo_contenedor);
   $('#container-reporte').data(data);
 
-  if (data.estado == 'embarque') {
+  if (data.estado == 'proceso') {
     $('#delete_oc').addClass('d-none');
     $('#edit_oc').addClass('d-none');
     $('#restaurar_oc').addClass('d-none');
     $('#cancelar_oc').removeClass('d-none');
     $('#finalizar_oc').removeClass('d-none');
 
-    $('#create_container_modal').prop('disabled', true);
-    $('#add_product_container_modal').prop('disabled', true);
+    $('#generate_embarque').addClass('d-none');
     $('#addDestinationButton').addClass('d-none');
+    $('#create_container_modal').addClass('d-none');
+    $('#add_product_container_modal').addClass('d-none');
+
+    $('#productos_table_tab').DataTable().column(4).visible(false);
+    $('#contenedores_table').DataTable().column(3).visible(false);
+    $('#destinos_table').DataTable().column(4).visible(false);
+  } else if (data.estado == 'embarque') {
+    $('#delete_oc').addClass('d-none');
+    $('#edit_oc').addClass('d-none');
+    $('#restaurar_oc').addClass('d-none');
+    $('#cancelar_oc').removeClass('d-none');
+    $('#finalizar_oc').removeClass('d-none');
 
     $('#generate_embarque').addClass('d-none');
+    $('#addDestinationButton').addClass('d-none');
+    $('#create_container_modal').addClass('d-none');
+    $('#add_product_container_modal').addClass('d-none');
+
     $('#productos_table_tab').DataTable().column(4).visible(false);
     $('#contenedores_table').DataTable().column(3).visible(false);
     $('#destinos_table').DataTable().column(4).visible(false);
@@ -311,9 +351,11 @@ $('#embarques_container').on('click', '.embarque_container_child', async functio
     $('#finalizar_oc').addClass('d-none');
     $('#addDestinationButton').addClass('d-none');
 
-    $('#create_container_modal').prop('disabled', true);
-    $('#add_product_container_modal').prop('disabled', true);
     $('#generate_embarque').addClass('d-none');
+    $('#addDestinationButton').addClass('d-none');
+    $('#create_container_modal').addClass('d-none');
+    $('#add_product_container_modal').addClass('d-none');
+
     $('.eliminar-producto').addClass('d-none');
     $('#productos_table_tab').DataTable().column(4).visible(false);
     $('#contenedores_table').DataTable().column(3).visible(false);
@@ -326,10 +368,11 @@ $('#embarques_container').on('click', '.embarque_container_child', async functio
     $('#restaurar_oc').removeClass('d-none');
     $('#addDestinationButton').addClass('d-none');
 
-    $('#add_product_container_modal').prop('disabled', true);
-    $('#create_container_modal').prop('disabled', true);
-
     $('#generate_embarque').addClass('d-none');
+    $('#addDestinationButton').addClass('d-none');
+    $('#create_container_modal').addClass('d-none');
+    $('#add_product_container_modal').addClass('d-none');
+
     $('.eliminar-producto').addClass('d-none');
     $('#productos_table_tab').DataTable().column(4).visible(false);
     $('#contenedores_table').DataTable().column(3).visible(false);
@@ -344,8 +387,10 @@ $('#embarques_container').on('click', '.embarque_container_child', async functio
     $('#finalizar_oc').addClass('d-none');
     $('#restaurar_oc').addClass('d-none');
 
-    $('#addDestinationButton').removeClass('d-none');
     $('#generate_embarque').removeClass('d-none');
+    $('#addDestinationButton').removeClass('d-none');
+    $('#create_container_modal').removeClass('d-none');
+    $('#add_product_container_modal').removeClass('d-none');
     $('#productos_table_tab').DataTable().column(4).visible(true);
     $('#contenedores_table').DataTable().column(3).visible(true);
     $('#destinos_table').DataTable().column(4).visible(true);
@@ -361,6 +406,7 @@ $('#embarques_container').on('click', '.embarque_container_child', async functio
   await loadContenedores(data);
   await loadProducts(data);
   await loadDestinos();
+  await loadVerificaciones(data.id);
 });
 //PARTE PARA ELIMINAR LOS EMBARQUES
 $('#delete_oc').on('click', function () {
@@ -679,7 +725,7 @@ $('#confirm_add_products').on('click', async function () {
 // METODO PARA CARGAR LA TABLA DE CONTENEDORES EN EL APARTADO DE CONTENEDORES
 const loadContenedores = async data => {
   console.log(data);
-  const response = await fetchData(`/embarques/contenedores/${data.id}`, 'GET', {});
+  const response = await fetchData('/embarques/contenedores/' + data.id, 'GET', {});
 
   const contenedors_data_table = response.data.map(contenedor => {
     return {
@@ -687,10 +733,6 @@ const loadContenedores = async data => {
       nombre_contenedor: contenedor.nombre_contenedor,
       codigo_contenedor: contenedor.codigo,
       cantidad: contenedor.cantidad,
-      //producto: contenedor.order_products.piezas.numero_parte,
-      //descripcion_producto: contenedor.order_products.piezas.descripcion,
-      //producto_id: contenedor.producto_id,
-      //order_id: contenedor.order_id,
       embarque_id: contenedor.embarque_id
     };
   });
@@ -893,6 +935,11 @@ $('#confirm_generate_embarque').on('click', async function () {
   $('#contenedores_table').DataTable().column(3).visible(false);
   $('#destinos_table').DataTable().column(4).visible(false);
 
+  $('#generate_embarque').addClass('d-none');
+  $('#addDestinationButton').addClass('d-none');
+  $('#create_container_modal').addClass('d-none');
+  $('#add_product_container_modal').addClass('d-none');
+
   await loadEmbarques();
   await loadCodigos(embarque_data);
   await cambiarStatus('proceso');
@@ -903,7 +950,7 @@ $('#confirm_generate_embarque').on('click', async function () {
 });
 
 $('#confirm_add_container').on('click', async function () {
-  const data_contenedor = $('#container-reporte').data();
+  const data = $('#container-reporte').data();
 
   const $nombre_contenedor = $('#nombre_contenedor');
 
@@ -914,7 +961,7 @@ $('#confirm_add_container').on('click', async function () {
     return;
   }
 
-  const response = await fetchData(`/embarque/${data_contenedor.id}/contenedor`, 'POST', {
+  const response = await fetchData(`/embarque/${data.id}/contenedor`, 'POST', {
     nombre_contenedor: nombre_contenedor
   });
 
@@ -923,10 +970,10 @@ $('#confirm_add_container').on('click', async function () {
     return;
   }
 
-  await loadContenedores(data_contenedor);
   $nombre_contenedor.val('');
   toastr.success('Contenedor generado con éxito');
 
+  loadContenedores(data);
   $('#addContainerEmbarque').modal('hide');
 });
 
@@ -948,8 +995,6 @@ async function cambiarStatus(estado) {
 
   loadEmbarques();
 }
-
-$('#restaurar_oc').on('click', async function () {});
 
 $('#confirm_cancel_order').on('click', async function () {
   cambiarStatus('cancelada');
@@ -1014,7 +1059,7 @@ $('#check_embarque').on('change', function () {
 });
 
 $('#confirm_restore_order').on('click', async function () {
-  await cambiarStatus('pendiente');
+  await cambiarStatus('proceso');
 
   $('#productos_table_tab').DataTable().column(4).visible(true);
   $('#contenedores_table').DataTable().column(3).visible(true);
@@ -1022,13 +1067,14 @@ $('#confirm_restore_order').on('click', async function () {
   $('#restaurar_oc').addClass('d-none');
   $('#cancelar_oc').removeClass('d-none');
   $('#finalizar_oc').removeClass('d-none');
-  $('#generate_embarque').removeClass('d-none');
 
-  $('#data-status-data').text('pendiente');
+  $('#generate_embarque').addClass('d-none');
+  $('#addDestinationButton').addClass('d-none');
+  $('#create_container_modal').addClass('d-none');
+  $('#add_product_container_modal').addClass('d-none');
+
+  $('#data-status-data').text('proceso');
   $('#data-status-data').removeClass().addClass(`text-capitalize badge bg-secondary`);
-
-  $('#create_container_modal').prop('disabled', false);
-  $('#add_product_container_modal').prop('disabled', false);
 
   toastr.success('Embarque restaurado con éxito');
   $('#restore_orden_modal').modal('hide');
@@ -1201,3 +1247,32 @@ $('#remove-filters-btn').on('click', function () {
   $('#check_completada').prop('checked', false);
   actualizarVisualizacion();
 });
+
+const loadVerificaciones = async id => {
+  const result = await fetchData('/embarques/verificaciones/' + id, 'GET', {});
+
+  console.log({ result: result.data });
+
+  const contenedores_table_data = $('#contenedores_table').DataTable().data().toArray();
+
+  const codigos = result.data.map(item => item.codigo);
+
+  console.log({ codigos });
+
+  const contenedoresFiltrados = contenedores_table_data.filter(row => codigos.includes(row.codigo_contenedor));
+
+  const contenedoresConFecha = contenedoresFiltrados.map(contenedor => {
+    const contenedorResult = result.data.find(item => item.codigo === contenedor.codigo_contenedor);
+    return {
+      ...contenedor,
+      created_at: contenedorResult ? contenedorResult.created_at : null
+    };
+  });
+
+  const progress = (contenedoresConFecha.length / contenedores_table_data.length) * 100;
+
+  $('#progress-bar-verificaciones').css('width', progress + '%');
+  $('#progress-bar-verificaciones').text(progress.toFixed(2) + '%');
+
+  $('#verificaciones_table').DataTable().clear().rows.add(contenedoresConFecha).draw();
+};

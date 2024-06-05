@@ -7,10 +7,30 @@ const badgeType = {
   finalizada: 'success'
 };
 
+var estadosMarcados = {
+  proceso: true,
+  cancelada: false,
+  pendiente: true,
+  embarque: true,
+  finalizada: false
+};
+
+var estadoOrden = {
+  proceso: 1,
+  pendiente: 2,
+  embarque: 3,
+  cancelada: 4,
+  finalizada: 5
+};
+
 async function loadEmbarques() {
   const $container = $('#embarques_container');
 
   const embarques = await fetchData('/embarques', 'GET', {});
+
+  embarques.data.sort((a, b) => estadoOrden[a.estado] - estadoOrden[b.estado]);
+
+  console.log(embarques.data);
 
   for (let embarque of embarques.data) {
     const uniqueFolio = addLeadingZeros(embarque.folio_unico, 6);
@@ -91,39 +111,6 @@ $(document).ready(async function () {
 //  return dif <= el.clientHeight + offset;
 //};
 
-$('#embarques_container').on('click', '.embarque_container_child', async function () {
-  $(this).addClass('active').siblings().removeClass('active');
-  $('#cancel_verification_modal').modal('hide');
-  $('#save_verification_btn').addClass('d-none');
-  $('#cancel_verificacion_btn').addClass('d-none');
-  $('#startVerificacion').removeClass('d-none');
-  $('#select_verificaciones ~ span').removeClass('d-none');
-  verification_mode = false;
-
-  const $this = $(this);
-
-  const data = $this.data('data');
-  const res = await fetchData('/embarques/all/' + data.id, 'GET', {});
-
-  console.log(res);
-
-  if (!res.status) return toastr.error('Ocurrió un error al obtener la orden');
-
-  embarqueData = res.data;
-
-  console.log(embarqueData);
-
-  $('#embarques_container').data('selected', data.id);
-
-  $('.embarque_container_child').removeClass('selected');
-  $this.addClass('selected');
-
-  $('#oc_modal').modal('show');
-  loadEmbarqueData();
-  loadVerificaciones();
-  $('#container-buttons-verification').removeClass('d-none');
-});
-
 function addLeadingZeros(number, length) {
   // Convert number to string
   let numStr = String(number);
@@ -134,10 +121,6 @@ function addLeadingZeros(number, length) {
   // Return the number padded with leading zeros
   return '0'.repeat(zerosToAdd) + numStr;
 }
-
-$('#ordenes_compra_container').on('click', '.order_container_child', function () {
-  location.href = `/verificador/ordenes/${$(this).attr('order_id')}`;
-});
 
 $('#exit-checker').on('click', async function () {
   $('#modal_quit_checker').modal('show');
@@ -166,4 +149,35 @@ $('#quit-checker-form').on('submit', async function (e) {
   }
   button.stop();
   toastr.error('Contraseña incorrecta');
+});
+
+function actualizarVisualizacion() {
+  $('#embarques_container .embarque_container_child').each(function () {
+    var estado = $(this).data().data.estado.toLowerCase();
+    $(this).toggle(estadosMarcados[estado]);
+  });
+}
+
+$('#check_cancelada').on('change', function () {
+  estadosMarcados['cancelada'] = this.checked;
+  actualizarVisualizacion();
+});
+
+$('#check_pendiente').on('change', function () {
+  estadosMarcados['pendiente'] = this.checked;
+  actualizarVisualizacion();
+});
+$('#check_proceso').on('change', function () {
+  estadosMarcados['proceso'] = this.checked;
+  actualizarVisualizacion();
+});
+
+$('#check_completada').on('change', function () {
+  estadosMarcados['finalizada'] = this.checked;
+  actualizarVisualizacion();
+});
+
+$('#check_embarque').on('change', function () {
+  estadosMarcados['embarque'] = this.checked;
+  actualizarVisualizacion();
 });
