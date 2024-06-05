@@ -77,3 +77,25 @@ export const updateCliente = async (cliente: Cliente, id_string: string): Promis
 
   return data as Cliente;
 };
+
+export const getHistorialOrdenes = async (cliente_id: number) => {
+  const { data, error } = await supabase().from('ordenes').select('*, client_id(*)').eq('client_id', cliente_id).order('id', {ascending: false})
+
+  if( error ) {
+    console.log(error)
+    throw error
+  }
+
+  return data
+}
+
+export const gettHistorialEmbarques = async(cliente_id: number) => {
+  const { data, error } = await supabase().from('destinos').select('*, embarque_id(*)').eq('cliente_id', cliente_id).order('id', {ascending: false})
+
+  if (error) {
+    console.log(error)
+    throw error
+  }
+
+  return data 
+}

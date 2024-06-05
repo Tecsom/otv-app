@@ -9,8 +9,8 @@ var estadosMarcados = {
 };
 
 var estadoOrden = {
-  proceso: 1,
-  pendiente: 2,
+  proceso: 2,
+  pendiente: 1,
   embarque: 3,
   cancelada: 4,
   finalizada: 5

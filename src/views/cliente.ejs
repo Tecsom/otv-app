@@ -3,6 +3,27 @@
     box-shadow: none !important;
   }
 
+  #navs_historial_ordenes::-webkit-scrollbar {
+    width: 3px;
+    padding-right: 0;
+  }
+
+  #navs_historial_ordenes::-webkit-scrollbar-track {
+    background: #f1f1f1; 
+  }
+
+  #navs_historial_ordenes::-webkit-scrollbar-thumb {
+    background: #888; 
+  }
+
+  #navs_historial_ordenes::-webkit-scrollbar-thumb:hover {
+    background: #555; 
+  }
+
+  .timeline {
+    padding: 10px;
+  }
+
   #piezas_table td {
     cursor: pointer !important;
   }
@@ -234,12 +255,26 @@
                 class="nav-link"
                 role="tab"
                 data-bs-toggle="tab"
-                data-bs-target="#navs_historial"
-                aria-controls="navs_historial"
+                data-bs-target="#navs_historial_ordenes"
+                aria-controls="navs_historial_ordenes"
                 aria-selected="false"
                 tabindex="-1">
                 <i class="ti ti-clock ti-xs me-1"></i>
-                Historial
+                Ordenes de compra
+              </button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button
+                type="button"
+                class="nav-link"
+                role="tab"
+                data-bs-toggle="tab"
+                data-bs-target="#navs_historial_embarques"
+                aria-controls="navs_historial_embarques"
+                aria-selected="false"
+                tabindex="-1">
+                <i class="ti ti-clock ti-xs me-1"></i>
+                Embarques
               </button>
             </li>
             <li class="nav-item" role="presentation">
@@ -305,42 +340,13 @@
                 </div>
               </div>
             </div>
-            <div class="tab-pane fade" id="navs_historial" role="tabpanel">
-              Historial de órdenes de compra
-              <!--<ul class="timeline mb-0 pt-2">
-                <li class="timeline-item timeline-item-transparent">
-                  <span class="timeline-point timeline-point-primary"></span>
-                  <div class="timeline-event">
-                    <div class="timeline-header mb-1">
-                      <h6 class="mb-0">12 Invoices have been paid</h6>
-                      <small class="text-muted">12 min ago</small>
-                    </div>
-                    <p class="mb-2">Invoices have been paid to the company</p>
-                    <div class="d-flex">
-                      <a href="javascript:void(0)" class="me-3">
-                        <img src="/public/assets/img/icons/misc/pdf.png" alt="PDF image" width="15" class="me-2" />
-                        <span class="fw-medium text-heading">invoices.pdf</span>
-                      </a>
-                    </div>
-                  </div>
-                </li>
-                <li class="timeline-item timeline-item-transparent">
-                  <span class="timeline-point timeline-point-primary"></span>
-                  <div class="timeline-event">
-                    <div class="timeline-header mb-1">
-                      <h6 class="mb-0">12 Invoices have been paid</h6>
-                      <small class="text-muted">12 min ago</small>
-                    </div>
-                    <p class="mb-2">Invoices have been paid to the company</p>
-                    <div class="d-flex">
-                      <a href="javascript:void(0)" class="me-3">
-                        <img src="/public/assets/img/icons/misc/pdf.png" alt="PDF image" width="15" class="me-2" />
-                        <span class="fw-medium text-heading">invoices.pdf</span>
-                      </a>
-                    </div>
-                  </div>
-                </li>
-              </ul>-->
+            <div class="tab-pane fade" id="navs_historial_ordenes" role="tabpanel" style="max-height: 500px; overflow-y: auto;">
+              <ul class="timeline mb-0 pt-2" id="historial_oc">
+              </ul>
+            </div>
+            <div class="tab-pane fade" id="navs_historial_embarques" role="tabpanel" style="max-height: 400px; overflow-y: auto;">
+              <ul class="timeline mb-0 pt-2" id="historial_emb">
+              </ul>
             </div>
             <div class="tab-pane fade" id="navs_stats" role="tabpanel">Estadísticas</div>
             <div class="tab-pane fade" id="navs_settings" role="tabpanel">

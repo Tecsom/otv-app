@@ -1,4 +1,13 @@
-import { fetchData, loadingButton } from '/public/scripts/helpers.js';
+import { fetchData, loadingButton, isoDateToFormattedWithTime, isoDateToFormatted } from '/public/scripts/helpers.js';
+
+const badgeType = {
+  pendiente: 'primary',
+  proceso: 'secondary',
+  embarque: 'info',
+  cancelada: 'danger',
+  finalizada: 'success'
+};
+
 const previewTemplate = `<div class="dz-preview dz-file-preview">
 <div class="dz-details">
   <div class="dz-thumbnail">
@@ -112,7 +121,7 @@ const updateFieldsEdit = cliente => {
   $('#pais_cliente').val(cliente.pais);
 };
 
-$(document).ready(function () {
+$(document).ready(async function () {
   updateFieldsEdit(clientData);
 
   const TagifyCustomInlineSuggestionEl = document.querySelector('#TagifyCustomInlineSuggestion');
@@ -128,6 +137,7 @@ $(document).ready(function () {
   //   'Identificador de proveedor',
   //   '# Consecutivo de la pieza por OC'
   // ];
+
   const whitelist = [
     { value: 'Número de parte', id: 'numero_parte' },
     { value: 'Revisión de parte', id: 'revision_parte' },
@@ -139,6 +149,7 @@ $(document).ready(function () {
     { value: 'Identificador de proveedor', id: 'proveedor_id' },
     { value: '# Consecutivo de la pieza por OC', id: 'consecutivo' }
   ];
+
   // Inline
   let TagifyCustomInlineSuggestion = new Tagify(TagifyCustomInlineSuggestionEl, {
     whitelist: whitelist,
@@ -161,6 +172,9 @@ $(document).ready(function () {
       }
     }
   });
+
+  await loadHistorialOrdenes(clientData.id);
+  await loadHistorialEmbarques(clientData.id);
 });
 
 $('#delete_client_btn').on('click', async function () {
@@ -193,3 +207,58 @@ $('#form_qr_config').on('submit', async function (e) {
   }
   toastr.error(res.message, 'Error guardando la configuración');
 });
+
+const loadHistorialOrdenes = async cliente_id => {
+  const response = await fetchData('/clientes/historial/ordenes/' + cliente_id, 'GET', {});
+
+  for (let orden of response.data) {
+    const $newListItem = $(`
+      <li class="timeline-item timeline-item-transparent">
+      <span class="timeline-point timeline-point-primary"></span>
+      <div class="timeline-event">
+        <div class="timeline-header mb-1">
+          <h6 class="mb-0">${orden.folio_id}</h6>
+          <small class="text-muted">${isoDateToFormattedWithTime(orden.created_at)}</small>
+        </div>
+        <p class="mb-2">Estado: <span class="text-capitalize badge bg-${badgeType[orden.estado]}">${orden.estado}</span></p>
+        <p class="mb-2">Folio único: ${orden.unique_folio ? addLeadingZeros(orden.unique_folio, 6) : '<b>sin folio</b>'}</p>
+        <p class="mb-2">Fecha de entrega: ${isoDateToFormattedWithTime(orden.delivery_date)}</p>
+      </div>
+    </li>
+    `);
+
+    $('#historial_oc').append($newListItem);
+  }
+};
+
+const loadHistorialEmbarques = async cliente_id => {
+  const response = await fetchData('/cliente/historial/embarques/' + cliente_id, 'GET', {});
+
+  for (let embarque of response.data) {
+    const $newListItem = $(`
+      <li class="timeline-item timeline-item-transparent">
+      <span class="timeline-point timeline-point-primary"></span>
+      <div class="timeline-event">
+        <div class="timeline-header mb-1">
+          <h6 class="mb-0">${embarque.embarque_id.descripcion}</h6>
+          <small class="text-muted">${isoDateToFormattedWithTime(embarque.embarque_id.created_at)}</small>
+        </div>
+        <p class="mb-2">Estado: <span class="text-capitalize badge bg-${badgeType[embarque.embarque_id.estado]}">${embarque.embarque_id.estado}</span></p>
+        <p class="mb-2">Folio único: ${embarque.embarque_id.folio_unico ? addLeadingZeros(embarque.embarque_id.folio_unico, 6) : '<b>sin folio</b>'}</p>
+        <p class="mb-2">Fecha de embarque: ${isoDateToFormatted(embarque.embarque_id.fecha_embarque)}</p>
+        <p class="mb-2">Fecha de entrega: ${isoDateToFormatted(embarque.embarque_id.fecha_entrega)}</p>
+      </div>
+    </li>
+  `);
+
+    $('#historial_emb').append($newListItem);
+  }
+};
+
+function addLeadingZeros(number, length) {
+  let numStr = String(number);
+
+  let zerosToAdd = Math.max(length - numStr.length, 0);
+
+  return '0'.repeat(zerosToAdd) + numStr;
+}

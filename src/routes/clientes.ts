@@ -16,7 +16,9 @@ import {
   deleteRevisionC,
   getClientesPagingC,
   updateProfilePhotoC,
-  getProfilePhotoC
+  getProfilePhotoC,
+  getHistoryOrders,
+  getHistoryShips
 } from '../controllers/clientes';
 
 const router = express.Router();
@@ -42,5 +44,8 @@ router.get('/clientes/:cliente_id/piezas/:pieza_id/revisiones/:revision_id/files
 router.put('/clientes/:cliente_id/piezas/:pieza_id/revisiones/:revision_id', updateRevisionC);
 router.post('/clientes/:cliente_id/piezas/:pieza_id/revisiones', createRevisionC);
 router.delete('/clientes/:cliente_id/piezas/:pieza_id/revisiones/:revision_id', deleteRevisionC);
+
+router.get('/clientes/historial/ordenes/:cliente_id', getHistoryOrders)
+router.get('/cliente/historial/embarques/:cliente_id', getHistoryShips)
 
 export default router;
