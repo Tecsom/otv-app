@@ -27,6 +27,7 @@
     background-color: #eae8fd !important;
     color: #7367f0 !important;
   }
+
 </style>
 <div class="container-xxl flex-grow-1 container-p-y">
   <div class="app-chat card overflow-hidden mt-2">
@@ -71,6 +72,15 @@
             <div class="row g-3">
               <div class="col-md-12">
                 <label for="range_filter" class="form-label">Estado de la orden</label>
+                <div class="form-check mt-2">
+                  <input
+                    class="form-check-input filter-checkbox"
+                    type="checkbox"
+                    value="pendiente"
+                    id="check_proceso"
+                    checked />
+                  <label class="form-check-label" for="check_proceso">Proceso</label>
+                </div>
                 <div class="form-check mt-2">
                   <input
                     class="form-check-input filter-checkbox"
@@ -734,6 +744,20 @@
         </div>
       </div>
     </div>
+    <!--! MODAL PARA CODIGOS QR DE CONTENEDORES-->
+    <div class="modal fade" id="viewCodeModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel1"></h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <div id="codeWrapper" class="text-center"></div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
   
 
@@ -744,6 +768,7 @@
           var productos_table;
           var destinos_table;
           var verificaciones_table;
+          var codigos_table
           var loadEmbarques = () => {};
         </script>
 

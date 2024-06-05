@@ -74,18 +74,8 @@ const initscanner = async () => {
 const onScanner = async (data: Buffer) => {
   const dataString = data.toString();
 
-  const current_url = globalThis.globalWindow?.webContents.getURL();
-  if (current_url.includes('verificador') && !current_url.includes('ordenes')) {
-    const orden_res = await getOrdenByCodeProd(data.toString());
-    const orden = orden_res && orden_res.length > 0 ? orden_res[0] : null;
-    if (!orden?.id) {
-      console.log('Orden no encontrada');
-      return;
-    }
+  console.log(dataString)
 
-    globalThis.globalWindow?.loadURL('http://localhost:3000/verificador/ordenes/' + orden.order_id);
-    return;
-  }
   console.log('redirected to localhost:3000');
 
   global.socket_io.emit('scanner', dataString);

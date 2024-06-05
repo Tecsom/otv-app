@@ -74,8 +74,12 @@ destinos_table = $('#destinos_table').DataTable({
   }
 });
 
-verificaciones_table = $('#codigos_table').DataTable({
-  columns: [{ title: 'codigo' }, { title: 'ultimo escaneo' }, { title: 'acciones', defaultContent: tableActions }],
+codigos_table = $('#codigos_table').DataTable({
+  columns: [
+    { title: 'contenedor', data: 'contenedor' },
+    //{ title: 'ultimo escaneo' },
+    { title: 'acciones', defaultContent: tableActions }
+  ],
   orderable: false,
   lengthChange: false,
   info: false,
@@ -99,17 +103,17 @@ $('#codigos_table').on('click', 'tbody tr button', async function (e) {
 });
 
 const showBarcode = async data => {
-  const code_type = data.code_type;
+  const code_type = 'QR';
   //get templateCustomizer-vertical-menu-template-starter--Style from localstorage
   const colorPref = localStorage.getItem('templateCustomizer-vertical-menu-template-starter--Style');
   $('#viewCodeModal').modal('show');
   $('#codeWrapper').empty();
   if (code_type == 'QR') {
-    const svgNode = QRCode(data.code);
+    const svgNode = QRCode(data.codigo);
 
     $('#codeWrapper').append(svgNode);
   } else if (code_type == 'DM') {
-    const svgNode = DATAMatrix(data.code);
+    const svgNode = DATAMatrix(data.codigo);
 
     $('#codeWrapper').append(svgNode);
   }

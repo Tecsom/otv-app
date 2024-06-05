@@ -1,6 +1,6 @@
 import { Request, Response } from 'express'
 import { CreateCodigo, Embarque } from '@/types/embarques'
-import { newEmbarque, createEmbarqueProduct, delEmbarque, getEmbarqueProducts, getOrdenesStatic, listEmbarques, getEmbarqueById, updtEmbarque, deleteProductFromEmbarque, createNewEmbarqueContenedor, getContenedoresByEmbarque, changeStateToEmbarque, deleteContainerInEmbarque, updateContainerInEmbarque, getProductsInOrdenCompra, postNewDestino, getDestinosPorEmbarque, deleteDestino, generateContenedorCode, getCodigosContenedores } from '@/utils/embarques';
+import { newEmbarque, createEmbarqueProduct, delEmbarque, getEmbarqueProducts, getOrdenesStatic, listEmbarques, getEmbarqueById, updtEmbarque, deleteProductFromEmbarque, createNewEmbarqueContenedor, getContenedoresByEmbarque, changeStateToEmbarque, deleteContainerInEmbarque, updateContainerInEmbarque, getProductsInOrdenCompra, postNewDestino, getDestinosPorEmbarque, deleteDestino, generateContenedorCode, getCodigosContenedores, getEmbarqueData } from '@/utils/embarques';
 
 export const getEmbarques = async (req: Request, res: Response) => {
 
@@ -229,7 +229,9 @@ export const deleteDestinoEmbarque = async (req:Request, res: Response) =>{
 
 export const createCodigoContenedor = async(req: Request, res: Response) => {
     try {
+        console.log(req.body)
         const payload = req.body;
+        console.log(payload)
         const data = await generateContenedorCode(payload);
         res.status(200).json(data);
     } catch (error) {
@@ -244,5 +246,18 @@ export const getAllEmbarqueContenedorCodigo = async (req: Request, res: Response
         res.status(200).json(data);
     } catch (error) {
         res.status(500).json(error);
+    }
+}
+
+export const getAllDataFromEmbarque = async (req: Request, res: Response) => {
+    try {
+        const embarque_id = req.params.embarque_id;
+        const embarque = await getEmbarqueData(parseInt(embarque_id));
+
+        console.log(embarque)
+        
+        res.status(200).json(embarque);
+    } catch (error) {
+        res.status(500).json(error)
     }
 }

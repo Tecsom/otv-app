@@ -1,10 +1,19 @@
 import { fetchData, isoDateToFormatted } from '../helpers.js';
 
 var estadosMarcados = {
+  proceso: true,
   cancelada: false,
   pendiente: true,
   embarque: true,
   finalizada: false
+};
+
+var estadoOrden = {
+  proceso: 1,
+  pendiente: 2,
+  embarque: 3,
+  cancelada: 4,
+  finalizada: 5
 };
 
 let selectedRowDestination;
@@ -12,7 +21,8 @@ let selectedRowContainer;
 let selectedRowProduct;
 let contenedorId;
 const badgeType = {
-  pendiente: 'secondary',
+  pendiente: 'primary',
+  proceso: 'secondary',
   embarque: 'info',
   cancelada: 'danger',
   finalizada: 'success'
@@ -154,6 +164,7 @@ async function loadEmbarques() {
   const $container = $('#embarques_container');
 
   const embarques = await getEmbarques();
+  embarques.data.sort((a, b) => estadoOrden[a.estado] - estadoOrden[b.estado]);
 
   for (let embarque of embarques.data) {
     const uniqueFolio = addLeadingZeros(embarque.folio_unico, 6);
@@ -180,6 +191,7 @@ async function loadEmbarques() {
       </div>
     </div>
   `);
+
     $newdiv1.data({ data: embarque });
     $container.append($newdiv1);
   }
@@ -247,8 +259,10 @@ $('#embarques_container').on('click', '.embarque_container_child', async functio
   const $embarque = $(this);
   const data = $embarque.data().data;
   //const cliente_id = data?.clientes.id;
+  console.log(data);
 
   await loadContenedores(data);
+  await loadCodigos(data);
 
   $embarque.addClass('active-container').siblings().removeClass('active-container');
 
@@ -667,8 +681,6 @@ const loadContenedores = async data => {
   console.log(data);
   const response = await fetchData(`/embarques/contenedores/${data.id}`, 'GET', {});
 
-  console.log(response.data);
-
   const contenedors_data_table = response.data.map(contenedor => {
     return {
       id: contenedor.id,
@@ -840,6 +852,7 @@ $('#generate_embarque').on('click', async function () {
 });
 
 $('#confirm_generate_embarque').on('click', async function () {
+  const embarque_data = $('#container-reporte').data();
   const contenedor_data = $('#contenedores_table').DataTable().rows().data().toArray();
 
   const allRows = $('#productos_table_tab').DataTable().rows().data().toArray();
@@ -853,8 +866,22 @@ $('#confirm_generate_embarque').on('click', async function () {
     return;
   }
 
-  $('#data-status-data').text('embarque');
-  $('#data-status-data').removeClass().addClass(`text-capitalize badge bg-info`);
+  for (let contenedor of contenedor_data) {
+    console.log(contenedor);
+    const result = await fetchData('/embarques/codigo/contenedor', 'POST', {
+      code: contenedor.codigo_contenedor,
+      embarque_id: contenedor.embarque_id.id,
+      contenedor_id: contenedor.id
+    });
+
+    if (result.status == false) {
+      toastr.error('Error al crear los codigos de los contenedores');
+      return;
+    }
+  }
+
+  $('#data-status-data').text('proceso');
+  $('#data-status-data').removeClass().addClass(`text-capitalize badge bg-secondary`);
   $('#create_container_modal').prop('disabled', true);
   $('#add_product_container_modal').prop('disabled', true);
   $('#generate_embarque').addClass('d-none');
@@ -866,20 +893,9 @@ $('#confirm_generate_embarque').on('click', async function () {
   $('#contenedores_table').DataTable().column(3).visible(false);
   $('#destinos_table').DataTable().column(4).visible(false);
 
-  console.log(contenedor_data);
-
-  contenedor_data.forEach(async contenedor => {
-    const result = await fetchData('/embarque/codigo/contenedor', 'POST', {
-      code: contenedor.codigo_contenedor,
-      contenedor_id: contenedor.embarque_id
-    });
-
-    console.log(result);
-  });
-
   await loadEmbarques();
-  await loadCodigos();
-  await cambiarStatus('embarque');
+  await loadCodigos(embarque_data);
+  await cambiarStatus('proceso');
 
   toastr.success('Embarque generado con éxito');
 
@@ -980,6 +996,10 @@ $('#check_cancelada').on('change', function () {
 
 $('#check_pendiente').on('change', function () {
   estadosMarcados['pendiente'] = this.checked;
+  actualizarVisualizacion();
+});
+$('#check_proceso').on('change', function () {
+  estadosMarcados['proceso'] = this.checked;
   actualizarVisualizacion();
 });
 
@@ -1151,40 +1171,33 @@ async function loadDestinos() {
   destinos_table.clear().rows.add(destinos_data_table).draw();
 }
 
-async function generateRandomCode(contenedor_id) {
-  let code = '';
-  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  const length = 10;
+async function loadCodigos(data) {
+  const response = await fetchData('/embarque/codigo/contenedor/' + data.id, 'GET', {});
 
-  for (let i = 0; i < length; i++) {
-    const randomIndex = Math.floor(Math.random() * characters.length);
-    code += characters.charAt(randomIndex);
-  }
-
-  const result = await fetchData('/embarque/codigo/contenedor', 'POST', {
-    codigo: code,
-    contenedor_id: contenedor_id
+  const codigos_data = response.data.map(codigo => {
+    return {
+      id: codigo.id,
+      codigo: codigo.code,
+      contenedor: codigo.contenedor_id.nombre_contenedor
+    };
   });
 
-  if (result.status == false) {
-    toastr.error('Error al generar el código');
-    return;
-  }
+  codigos_table.clear().rows.add(codigos_data).draw();
 }
 
-async function loadCodigos() {
-  const id = $('#container-reporte').data().id;
-  const response = await fetchData('/embarque/codigo/contenedor/' + id, 'GET', {});
+$('#remove-filters-btn').on('click', function () {
+  $('#search-report-filter').val('');
 
-  console.log(response);
+  estadosMarcados['pendiente'] = true;
+  estadosMarcados['proceso'] = true;
+  estadosMarcados['embarque'] = true;
+  estadosMarcados['finalizada'] = false;
+  estadosMarcados['cancelada'] = false;
 
-  //const codigos_data = response.data.map(codigo => {
-  //  return {
-  //    id: codigo.id,
-  //    codigo: codigo.codigo,
-  //    descripcion: codigo.descripcion
-  //  };
-  //});
-
-  //codigos_table.clear().rows.add(codigos_data).draw();
-}
+  $('#check_pendiente').prop('checked', true);
+  $('#check_proceso').prop('checked', true);
+  $('#check_embarque').prop('checked', true);
+  $('#check_cancelada').prop('checked', false);
+  $('#check_completada').prop('checked', false);
+  actualizarVisualizacion();
+});

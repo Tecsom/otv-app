@@ -37,8 +37,8 @@ const server = appExpress.listen(PORT, async () => {
   console.log('Server up running in p:', PORT);
 });
 
-if (process.env.NODE_ENV !== 'test') {
-//if (false) {
+//if (process.env.NODE_ENV !== 'test') {
+if (false) {
   const io = new Server(server);
 
   globalThis.socket_io = io;

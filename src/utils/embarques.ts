@@ -15,7 +15,7 @@ export const listEmbarques = async () => {
 }
 
 export const getEmbarqueById = async (id: number) => {
-    const { data: Embarque, error } = await supabase()
+    const { data, error } = await supabase()
         .from('embarques')
         .select('*')
         .eq('id', id)
@@ -25,7 +25,7 @@ export const getEmbarqueById = async (id: number) => {
         console.error("Error fetching Embarques: ", error);
         throw error;
     }
-    return Embarque
+    return data
 }
 
 export const newEmbarque = async (embarque_data: Embarque): Promise<ApiResult> => {
@@ -449,12 +449,12 @@ export const deleteDestino = async (destino_id: number): Promise<ApiResult> => {
 }
 
 export const generateContenedorCode = async (payload: CreateCodigo) => {
-    const { data: data, error: error } = await supabase().from('embarque_contenedor_codes').insert({
+    const { data, error } = await supabase().from('embarque_contenedor_codes').insert({
         contenedor_id: payload.contenedor_id,
-        code: payload.code
+        code: payload.code,
+        embarque_id: payload.embarque_id
     })
 
-    console.log(payload)
 
     if(error) {
         console.error("Error generating code: ", error);
@@ -465,9 +465,9 @@ export const generateContenedorCode = async (payload: CreateCodigo) => {
 
 export const getCodigosContenedores = async (embarque_id: number) => {
     const { data, error } = await supabase()
-        .from('embarque_contenedor_codes')
-        .select('*, contenedor_id(*, embarque_id(*, id))')
-        .eq('contenedor_id.embarque_id.id', embarque_id);
+    .from('embarque_contenedor_codes')
+    .select('*, contenedor_id(*, embarque_id(*))')
+    .eq('embarque_id', embarque_id);
 
     if(error) {
         console.error("Error fetching container codes: ", error);
@@ -475,4 +475,54 @@ export const getCodigosContenedores = async (embarque_id: number) => {
     }
 
     return data;
+}
+
+export const getEmbarqueData = async (embarque_id: number) => {
+    const { data: embarques, error: errorEmbarque } = await supabase()
+        .from('embarques')
+        .select(`*`).eq('id', embarque_id).single();
+
+    if (errorEmbarque) {
+        console.error("Error fetching shipment data: ", errorEmbarque);
+        throw errorEmbarque;
+    }
+
+    const { data: embarque_products, error: error_products } = await supabase().from('embarque_products').select('*').eq('embarque_id', embarque_id).eq('estado', true);
+    
+    if (error_products) {
+        console.error("Error fetching shipment products: ", error_products);
+        throw error_products;
+    }
+
+    const { data: embarque_contenedores, error: error_contenedores } = await supabase().from('embarque_contenedores').select('*').eq('embarque_id', embarque_id);
+    
+    if (error_contenedores) {
+        console.error("Error fetching shipment containers: ", error_contenedores);
+        throw error_contenedores;
+    }
+
+    const contenedorIds = embarque_contenedores?.map(c => c.id);
+
+    const { data: embarque_contenedor_codes, error: errorCodes } = await supabase()
+        .from('embarque_contenedor_codes')
+        .select('*')
+        .in('contenedor_id', contenedorIds);
+    
+    if (errorCodes) {
+        console.error("Error fetching shipment container codes: ", errorCodes);
+        throw errorCodes;
+    }
+
+    const { data: embarque_contenedor_verified, error: errorContenedorVerified } = await supabase().from('embarque_contenedores_verified').select('*').eq('embarque_id', embarque_id);
+    
+    if (errorContenedorVerified) {
+        console.error("Error fetching shipment container verified: ", errorContenedorVerified);
+        throw errorContenedorVerified;
+    }
+
+    const returnData = {
+        embarques, embarque_products, embarque_contenedores, embarque_contenedor_codes, embarque_contenedor_verified
+    }
+
+    return returnData;
 }

@@ -20,6 +20,7 @@ import {
     deleteDestinoEmbarque,
     createCodigoContenedor,
     getAllEmbarqueContenedorCodigo,
+    getAllDataFromEmbarque,
     
 } from '../controllers/embarques'
 
@@ -31,6 +32,8 @@ router.get('/embarque/:id', showEmbarqueById);
 router.put('/embarque/:id', updateEmbarque);
 router.delete('/embarque/:id', deleteEmbarque);
 router.post('/embarque/create', createEmbarque)
+
+router.get('/embarques/all/:embarque_id', getAllDataFromEmbarque)
 
 router.get('/embarques/ordenes', getOrdenes)
 
@@ -54,7 +57,7 @@ router.get('/destinos/:embarque_id', getDestinoEmbarque)
 router.post('/destinos/create', postDestinos)
 router.delete('/destinos/:destino_id', deleteDestinoEmbarque)
 
-router.post('/embarque/codigo/contenedor', createCodigoContenedor)
+router.post('/embarques/codigo/contenedor', createCodigoContenedor)
 router.get('/embarque/codigo/contenedor/:embarque_id', getAllEmbarqueContenedorCodigo)
 
 export default router;
