@@ -1,5 +1,6 @@
 import { fetchData, loadingButton, isoDateToFormatted, isoDateToFormattedWithTime } from '/public/scripts/helpers.js';
 
+let cantidadRestante;
 let cantidadProductos;
 let cantidadIngresada;
 let productoByCode;
@@ -195,6 +196,12 @@ loadOrderData = async () => {
 };
 
 $('#startVerificacion').on('click', function () {
+  const progress = updateGeneralProgress();
+  console.log(progress);
+  if (progress === 100) {
+    toastr.error('La orden ya ha sido verificada');
+    return;
+  }
   $('#start_verificacion').modal('show');
 });
 
@@ -269,15 +276,63 @@ $('#start_verificacion_btn').on('click', function () {
 
   const codigos = ordenData.codigos;
 
+  console.log({ ordenData });
+
   const codigosUnicos = new Set(codigos.map(pieza => pieza.code));
 
-  const ordenesVerificadas = ordenData.ordenes_static_verified?.filter(
+  const ordenesVerificadasArray = ordenData.ordenes_static_verified?.filter(orden =>
+    codigos.find(pieza => pieza.code === orden.codigo)
+  );
+
+  const codigosCantidad = {};
+
+  ordenesVerificadasArray.forEach(orden => {
+    if (codigosCantidad[orden.codigo]) {
+      codigosCantidad[orden.codigo] += orden.quantity;
+    } else {
+      codigosCantidad[orden.codigo] = orden.quantity;
+    }
+  });
+
+  const productos = ordenesVerificadasArray.map(orden => {
+    const producto = ordenData.productos.find(prod => prod.codigos.includes(orden.codigo));
+    if (producto && producto.type === 'simple') {
+      return { ...producto, quantity: codigosCantidad[orden.codigo] };
+    }
+    return producto;
+  });
+
+  const comparacion = ordenesVerificadasArray.map((orden, index) => {
+    const producto = productos[index];
+    return {
+      orden: orden.codigo,
+      ordenQuantity: codigosCantidad[orden.codigo],
+      productoQuantity: producto ? producto.quantity : 'Producto no encontrado',
+      sonIguales: producto ? producto.quantity === codigosCantidad[orden.codigo] : false
+    };
+  });
+
+  const ordenesVerificadasTemp = ordenData.ordenes_static_verified?.filter(
     (orden, index, self) => codigosUnicos.has(orden.codigo) && self.findIndex(t => t.codigo === orden.codigo) === index
   );
 
-  const ordenesSinVerificar = codigos.filter(pieza => !ordenesVerificadas.find(orden => orden.codigo === pieza.code));
+  const ordenesSinVerificar = codigos.filter(
+    pieza =>
+      !ordenesVerificadasTemp.find(orden => orden.codigo === pieza.code) ||
+      comparacion.find(comp => comp.orden === pieza.code && !comp.sonIguales)
+  );
 
-  table_verificadas.rows.add(ordenesVerificadas).draw();
+  const ordenesVerificadas = ordenesVerificadasTemp.filter(
+    orden => !ordenesSinVerificar.find(noVerificado => noVerificado.code === orden.codigo)
+  );
+
+  console.log({ ordenesSinVerificar });
+  console.log({ comparacion });
+
+  console.log({ ordenesVerificadasArray });
+  console.log({ productos });
+  console.log({ ordenesVerificadas });
+
   table_not_verificadas.rows.add(ordenesSinVerificar).draw();
 });
 
@@ -329,10 +384,14 @@ socket.on('scanner', data => {
 });
 
 const verificarPieza = async codigo => {
-  const exists = ordenData.codigos.find(pieza => pieza.code === codigo);
+  //const exists = ordenData.codigos.find(pieza => pieza.code === codigo);
   const isVerified = verificadas_array.includes(codigo);
 
   productoByCode = ordenData.productos.find(product => product.codigos.find(code => code === codigo));
+
+  const data_no_verified = table_not_verificadas.rows().data().toArray();
+
+  const existsInNotVerified = data_no_verified.find(pieza => pieza.code === codigo);
 
   const data_verified = table_verificadas.rows().data().toArray();
 
@@ -345,7 +404,7 @@ const verificarPieza = async codigo => {
 
   codigoVerificador = codigo;
 
-  if (!exists) {
+  if (!existsInNotVerified) {
     toastr.error('Pieza no encontrada');
     return;
   }
@@ -376,7 +435,7 @@ $('#boton_mandar_cantidad').on('click', function () {
   const cantidadPieza = ordenesVerificadas.reduce((acc, orden) => acc + orden.quantity, 0);
   console.log({ cantidadPieza });
 
-  const cantidadRestante = productoByCode.quantity - cantidadPieza;
+  cantidadRestante = productoByCode.quantity - cantidadPieza;
   console.log({ cantidadRestante });
 
   if ($('#check_quantity').val() > productoByCode.quantity) {
@@ -445,8 +504,7 @@ const verify = codigo => {
     let progress = 0;
     console.log(productoByCode);
     if (productoByCode.type === 'bulk') {
-      const cantidadTotal = productoByCode.quantity;
-      progress = (cantidadIngresada / cantidadTotal) * 100;
+      progress = (cantidadIngresada / cantidadRestante) * 100;
       progress /= cantidadProductos;
     } else {
       progress = 100 / cantidadProductos;
@@ -559,4 +617,6 @@ const updateGeneralProgress = () => {
 
   $('#progress_general').css('width', `${progress}%`);
   $('#progress_general').text(`Progreso general (${progress.toFixed(2)}%)`);
+
+  return progress;
 };
