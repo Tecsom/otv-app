@@ -1,5 +1,6 @@
 import { fetchData, loadingButton, isoDateToFormattedWithTime, isoDateToFormatted } from '/public/scripts/helpers.js';
-
+let page_oc = 0;
+let limit_oc = 5;
 const badgeType = {
   pendiente: 'primary',
   proceso: 'secondary',
@@ -110,12 +111,13 @@ const updateClientData = data => {
   $('#client_name_title').text(data.nombre);
 };
 const updateFieldsEdit = cliente => {
+  console.log({ cliente });
   $('#nombre_cliente').val(cliente.nombre);
   $('#rfc_cliente').val(cliente.identificador);
   $('#email_cliente').val(cliente.correo);
   $('#telefono_cliente').val(cliente.telefono);
   $('#celular_cliente').val(cliente.celular);
-  $('#domilicio_cliente').val(cliente.domilicio);
+  $('#domicilio_cliente').val(cliente.domicilio);
   $('#ciudad_cliente').val(cliente.ciudad);
   $('#estado_cliente').val(cliente.estado);
   $('#pais_cliente').val(cliente.pais);
@@ -209,7 +211,9 @@ $('#form_qr_config').on('submit', async function (e) {
 });
 
 const loadHistorialOrdenes = async cliente_id => {
-  const response = await fetchData('/clientes/historial/ordenes/' + cliente_id, 'GET', {});
+  const params = `?page=${page_oc}&limit=${limit_oc}`;
+  const response = await fetchData('/clientes/historial/ordenes/' + cliente_id + params, 'GET', {});
+  if (response.status === false) return toastr.error(response.message, 'Error obteniendo historial de órdenes');
 
   for (let orden of response.data) {
     const $newListItem = $(`
@@ -229,7 +233,14 @@ const loadHistorialOrdenes = async cliente_id => {
 
     $('#historial_oc').append($newListItem);
   }
+  page_oc++;
+  if (response.data.length < limit_oc) $('#load_more_oc').addClass('d-none');
 };
+
+$('#load_more_oc').on('click', async function () {
+  console.log('asd');
+  await loadHistorialOrdenes(clientData.id);
+});
 
 const loadHistorialEmbarques = async cliente_id => {
   const response = await fetchData('/cliente/historial/embarques/' + cliente_id, 'GET', {});

@@ -48,11 +48,53 @@ loadOrdenes = async () => {
   }
 };
 
+$('.filter-checkbox').on('change', function () {
+  const checked = $(this).prop('checked');
+  const value = $(this).val();
+
+  if (checked) {
+    estatusFilters.push(value);
+  } else {
+    estatusFilters = estatusFilters.filter(elm => elm !== value);
+  }
+
+  page = 1;
+  loadMore = true;
+  $('#ordenes_compra_container').empty();
+  loadOrdenes();
+});
+$('#remove-filters-btn').on('click', function () {
+  console.log('entra');
+  $('#search-report-filter').val('');
+
+  flatpckr_day.clear();
+  flatpicker_created.clear();
+  flatpckr_week.clear();
+
+  estatusFilters = ['pendiente', 'proceso', 'embarque'];
+
+  $('#check_pendiente').prop('checked', true);
+  $('#check_proceso').prop('checked', true);
+  $('#check_embarque').prop('checked', true);
+  $('#check_cancelada').prop('checked', false);
+  $('#check_completada').prop('checked', false);
+
+  search = '';
+  createdAtFilter = null;
+  deliveryDateFilter = null;
+
+  page = 1;
+  loadMore = true;
+  $('#ordenes_compra_container').empty();
+  loadOrdenes();
+});
+
 async function getOrdenes() {
   // page, pageSize, search
   if (!loadMore) return [];
 
   const createdAtFilterString = createdAtFilter?.join(',') ?? '';
+  console.log({ createdAtFilterString });
   const deliveryDateFilterString = deliveryDateFilter?.join(',') ?? '';
   const query = `?page=${page}&pageSize=${limit}&estatusFiltersStr=${estatusFilters.join(',')}&search=${search}&createdAtFilterString=${createdAtFilterString}&deliveryDateFilterString=${deliveryDateFilterString}`;
   isLoading = true;

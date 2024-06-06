@@ -454,6 +454,9 @@ const generateCodesForProduct = async (product: ProductCode, index: number): Pro
       code_str += `${week.toString().padStart(2, '0')}`;
 
       continue;
+    } else if (key === 'proveedor_id') {
+      code_str += product.proveedor_id;
+      continue;
     }
     if (!key_obj) {
       code_str += value;

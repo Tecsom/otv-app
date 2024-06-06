@@ -16,7 +16,6 @@ const badgeType = {
 
 const flatpickOptions = {
   dateFormat: 'd/m/Y',
-  maxDate: 'today',
   mode: 'range',
   locale: {
     firstDayOfWeek: 1,
@@ -100,6 +99,7 @@ const flatpckr_created = $('#range_filter').flatpickr({
     $('#ordenes_compra_container').empty();
     loadOrdenes();
   },
+  maxDate: 'today',
   ...flatpickOptions
 });
 
@@ -523,6 +523,8 @@ $('#ordenes_compra_container').on('click', '.order_container_child', async funct
     $('#delete_oc').removeClass('d-none');
   } else if (data.estado === 'cancelada') {
     $('#restaurar_oc').removeClass('d-none');
+  } else if (data.estado === 'embarque') {
+    $('#finalizar_oc').removeClass('d-none');
   } else if (data.estado === 'finalizada') {
   } else {
     $('#cancelar_oc').removeClass('d-none');
@@ -807,7 +809,9 @@ loadProductos = async id => {
       codeProdsTable.push({
         code: code.code,
         numero_parte: product.piezas.numero_parte,
-        code_type: tableData.clientes.code_type
+        code_type: tableData.clientes.code_type,
+        product: product,
+        consecutivo: code.consecutivo
       });
     }
   }
@@ -870,6 +874,15 @@ $('#edit_oc').on('click', async function () {
   if (!order_data?.id) {
     console.error('No orden de compra seleccionada');
     return;
+  }
+  const products = $('#ordenes_table').DataTable().rows().data().toArray();
+
+  if (products.length > 0) {
+    $('#select_client_edit').prop('disabled', true);
+    $('#remove-products-help').removeClass('d-none');
+  } else {
+    $('#select_client_edit').prop('disabled', false);
+    $('#remove-products-help').addClass('d-none');
   }
 
   $folio.val(order_data.folio_id);

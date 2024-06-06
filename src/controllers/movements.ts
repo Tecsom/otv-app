@@ -78,7 +78,10 @@ export const generateOutputMovement = async (req: Request, res: Response) => {
 
     res.status(200).json(new_movement);
   } catch (error) {
-    console.log({ error });
-    res.status(400).json({ error: 'Error creando el movimiento' });
+    const err = error as Error;
+    console.log();
+    res.status(400).json({
+      message: err.message
+    });
   }
 };

@@ -30,7 +30,9 @@ const flatpickOptions = {
 
 flatpckr_day = $('#day_fecha_entrega').flatpickr({
   onChange: function (date, dateStr) {
-    console.log('changed');
+    if (!this.selectedDates.length) {
+      return;
+    }
     date = new Date(date[0]);
 
     const StartDay = new Date(date.getFullYear(), date.getMonth(), date.getDate() - 1, 23, 59, 59);
@@ -54,13 +56,46 @@ flatpckr_day = $('#day_fecha_entrega').flatpickr({
   maxDate: ''
 });
 
+flatpicker_created = $('#range_filter').flatpickr({
+  onChange: function (date, dateStr) {
+    if (!this.selectedDates.length) {
+      return;
+    }
+
+    date = new Date(date[0]);
+
+    const StartDay = new Date(date.getFullYear(), date.getMonth(), date.getDate() - 1, 23, 59, 59);
+    const EndDay = new Date(date.getFullYear(), date.getMonth(), date.getDate(), 23, 59, 59);
+
+    const startUTCDate = new Date(StartDay.getTime() - StartDay.getTimezoneOffset() * 60000);
+    const endUTCDate = new Date(EndDay.getTime() - EndDay.getTimezoneOffset() * 60000);
+
+    const startIsoDate = startUTCDate.toISOString();
+    const endIsoDate = endUTCDate.toISOString();
+    console.log({ startIsoDate, endIsoDate });
+
+    createdAtFilter = [startIsoDate, endIsoDate];
+
+    page = 1;
+    loadMore = true;
+    $('#ordenes_compra_container').empty();
+    loadOrdenes();
+  },
+  ...flatpickOptions,
+  mode: 'single',
+  maxDate: ''
+});
+
 flatpckr_week = $('#week_fecha_entrega').flatpickr({
   onChange: function (date, dateStr) {
+    if (!this.selectedDates.length) {
+      return;
+    }
     const weekNumber = this.selectedDates[0] ? this.config.getWeek(this.selectedDates[0]) : null;
 
     const year = this.selectedDates[0] ? this.selectedDates[0].getFullYear() : null;
 
-    const startDay = new Date(year, 0, 1 + (weekNumber - 1) * 7 - 1, 23, 59, 59);
+    const startDay = new Date(year, 0, 1 + (weekNumber - 1) * 7 - 1, 0, 0, 0);
     const endDay = new Date(year, 0, 1 + (weekNumber - 1) * 7 + 5, 23, 59, 59);
 
     console.log({ startDay, endDay });

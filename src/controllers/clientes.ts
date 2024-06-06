@@ -1,5 +1,13 @@
 import { Request, Response } from 'express';
-import { getClientes, createCliente, getClientById, deleteCliente, updateCliente, getHistorialOrdenes, gettHistorialEmbarques } from './../utils/clientes';
+import {
+  getClientes,
+  createCliente,
+  getClientById,
+  deleteCliente,
+  updateCliente,
+  getHistorialOrdenes,
+  gettHistorialEmbarques
+} from './../utils/clientes';
 import type { Cliente } from '@/types/clientes';
 import {
   createPieza,
@@ -310,24 +318,24 @@ export const getProfilePhotoC = async (req: Request, res: Response) => {
 };
 
 export const getHistoryOrders = async (req: Request, res: Response) => {
+  const { page, limit } = req.query as { page: string; limit: string };
   try {
-    
-    const cliente_id = req.params.cliente_id
-    const ordenes = await getHistorialOrdenes(parseInt(cliente_id))
-    res.status(200).json(ordenes)
+    const cliente_id = req.params.cliente_id;
+    console.log({ cliente_id, page, limit });
+    const ordenes = await getHistorialOrdenes(parseInt(cliente_id), parseInt(page), parseInt(limit));
+    res.status(200).json(ordenes);
   } catch (error) {
-    res.status(500).json(error)
+    res.status(500).json(error);
   }
-}
+};
 
 export const getHistoryShips = async (req: Request, res: Response) => {
   try {
-    
-    const cliente_id = req.params.cliente_id
-    const embarques = await gettHistorialEmbarques(parseInt(cliente_id))
+    const cliente_id = req.params.cliente_id;
+    const embarques = await gettHistorialEmbarques(parseInt(cliente_id));
 
-    res.status(200).json(embarques)
+    res.status(200).json(embarques);
   } catch (error) {
-    res.status(500).json(error)
+    res.status(500).json(error);
   }
-}
+};

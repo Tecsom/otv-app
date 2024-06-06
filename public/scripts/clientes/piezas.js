@@ -187,7 +187,7 @@ $('#crear-pieza-form').on('submit', async function (e) {
     data.revision_nombre == '' ||
     data.costo_produccion == '' ||
     data.costo_venta == '' ||
-    data.type == ''
+    !data.type
   ) {
     button.stop();
     toastr.warning('Rellene los campos obligatorios para crear la pieza');
@@ -421,6 +421,9 @@ $('#editar-revision-form').on('submit', async function (e) {
 });
 
 $('#btn_new_revision').on('click', async function () {
+  $('#nueva-revision-form').trigger('reset');
+  dropzoneImagesNew.removeAllFiles();
+  dropzoneFilesNew.removeAllFiles();
   $('#modal_nueva_revision').modal('show');
   $('#offcanvas_pieza').offcanvas('hide');
 });
@@ -462,7 +465,17 @@ $('#nueva-revision-form').on('submit', async function (e) {
     piezas_table.ajax.reload();
     return;
   }
-  toastr.error(res.message, 'Error creando la revisión');
+  let message = res.message;
+
+  switch (res.message) {
+    case 'duplicate key value violates unique constraint "unique_pieza_nombre"':
+      message = 'Ya existe una revisión con ese nombre';
+      break;
+    default:
+      break;
+  }
+
+  toastr.error(message, 'Error creando la revisión');
 });
 
 $('#switch-input-estado').on('change', function (event) {

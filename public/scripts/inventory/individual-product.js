@@ -32,6 +32,10 @@ const individual_product_table = $('#individual-product-table').DataTable({
   searching: true
 });
 
+$('#search_individual').on('keyup', function () {
+  individual_product_table.search(this.value).draw();
+});
+
 $('#create_individual_product_form').submit(async function (e) {
   e.preventDefault();
   const quantity = parseFloat($('#quantity_ins').val());
@@ -48,10 +52,15 @@ $('#create_individual_product_form').submit(async function (e) {
     await loadIndividualProducts();
     $('#modal_create_individual_product').modal('hide');
     $('#create_individual_product_form').trigger('reset');
+    const prev_quantity = parseFloat($('#total_quantity').text());
+    $('#total_quantity').text(prev_quantity + quantity);
+    $('#historial_table').DataTable().ajax.reload();
 
     toastr.success('Producto creado exitosamente', 'Producto creado');
     return;
   }
+
+  toastr.error(res.message, 'Error');
 });
 
 $(document).ready(function () {
@@ -102,6 +111,9 @@ $('#output_product_form').submit(async function (e) {
     toastr.success('Salida realizada exitosamente', 'Salida realizada');
     return;
   }
+  console.log({ res });
+
+  toastr.error(res.message, 'Error');
 });
 
 $(document).ready(async function () {

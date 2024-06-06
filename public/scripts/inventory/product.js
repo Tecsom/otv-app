@@ -15,6 +15,9 @@ $('#edit-product-form').submit(async function (e) {
   if (res.status === true) {
     $('#modal_edit_product').modal('hide');
     toastr.success('Producto actualizado exitosamente', 'Producto actualizado');
+    $('#details_client_name').text(data.name);
+    $('#details_client_rfc').text(data.description);
+    $('#client_name_title').text(data.name);
     return;
   }
 });

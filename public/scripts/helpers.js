@@ -22,7 +22,7 @@ export const fetchData = async (endpoint, method = 'GET', body) => {
     const status = res_encoded.status;
 
     const res = await res_encoded.json();
-
+    console.log({ res });
     if (status !== 200) {
       return { status: false, message: res.message, data: {} };
     }

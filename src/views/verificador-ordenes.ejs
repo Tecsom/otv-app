@@ -12,6 +12,8 @@
     color: #7367f0 !important;
   }
 </style>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/plugins/weekSelect/weekSelect.min.js"></script>
+<script src="/public/assets/vendor/libs/flatpickr/flatpickr.js"></script>
 <div class="app-chat card overflow-hidden mt-2">
   <div class="row g-0">
     <div class="col-md-2 app-chat-contacts bg-body app-sidebar flex-grow-0 border-end" id="app-chat-contacts">
@@ -102,7 +104,16 @@
               <label for="range_entrega_filter" class="form-label">Fecha de entrega</label>
               <input
                 class="form-control datetimepicker flatpickr-input"
-                id="range_entrega_filter"
+                id="day_fecha_entrega"
+                type="text"
+                placeholder="Selecciona un rango de fecha"
+                readonly="readonly" />
+            </div>
+            <div class="col-md-12">
+              <label for="week_fecha_entrega" class="form-label">Semana de entrega</label>
+              <input
+                class="form-control datetimepicker flatpickr-input"
+                id="week_fecha_entrega"
                 type="text"
                 placeholder="Selecciona un rango de fecha"
                 readonly="readonly" />
@@ -314,6 +325,7 @@
   let loadVerificaciones;
 </script>
 
+<script src="/public/scripts/verificador/ordenes/flatpicker.js"></script>
 <script src="/public/scripts/verificador/ordenes/ordenes.js" type="module"></script>
 <script src="/public/scripts/verificador/ordenes/verifications.js" type="module"></script>
 <script src="/public/scripts/verificador/ordenes/history.js" type="module"></script>

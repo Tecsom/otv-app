@@ -76,13 +76,37 @@ const showBarcode = async data => {
 };
 
 $('#download-csv').on('click', function () {
+  const order_data = $('#ordenes_table').data();
+  const proveedor_id = order_data?.clientes?.proveedor_id;
   const data = codigos_table.rows().data();
   const csvData = [];
-  const headers = ['Número de Parte', 'Código'];
+  const headers = [
+    'NUMERACION',
+    'PUNTO',
+    'PLANO',
+    'MARCA',
+    'AÑO',
+    'NUMERO',
+    'SUMA',
+    'NUMERO DE PARTE',
+    'CODIGO DE BARRAS'
+  ];
   csvData.push(headers);
-
+  console.log(data);
+  const year = new Date().getFullYear();
   data.each(row => {
-    csvData.push([row.numero_parte, row.code]);
+    // csvData.push([`"${row.numero_parte}"`, `"${row.code}"`]);
+    csvData.push([
+      `"${row.consecutivo}"`,
+      `.`,
+      `"${row?.product?.revisiones?.nombre}"`,
+      `"${proveedor_id}"`,
+      `"${year}"`,
+      `"${row.consecutivo.toString().padStart(5, '0')}"`,
+      `"${row.code}"`,
+      `"${row.numero_parte}"`,
+      `"${row.code}"`
+    ]);
   });
 
   const csv = csvData.map(row => row.join(',')).join('\n');
