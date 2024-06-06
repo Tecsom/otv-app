@@ -499,14 +499,17 @@ const updateGeneralProgress = () => {
   const order_data = ordenData;
   let piezas = 0;
   let piezas_verificadas = 0;
-
   for (const producto of order_data.codigos) {
-    if (producto.tipo === 'bulk') {
-      const ordenVerificada = order_data.ordenes_verified.find(orden => orden.codigo === producto.code);
-      if (ordenVerificada) {
-        piezas_verificadas += ordenVerificada.quantity;
+    const main_prod = order_data?.productos?.find(prod => prod.codigos.includes(producto.code));
+    if (main_prod.type === 'bulk') {
+      const ordenVerificada = order_data.ordenes_verified?.find(orden => orden.codigo === producto.code);
+      const quantity = producto.data.reduce((acc, item) => acc + item.quantity, 0);
+      const main_quantity = main_prod.quantity;
+      console.log({ ordenVerificada, quantity });
+      if (quantity > 0) {
+        piezas_verificadas += quantity;
       }
-      piezas += producto.quantity;
+      piezas += main_quantity;
     } else {
       if (producto.verified) {
         piezas_verificadas++;
@@ -514,6 +517,7 @@ const updateGeneralProgress = () => {
       piezas++;
     }
   }
+  console.log({ piezas, piezas_verificadas });
 
   const progress = (piezas_verificadas / piezas) * 100;
 

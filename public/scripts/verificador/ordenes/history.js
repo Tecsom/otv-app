@@ -147,7 +147,7 @@ $('#ordenes_compra_container').on('click', '.order_container_child', async funct
 
   const res = await fetchData('/ordenes/estaticas/' + static_order_id);
   if (!res.status) return toastr.error('Ocurrió un error al obtener la orden');
-
+  console.log(res.data);
   ordenData = res.data;
 
   console.log(ordenData);

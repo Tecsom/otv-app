@@ -56,7 +56,10 @@ export const getStaticOrden = async (id: number) => {
         .select('*')
         .eq('order_id', id)
         .eq('codigo', prod.code);
+
       orden.codigos[index].verified = (is_verified?.data?.length ?? 0) > 0;
+      orden.codigos[index].data = is_verified?.data;
+      // orden.codigos[index].type = is_verified
       index++;
     }
   }
