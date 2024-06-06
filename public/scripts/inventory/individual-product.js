@@ -79,12 +79,15 @@ const loadIndividualProducts = async () => {
 $('#individual-product-table').on('click', '.open-output-modal', function () {
   $('#modal_output_product').modal('show');
   const data = individual_product_table.row($(this).parents('tr')).data();
+
   $('#modal_output_product').data('individual_product_id', data.id);
+  $('#modal_output_product').data('remaining', data.remaining);
 });
 
 $('#output_product_form').submit(async function (e) {
   e.preventDefault();
   const individual_product_id = $('#modal_output_product').data('individual_product_id');
+  const remaining = $('#modal_output_product').data('remaining');
 
   const quantity_b100 = parseFloat($('#quantity_output').val());
   const quantity = quantity_b100 / 100;
@@ -105,6 +108,14 @@ $('#output_product_form').submit(async function (e) {
   const res = await fetchData(`/movements/output`, 'POST', movement);
   button.stop();
   if (res.status === true) {
+    const new_quantity = remaining - quantity;
+    console.log({ new_quantity, remaining, quantity });
+    if (new_quantity <= 0) {
+      $('#total_quantity').text(parseFloat($('#total_quantity').text()) - 1);
+    }
+
+    $('#historial_table').DataTable().ajax.reload();
+
     await loadIndividualProducts();
     $('#modal_output_product').modal('hide');
     $('#output_product_form').trigger('reset');
