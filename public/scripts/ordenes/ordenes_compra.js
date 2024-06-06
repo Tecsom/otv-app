@@ -185,6 +185,7 @@ $('#select_client_edit').select2({
 $(() => {
   init();
 });
+let date_picker_new;
 
 async function init() {
   new PerfectScrollbar(document.getElementById('ordenes_compra_container'), {
@@ -201,7 +202,7 @@ async function init() {
   });
 
   const $date_picker = $('#date_picker');
-  $date_picker.flatpickr({
+  date_picker_new = $date_picker.flatpickr({
     // EN ESTA PARTE ES DONDE SE REGISTRA EL EVENTO
     onChange: function (selectedDates, dateStr, instance) {
       $date_picker.data({ value: selectedDates[0] });
@@ -365,7 +366,9 @@ $('#create_order').on('submit', async function (e) {
   toastr.success('Creado con éxito');
   $folio.val('');
   $date.val('');
-  $client.val('');
+  $client.val('').trigger('change');
+  date_picker_new.clear();
+
   $('#create_orden_compra').modal('hide');
   $('#ordenes_compra_container').empty();
   page = 1;
@@ -490,8 +493,11 @@ function addLeadingZeros(number, length) {
 }
 
 //añadir, eliminar, editar productos en las ordenes de compras
-
+let isLoading_child = false;
 $('#ordenes_compra_container').on('click', '.order_container_child', async function () {
+  if (isLoading_child) return;
+  isLoading_child = true;
+  $('.order_container_child').css('cursor', 'wait');
   const $order = $(this);
   const data = $order.data().data; //ORDER DATA
   const cliente_id = data?.clientes.id;
@@ -517,10 +523,12 @@ $('#ordenes_compra_container').on('click', '.order_container_child', async funct
   $('#cancelar_oc').addClass('d-none');
   $('#restaurar_oc').addClass('d-none');
   $('#finalizar_oc').addClass('d-none');
+  $('#modify_inventory_button').addClass('d-none');
   if (data.estado === 'pendiente') {
     $('#generate_order').removeClass('d-none');
     $('#edit_oc').removeClass('d-none');
     $('#delete_oc').removeClass('d-none');
+    $('#modify_inventory_button').removeClass('d-none');
   } else if (data.estado === 'cancelada') {
     $('#restaurar_oc').removeClass('d-none');
   } else if (data.estado === 'embarque') {
@@ -591,11 +599,14 @@ $('#ordenes_compra_container').on('click', '.order_container_child', async funct
 
   console.log(data.id);
 
-  loadProductos(data.id);
-  loadFiles(data.id);
-  loadProductosEmbarque(data.id);
+  await loadProductos(data.id);
+  await loadFiles(data.id);
+  await loadProductosEmbarque(data.id);
   $('#container-no-data').addClass('d-none');
   $('#container-data').removeClass('d-none');
+
+  $('.order_container_child').css('cursor', 'pointer');
+  isLoading_child = false;
 });
 
 const renderListItem = (name, url) => {
@@ -634,7 +645,7 @@ loadFiles = async (id, no_reload = false) => {
     return;
   }
   if (no_reload === false) dropzoneFiles.removeAllFiles();
-
+  console.log('entra');
   for (const archivo of files.data) {
     const type = archivo.type;
     const blob = await fetch(archivo.data).then(res => res.blob());
@@ -656,6 +667,7 @@ loadFiles = async (id, no_reload = false) => {
   if ($('#dpz-files').children().length === 0) {
     $('#dpz-files').append(renderNoData('archivos'));
   }
+  console.log('sale');
 };
 
 $('#dpz-imgs').on('click', '.list-group-item', function () {
