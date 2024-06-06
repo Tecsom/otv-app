@@ -254,8 +254,8 @@ $('#start_verificacion_btn').on('click', function () {
   $('#cancel_verificacion_btn').removeClass('d-none');
   $('#startVerificacion').addClass('d-none');
 
-  $('#progress_verificacion').css('width', '0%');
-  $('#progress_verificacion').text('Progreso de verificación (0%)');
+  //$('#progress_verificacion').css('width', '0%');
+  //$('#progress_verificacion').text('Progreso de verificación (0%)');
 
   $('#container_general').addClass('d-none');
   $('#container_verificacion').removeClass('d-none');
@@ -269,7 +269,16 @@ $('#start_verificacion_btn').on('click', function () {
 
   const codigos = ordenData.codigos;
 
-  table_not_verificadas.rows.add(codigos).draw();
+  const codigosUnicos = new Set(codigos.map(pieza => pieza.code));
+
+  const ordenesVerificadas = ordenData.ordenes_static_verified?.filter(
+    (orden, index, self) => codigosUnicos.has(orden.codigo) && self.findIndex(t => t.codigo === orden.codigo) === index
+  );
+
+  const ordenesSinVerificar = codigos.filter(pieza => !ordenesVerificadas.find(orden => orden.codigo === pieza.code));
+
+  table_verificadas.rows.add(ordenesVerificadas).draw();
+  table_not_verificadas.rows.add(ordenesSinVerificar).draw();
 });
 
 $('#cancel_verificacion_btn').on('click', function () {
@@ -277,6 +286,8 @@ $('#cancel_verificacion_btn').on('click', function () {
 });
 
 $('#cancel_verification_modal_btn').on('click', function () {
+  totalProgress = 0;
+
   $('#cancel_verification_modal').modal('hide');
   $('#save_verification_btn').addClass('d-none');
   $('#cancel_verificacion_btn').addClass('d-none');
@@ -322,6 +333,15 @@ const verificarPieza = async codigo => {
   const isVerified = verificadas_array.includes(codigo);
 
   productoByCode = ordenData.productos.find(product => product.codigos.find(code => code === codigo));
+
+  const data_verified = table_verificadas.rows().data().toArray();
+
+  const existsInVerified = data_verified.find(pieza => pieza.codigo === codigo);
+
+  if (existsInVerified) {
+    toastr.warning('Pieza ya verificada');
+    return;
+  }
 
   codigoVerificador = codigo;
 
@@ -371,13 +391,20 @@ $('#boton_mandar_cantidad').on('click', function () {
     toastr.error('Ingrese la cantidad de producto');
     return false;
   }
-  $('#ask_quantity').modal('hide');
   cantidadIngresada = Number($('#check_quantity').val());
+
+  if (cantidadRestante == 0) {
+    toastr.error('Toda la cantidad de la pieza ya ha sido verificada');
+    $('#ask_quantity').modal('hide');
+
+    return;
+  }
 
   if (cantidadIngresada > cantidadRestante) {
     toastr.error('La cantidad ingresada es mayor a la cantidad restante por verificar');
     return;
   }
+  $('#ask_quantity').modal('hide');
   verify(codigoVerificador);
 });
 
@@ -415,7 +442,7 @@ const verify = codigo => {
 
     console.log(productoByCode);
 
-    let progress;
+    let progress = 0;
     console.log(productoByCode);
     if (productoByCode.type === 'bulk') {
       const cantidadTotal = productoByCode.quantity;
@@ -434,6 +461,7 @@ const verify = codigo => {
 
 $('#save_verification_modal_btn').on('click', async function () {
   const piezas_verificadas = table_verificadas.rows().data().toArray();
+  totalProgress = 0;
 
   const order_id = ordenData.id;
   const button = new loadingButton($(this), 'Guardando...');
