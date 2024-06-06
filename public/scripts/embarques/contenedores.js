@@ -1,3 +1,8 @@
+const defaultOptionsDestinos = `<div class="d-inline-block text-nowrap">
+<button class="btn btn-sm btn-icon edit-icon editar-destino" title="Editar" data-bs-toggle="tooltip" data-bs-placement="top"><i class="ti ti-edit"></i></button>
+<button class="btn btn-sm btn-icon delete-icon eliminar-destino" title="Eliminar" data-bs-toggle="tooltip" data-bs-placement="top"><i class="ti ti-trash-x"></i></button>
+</div>`;
+
 const defaultOptionsProducts = `<div class="d-inline-block text-nowrap">
 <button class="btn btn-sm btn-icon delete-icon eliminar-producto" title="Eliminar" data-bs-toggle="tooltip" data-bs-placement="top"><i class="ti ti-trash-x"></i></button>
 </div>`;
@@ -61,7 +66,7 @@ destinos_table = $('#destinos_table').DataTable({
     { title: 'ubicacion', data: 'domicilio' },
     { title: 'correo', data: 'correo' },
     { title: 'telefono', data: 'telefono' },
-    { defaultContent: defaultOptionsProducts, width: '30px' }
+    { defaultContent: defaultOptionsDestinos, width: '30px' }
   ],
   orderable: false,
   lengthChange: false,

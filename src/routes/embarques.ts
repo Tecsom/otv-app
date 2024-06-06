@@ -23,6 +23,7 @@ import {
     getAllDataFromEmbarque,
     verifyContainersEmbarque,
     getContainersVerified,
+    putDestino,
     
 } from '../controllers/embarques'
 
@@ -57,6 +58,7 @@ router.get('/ordenes/embarques/:order_id', getProductosInOrderByEmbarque)
 
 router.get('/destinos/:embarque_id', getDestinoEmbarque) 
 router.post('/destinos/create', postDestinos)
+router.put('/destinos/:destino_id', putDestino)
 router.delete('/destinos/:destino_id', deleteDestinoEmbarque)
 
 router.post('/embarques/codigo/contenedor', createCodigoContenedor)

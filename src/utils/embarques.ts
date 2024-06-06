@@ -428,6 +428,30 @@ export const postNewDestino = async (payload: DestinoPost): Promise<ApiResult> =
     return result;
 }
 
+export const editDestino = async (destino_id: number, payload: DestinoPost): Promise<ApiResult> => {
+    const { data, error } = await supabase().from('destinos').update({
+        ubicacion: payload.ubicacion
+    }).eq('id', destino_id);
+
+    if(error) {
+        console.error("Error editing destino: ", error);
+        const resultError: ApiResult = {
+            data: error,
+            message: error.message,
+            status: false
+        }
+        return resultError;
+    }
+
+    const result: ApiResult = {
+        data: data,
+        message: 'Destino actualizado con éxito',
+        status: true
+    }
+
+    return result;
+}
+
 export const deleteDestino = async (destino_id: number): Promise<ApiResult> => {
     const { error } = await supabase().from('destinos').delete().eq('id', destino_id);
 

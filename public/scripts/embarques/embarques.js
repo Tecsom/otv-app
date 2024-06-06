@@ -277,6 +277,12 @@ $('#create_embarque').on('submit', async function (e) {
   $('#create_embarque_modal').modal('hide');
   $('#create_embarque_button').prop('disabled', false);
 
+  $('#fecha_entrega').val('');
+  $('#fecha_embarque').val('');
+
+  $('#fecha_entrega').data({ value: '' });
+  $('#fecha_embarque').data({ value: '' });
+
   await loadEmbarques();
 });
 
@@ -1155,15 +1161,29 @@ $('#clientes_select').on('change', function () {
 $('#confirm_add_cliente').on('click', async function () {
   const selectedOption = $('#clientes_select').find('option:selected');
   let data = selectedOption.data('cliente');
-  console.log(data);
+
+  const $direccion_destino = $('#direccion_destino');
+  const direccion_destino = $direccion_destino.val().trim();
+
+  if (direccion_destino == '') {
+    toastr.error('Completar los campos para agregar el destino');
+    return;
+  }
 
   const result = await fetchData('/destinos/create', 'POST', {
-    ubicacion: `${data.ciudad} ${data.estado}, ${data.pais}  ${data.domicilio}`,
+    ubicacion: direccion_destino,
     correo: data.correo,
     telefono: data.telefono,
     cliente_id: data.id,
     embarque_id: $('#container-reporte').data().id
   });
+
+  console.log(result);
+
+  if (result.status == false) {
+    toastr.error('Error al agregar el destino');
+    return;
+  }
 
   await loadDestinos();
 
@@ -1171,7 +1191,7 @@ $('#confirm_add_cliente').on('click', async function () {
   $('#add_destination_modal').modal('hide');
 });
 
-$('#destinos_table').on('click', '.eliminar-producto', function () {
+$('#destinos_table').on('click', '.eliminar-destino', function () {
   selectedRowDestination = $(this).closest('tr');
 
   console.log(selectedRowDestination);
@@ -1195,8 +1215,45 @@ $('#confirm_delete_destino').on('click', async function () {
   await loadDestinos();
 });
 
-//$("#destinos_table").on('click', '', '')
+$('#destinos_table').on('click', '.editar-destino', function () {
+  selectedRowDestination = $(this).closest('tr');
 
+  const data = $('#destinos_table').DataTable().row(selectedRowDestination).data();
+
+  $('#edit_ubicacion').val(data.domicilio);
+
+  $('#update_destination_modal').modal('show');
+});
+
+$('#confirm_update_destino').on('click', async function () {
+  const data = $('#destinos_table').DataTable().row(selectedRowDestination).data();
+
+  const $destino = $('#edit_ubicacion');
+
+  const ubicacion = $destino.val().trim();
+
+  if (ubicacion == '') {
+    toastr.error('Completar los campos para editar el destino');
+    return;
+  }
+
+  const result = await fetchData('/destinos/' + data.id, 'PUT', {
+    ubicacion: ubicacion
+  });
+
+  if (result.status == false) {
+    toastr.error('Error al editar el destino');
+    return;
+  }
+
+  toastr.success('Destino editado con éxito');
+
+  $('#update_destination_modal').modal('hide');
+
+  await loadDestinos();
+});
+
+$('#destinos_table').on('click', '', '');
 async function loadDestinos() {
   const data = $('#container-reporte').data();
 

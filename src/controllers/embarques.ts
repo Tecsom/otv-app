@@ -1,6 +1,6 @@
 import { Request, Response } from 'express'
 import { CreateCodigo, Embarque } from '@/types/embarques'
-import { newEmbarque, createEmbarqueProduct, delEmbarque, getEmbarqueProducts, getOrdenesStatic, listEmbarques, getEmbarqueById, updtEmbarque, deleteProductFromEmbarque, createNewEmbarqueContenedor, getContenedoresByEmbarque, changeStateToEmbarque, deleteContainerInEmbarque, updateContainerInEmbarque, getProductsInOrdenCompra, postNewDestino, getDestinosPorEmbarque, deleteDestino, generateContenedorCode, getCodigosContenedores, getEmbarqueData, verifyContainers, getVerificationsContainer } from '@/utils/embarques';
+import { newEmbarque, createEmbarqueProduct, delEmbarque, getEmbarqueProducts, getOrdenesStatic, listEmbarques, getEmbarqueById, updtEmbarque, deleteProductFromEmbarque, createNewEmbarqueContenedor, getContenedoresByEmbarque, changeStateToEmbarque, deleteContainerInEmbarque, updateContainerInEmbarque, getProductsInOrdenCompra, postNewDestino, getDestinosPorEmbarque, deleteDestino, generateContenedorCode, getCodigosContenedores, getEmbarqueData, verifyContainers, getVerificationsContainer, editDestino } from '@/utils/embarques';
 
 export const getEmbarques = async (req: Request, res: Response) => {
 
@@ -198,11 +198,25 @@ export const postDestinos = async(req:Request, res: Response) => {
 
         const data = await postNewDestino(payload);
 
-        res.status(201).json(data);
+        res.status(200).json(data);
 
     } catch (error) {
         res.status(500).json(error)
     }
+}
+
+export const putDestino = async(req:Request, res: Response) => {
+    try {
+        const payload = req.body;
+        const destino_id = req.params.destino_id;
+
+        const data = await editDestino(parseInt(destino_id), payload);
+
+        res.status(200).json(data);
+    } catch (error) {
+        res.status(500).json(error);
+    }
+
 }
 
 export const getDestinoEmbarque = async (req:Request, res: Response) =>{

@@ -744,6 +744,26 @@
         </div>
       </div>
     </div>
+    <!--MODAL EDITAR DESTINO-->
+    <div class="modal fade" id="update_destination_modal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel1">Eliminar destino</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body row">
+            <div class="col-md-12">
+              <label for="edit_ubicacion" class="required">Ubicación</label>
+              <input type="text" class="form-control" id="edit_ubicacion" name="edit_ubicacion">
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button id="confirm_update_destino" type="button" class="btn btn-success">Editar</button>
+          </div>
+        </div>
+      </div>
+    </div>
     <!--! MODAL PARA CODIGOS QR DE CONTENEDORES-->
     <div class="modal fade" id="viewCodeModal" tabindex="-1" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
@@ -773,5 +793,4 @@
         </script>
 
         <script src="/public/scripts/embarques/embarques.js" type="module"></script>
-        <script src="/public/scripts/embarques/embarques-products-table.js" type="module"></script>
         <script src="/public/scripts/embarques/contenedores.js" type="module"></script>
