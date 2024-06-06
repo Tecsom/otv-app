@@ -81,11 +81,7 @@ table_piezas = $('#table_piezas_oc').DataTable({
           if (verificaciones_unicas.length == 0) {
             return `${verificaciones_unicas.length || 0} de ${row.quantity}`;
           } else {
-            return `${(verificaciones_unicas.length = 0
-              ? 0
-              : verificaciones_unicas.map(item => {
-                  return item.cantidad;
-                }))} de ${row.quantity}`;
+            return `${verificaciones_unicas.reduce((acc, ver) => acc + ver.cantidad, 0)} de ${row.quantity}`;
           }
         }
         return `${verificaciones_unicas.length || 0} de ${row.codigos.length}`;
