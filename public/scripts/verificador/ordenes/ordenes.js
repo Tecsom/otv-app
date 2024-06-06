@@ -350,6 +350,15 @@ const verificarPieza = async codigo => {
 
 $('#boton_mandar_cantidad').on('click', function () {
   console.log(productoByCode);
+  const ordenesVerificadas = ordenData.ordenes_static_verified?.filter(orden => orden.codigo === codigoVerificador);
+  console.log({ ordenesVerificadas });
+
+  const cantidadPieza = ordenesVerificadas.reduce((acc, orden) => acc + orden.quantity, 0);
+  console.log({ cantidadPieza });
+
+  const cantidadRestante = productoByCode.quantity - cantidadPieza;
+  console.log({ cantidadRestante });
+
   if ($('#check_quantity').val() > productoByCode.quantity) {
     toastr.error('La cantidad ingresada es mayor a la cantidad de la pieza');
     return false;
@@ -364,6 +373,11 @@ $('#boton_mandar_cantidad').on('click', function () {
   }
   $('#ask_quantity').modal('hide');
   cantidadIngresada = Number($('#check_quantity').val());
+
+  if (cantidadIngresada > cantidadRestante) {
+    toastr.error('La cantidad ingresada es mayor a la cantidad restante por verificar');
+    return;
+  }
   verify(codigoVerificador);
 });
 
@@ -396,8 +410,6 @@ const verify = codigo => {
   cantidadProductos =
     table_verificadas.rows().data().toArray().length + table_not_verificadas.rows().data().toArray().length;
 
-  console.log(cantidadProductos);
-
   if (!verificadas_array.includes(codigo)) {
     verificadas_array.push(codigo);
 
@@ -414,8 +426,6 @@ const verify = codigo => {
     }
 
     totalProgress += progress;
-
-    console.log(totalProgress);
 
     $('#progress_verificacion').css('width', `${totalProgress}%`);
     $('#progress_verificacion').text(`Progreso de verificación (${totalProgress.toFixed(2)}%)`);
