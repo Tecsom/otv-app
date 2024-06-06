@@ -501,11 +501,13 @@ const updateGeneralProgress = () => {
       const ordenVerificada = order_data.ordenes_verified?.find(orden => orden.codigo === producto.code);
       const quantity = producto.data.reduce((acc, item) => acc + item.quantity, 0);
       const main_quantity = main_prod.quantity;
-      console.log({ ordenVerificada, quantity });
+
       if (quantity > 0) {
-        piezas_verificadas += quantity;
+        const percentaje = quantity / main_quantity;
+        console.log({ percentaje });
+        piezas_verificadas += percentaje;
       }
-      piezas += main_quantity;
+      piezas++;
     } else {
       if (producto.verified) {
         piezas_verificadas++;
