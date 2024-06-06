@@ -970,10 +970,10 @@ $('#confirm_add_container').on('click', async function () {
     return;
   }
 
+  await loadContenedores(data);
   $nombre_contenedor.val('');
   toastr.success('Contenedor generado con éxito');
 
-  loadContenedores(data);
   $('#addContainerEmbarque').modal('hide');
 });
 
@@ -1146,8 +1146,9 @@ $('#addDestinationButton').on('click', async function () {
 $('#clientes_select').on('change', function () {
   const selectedOption = $(this).find('option:selected');
   let data = selectedOption.data('cliente');
-
-  $('#direccion_destino').val(`${data.ciudad} ${data.estado}, ${data.pais}  ${data.domicilio}`);
+  $('#direccion_destino').val(
+    `${data.ciudad ? data.ciudad : ''} ${data.estado ? data.estado + ',' : ''}  ${data.pais ? data.pais : ''}  ${data.domicilio ? data.domicilio : ''}`
+  );
   $('#correo_cliente').val(data.correo);
   $('#telefono_cliente').val(data.telefono);
 });
@@ -1155,15 +1156,22 @@ $('#clientes_select').on('change', function () {
 $('#confirm_add_cliente').on('click', async function () {
   const selectedOption = $('#clientes_select').find('option:selected');
   let data = selectedOption.data('cliente');
-  console.log(data);
+  const direccion = $('#direccion_destino').val(`${data.ciudad} ${data.estado}, ${data.pais}  ${data.domicilio}`);
 
-  const result = await fetchData('/destinos/create', 'POST', {
-    ubicacion: `${data.ciudad} ${data.estado}, ${data.pais}  ${data.domicilio}`,
-    correo: data.correo,
-    telefono: data.telefono,
-    cliente_id: data.id,
-    embarque_id: $('#container-reporte').data().id
-  });
+  console.log(direccion.val());
+
+  //const result = await fetchData('/destinos/create', 'POST', {
+  //  ubicacion: direccion,
+  //  correo: data.correo,
+  //  telefono: data.telefono,
+  //  cliente_id: data.id,
+  //  embarque_id: $('#container-reporte').data().id
+  //});
+
+  if (result.status == false) {
+    toastr.error('Error al agregar el destino');
+    return;
+  }
 
   await loadDestinos();
 
