@@ -43,7 +43,8 @@ codigos_table = $('#codigos_table').DataTable({
   autoWidth: false,
   rowGroup: {
     dataSrc: 'numero_parte'
-  }
+  },
+  pageLength: 5
 });
 
 $('#codigos_table').on('click', 'tbody tr button', async function (e) {

@@ -85,6 +85,7 @@ codigos_table = $('#codigos_table').DataTable({
     //{ title: 'ultimo escaneo' },
     { title: 'acciones', defaultContent: tableActions }
   ],
+  pageLength: 10,
   orderable: false,
   lengthChange: false,
   info: false,

@@ -203,6 +203,12 @@ loadEmbarqueData = async () => {
 };
 
 $('#startVerificacion').on('click', function () {
+  const progress = updateGeneralProgress();
+  console.log(progress);
+  if (progress === 100) {
+    toastr.error('Los contenedores ya han sido verificados');
+    return;
+  }
   $('#start_verificacion').modal('show');
 });
 
@@ -227,13 +233,19 @@ $('#start_verificacion_btn').on('click', function () {
   table_verificadas.clear().draw();
   table_not_verificadas.clear().draw();
 
-  const codigos = embarqueData.embarque_contenedor_codes.map(codigo => {
-    return {
-      code: codigo.code
-    };
-  });
+  const codigos = embarqueData.embarque_contenedor_codes;
 
-  table_not_verificadas.rows.add(codigos).draw();
+  const codigosUnicos = new Set(codigos.map(pieza => pieza.code));
+
+  const ordenesVerificadasTemp = embarqueData.embarque_contenedor_verified?.filter(
+    (orden, index, self) => codigosUnicos.has(orden.codigo) && self.findIndex(t => t.codigo === orden.codigo) === index
+  );
+
+  const ordenesSinVerificar = codigos.filter(
+    pieza => !ordenesVerificadasTemp.find(orden => orden.codigo === pieza.code)
+  );
+
+  table_not_verificadas.rows.add(ordenesSinVerificar).draw();
 });
 
 $('#table_piezas_oc').on('click', '.btn-opciones-pieza', async function () {
@@ -332,11 +344,24 @@ socket.on('scanner', data => {
 });
 
 const verificarPieza = async codigo => {
-  const exists = embarqueData.embarque_contenedor_codes.find(pieza => pieza.code === codigo);
+  //const exists = embarqueData.embarque_contenedor_codes.find(pieza => pieza.code === codigo);
   const isVerified = verificadas_array.includes(codigo);
 
-  if (!exists) {
-    toastr.error('Codigo de embarque no encontrado o invalido');
+  const data_no_verified = table_not_verificadas.rows().data().toArray();
+
+  const existsInNotVerified = data_no_verified.find(pieza => pieza.code === codigo);
+
+  const data_verified = table_verificadas.rows().data().toArray();
+
+  const existsInVerified = data_verified.find(pieza => pieza.codigo === codigo);
+
+  if (existsInVerified) {
+    toastr.warning('Pieza ya verificada');
+    return;
+  }
+
+  if (!existsInNotVerified) {
+    toastr.error('Pieza no encontrada');
     return;
   }
 
@@ -398,6 +423,8 @@ const updateGeneralProgress = () => {
   const progress = (piezas_verificadas / piezas) * 100;
   $('#progress_general').css('width', `${progress}%`);
   $('#progress_general').text(`Progreso general (${progress.toFixed(2)}%)`);
+
+  return progress;
 };
 
 $('#save_verification_modal_btn').on('click', async function () {

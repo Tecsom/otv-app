@@ -326,13 +326,6 @@ $('#start_verificacion_btn').on('click', function () {
     orden => !ordenesSinVerificar.find(noVerificado => noVerificado.code === orden.codigo)
   );
 
-  console.log({ ordenesSinVerificar });
-  console.log({ comparacion });
-
-  console.log({ ordenesVerificadasArray });
-  console.log({ productos });
-  console.log({ ordenesVerificadas });
-
   table_not_verificadas.rows.add(ordenesSinVerificar).draw();
 });
 

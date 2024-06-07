@@ -12,6 +12,9 @@
     color: #7367f0 !important;
   }
 </style>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/plugins/weekSelect/weekSelect.min.js"></script>
+<script src="/public/assets/vendor/libs/flatpickr/flatpickr.js"></script>
+
 <div class="app-chat card overflow-hidden mt-2">
   <div class="row g-0">
     <div class="col-md-2 app-chat-contacts bg-body app-sidebar flex-grow-0 border-end" id="app-chat-contacts">
@@ -44,7 +47,7 @@
         <div class="border-1 border-top mt-2 pt-2 collapse" id="collapse-filters">
           <div class="row g-3">
             <div class="col-md-12">
-              <label for="range_filter" class="form-label">Estado del embarque</label>
+              <label for="range_filter" class="form-label">Estado de la orden</label>
               <div class="form-check mt-2">
                 <input
                   class="form-check-input filter-checkbox"
@@ -63,31 +66,6 @@
                   checked />
                 <label class="form-check-label" for="check_proceso">Proceso</label>
               </div>
-              <div class="form-check mt-2">
-                <input
-                  class="form-check-input filter-checkbox"
-                  type="checkbox"
-                  value="embarque"
-                  id="check_embarque"
-                  checked />
-                <label class="form-check-label" for="check_embarque">Embarque</label>
-              </div>
-              <div class="form-check mt-2">
-                <input
-                  class="form-check-input filter-checkbox"
-                  type="checkbox"
-                  value="finalizada"
-                  id="check_completada" />
-                <label class="form-check-label" for="check_completada">Completada</label>
-              </div>
-              <div class="form-check mt-2">
-                <input
-                  class="form-check-input filter-checkbox"
-                  type="checkbox"
-                  value="cancelada"
-                  id="check_cancelada" />
-                <label class="form-check-label" for="check_cancelada">Cancelada</label>
-              </div>
             </div>
             <div class="col-md-12">
               <label for="range_filter" class="form-label">Fecha de creación</label>
@@ -102,7 +80,16 @@
               <label for="range_entrega_filter" class="form-label">Fecha de entrega</label>
               <input
                 class="form-control datetimepicker flatpickr-input"
-                id="range_entrega_filter"
+                id="day_fecha_entrega"
+                type="text"
+                placeholder="Selecciona un rango de fecha"
+                readonly="readonly" />
+            </div>
+            <div class="col-md-12">
+              <label for="week_fecha_entrega" class="form-label">Semana de entrega</label>
+              <input
+                class="form-control datetimepicker flatpickr-input"
+                id="week_fecha_entrega"
                 type="text"
                 placeholder="Selecciona un rango de fecha"
                 readonly="readonly" />
@@ -444,13 +431,14 @@
 
   let flatpckr_day;
   let flatpckr_week;
+  let flatpicker_created;
 
   let flatpickr_edit;
   let page = 1;
   const limit = 10;
   let loadMore = true;
   let isLoading = false;
-  let estatusFilters = ['proceso', 'embarque'];
+  let estatusFilters = ['proceso', 'pendiente'];
   let search = '';
   let timeout_debounce;
   let createdAtFilter = null;
@@ -463,6 +451,7 @@
   let loadVerificaciones;
 </script>
 
-<script src="/public/scripts/verificador/embarques/embarques.js" type="module"></script>
 <script src="/public/scripts/verificador/embarques/verifications.js" type="module"></script>
+<script src="/public/scripts/verificador/embarques/embarques.js" type="module"></script>
 <script src="/public/scripts/verificador/embarques/history.js" type="module"></script>
+<script src="/public/scripts/verificador/embarques/flatpicker.js"></script>

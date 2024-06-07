@@ -7,110 +7,92 @@ const badgeType = {
   finalizada: 'success'
 };
 
-var estadosMarcados = {
-  proceso: true,
-  cancelada: false,
-  pendiente: true,
-  embarque: true,
-  finalizada: false
-};
+async function getEmbarques() {
+  // page, pageSize, search
+  if (!loadMore) return [];
+  const createdAtFilterString = createdAtFilter?.join(',') ?? '';
+  const deliveryDateFilterString = deliveryDateFilter?.join(',') ?? '';
 
-var estadoOrden = {
-  proceso: 1,
-  pendiente: 2,
-  embarque: 3,
-  cancelada: 4,
-  finalizada: 5
-};
+  console.log(estatusFilters);
+  const query = `?page=${page}&pageSize=${limit}&estatusFiltersStr=${estatusFilters.join(',')}&search=${search}&createdAtFilterString=${createdAtFilterString}&deliveryDateFilterString=${deliveryDateFilterString}`;
+  isLoading = true;
+  const embarques = await fetchData('/embarques/paging' + query, 'GET'); //api/embarques
+  isLoading = false;
 
-async function loadEmbarques() {
+  if (!embarques.status) {
+    toastr.error('Ocurrió un error al obtener embarques');
+    return;
+  }
+
+  if (embarques.data.length < limit) {
+    loadMore = false;
+  }
+
+  page = page + 1;
+  return embarques.data;
+}
+
+loadEmbarques = async () => {
   const $container = $('#embarques_container');
 
-  const embarques = await fetchData('/embarques', 'GET', {});
+  const embarques = await getEmbarques();
 
-  embarques.data.sort((a, b) => estadoOrden[a.estado] - estadoOrden[b.estado]);
-
-  console.log(embarques.data);
-
-  for (let embarque of embarques.data) {
+  for (let embarque of embarques) {
     const uniqueFolio = addLeadingZeros(embarque.folio_unico, 6);
 
     const $newdiv1 = $(`
-      <div class="embarque_container_child card-body border  cursor-pointer" embarque_id="${embarque.id}" id="order_${uniqueFolio}" folio="${embarque.id}">
-        <div class="row g-2">
-          <div class="col-md-12">
-            <div class="d-flex align-items-center justify-content-between p-2 pb-0">
-              <span class="badge bg-label-dark">${uniqueFolio}</span>
-              <span class="text-capitalize badge bg-${badgeType[embarque.estado]}">${embarque.estado}</span>
-            </div>
-          </div>
-          <div class="col-md-12">
-            <hr class="m-0" />
-          </div>
-          <div class="col-md-12">
-            <div class="p-2 pb-1 pt-0">
-              <p class="mb-0 small"><strong>Descripción: </strong>${embarque.descripcion ?? '<span style="color:Red">Sin cliente relacionado</span>'}</p>
-              <p class="mb-0 small"><strong>Fecha de embarque: ${isoDateToFormatted(embarque.fecha_embarque)}</strong></p>   
-              <p class="mb-0 small"><strong>Fecha de entrega: ${isoDateToFormatted(embarque.fecha_entrega)}</strong></p>
-            </div>      
+    <div class="embarque_container_child card-body border  cursor-pointer" embarque_id="${embarque.id}" id="order_${uniqueFolio}" folio="${embarque.id}">
+      <div class="row g-2">
+        <div class="col-md-12">
+          <div class="d-flex align-items-center justify-content-between p-2 pb-0">
+            <span class="badge bg-label-dark">${uniqueFolio}</span>
+            <span class="text-capitalize badge bg-${badgeType[embarque.estado]}">${embarque.estado}</span>
           </div>
         </div>
+        <div class="col-md-12">
+          <hr class="m-0" />
+        </div>
+        <div class="col-md-12">
+          <div class="p-2 pb-1 pt-0">
+            <p class="mb-0 small"><strong>Descripción: </strong>${embarque.descripcion ?? '<span style="color:Red">Sin cliente relacionado</span>'}</p>
+            <p class="mb-0 small"><strong>Fecha de embarque: ${isoDateToFormatted(embarque.fecha_embarque)}</strong></p>   
+            <p class="mb-0 small"><strong>Fecha de entrega: ${isoDateToFormatted(embarque.fecha_entrega)}</strong></p>
+            <p class="mb-0 small"><strong>Fecha de creación: ${isoDateToFormatted(embarque.created_at)}</strong></p>
+          </div>      
+        </div>
       </div>
-    `);
+    </div>
+  `);
+
     $newdiv1.data({ data: embarque });
     $container.append($newdiv1);
 
-    const selected = $('#ordenes_compra_container').data('selected');
+    const selected = $('#embarques_container').data('selected');
 
     if (selected && parseInt(selected) === orden.id) {
       $newdiv1.trigger('click');
     }
   }
-}
-
-//async function getOrdenes() {
-//  // page, pageSize, search
-//  if (!loadMore) return [];
-//
-//  const createdAtFilterString = createdAtFilter?.join(',') ?? '';
-//  const deliveryDateFilterString = deliveryDateFilter?.join(',') ?? '';
-//  const query = `?page=${page}&pageSize=${limit}&estatusFiltersStr=${estatusFilters.join(',')}&search=${search}&createdAtFilterString=${createdAtFilterString}&deliveryDateFilterString=${deliveryDateFilterString}`;
-//  isLoading = true;
-//  const ordenes = await fetchData('/ordenes/paging' + query, 'GET'); //api/ordenes
-//  isLoading = false;
-//
-//  if (!ordenes.status) {
-//    toastr.error('Ocurrió un error al obtener ordenes');
-//    return;
-//  }
-//
-//  if (ordenes.data.length < limit) {
-//    loadMore = false;
-//  }
-//
-//  page = page + 1;
-//  return ordenes.data;
-//}
+};
 
 $(document).ready(async function () {
   loadEmbarques();
 });
 
-//$('#ordenes_compra_container').on('scroll', async function () {
-//  const hasBottomReached = checkIfHasBottomReached(this);
-//
-//  if (hasBottomReached && loadMore && !isLoading) await loadOrdenes();
-//});
+$('#embarques_container').on('scroll', async function () {
+  const hasBottomReached = checkIfHasBottomReached(this);
 
-//const checkIfHasBottomReached = el => {
-//  const offset = 10;
-//  if (el === null) return false;
-//
-//  const dif = el.scrollHeight - el.scrollTop;
-//
-//  return dif <= el.clientHeight + offset;
-//};
+  if (hasBottomReached && loadMore && !isLoading) await loadEmbarques();
+});
 
+const checkIfHasBottomReached = el => {
+  const offset = 10;
+  if (el === null) return false;
+
+  const dif = el.scrollHeight - el.scrollTop;
+
+  return dif <= el.clientHeight + offset;
+};
 function addLeadingZeros(number, length) {
   // Convert number to string
   let numStr = String(number);
@@ -151,33 +133,44 @@ $('#quit-checker-form').on('submit', async function (e) {
   toastr.error('Contraseña incorrecta');
 });
 
-function actualizarVisualizacion() {
-  $('#embarques_container .embarque_container_child').each(function () {
-    var estado = $(this).data().data.estado.toLowerCase();
-    $(this).toggle(estadosMarcados[estado]);
-  });
-}
+$('.filter-checkbox').on('change', function () {
+  const checked = $(this).prop('checked');
+  const value = $(this).val();
 
-$('#check_cancelada').on('change', function () {
-  estadosMarcados['cancelada'] = this.checked;
-  actualizarVisualizacion();
+  if (checked) {
+    estatusFilters.push(value);
+  } else {
+    estatusFilters = estatusFilters.filter(elm => elm !== value);
+  }
+
+  page = 1;
+  loadMore = true;
+  $('#embarques_container').empty();
+  loadEmbarques();
 });
 
-$('#check_pendiente').on('change', function () {
-  estadosMarcados['pendiente'] = this.checked;
-  actualizarVisualizacion();
-});
-$('#check_proceso').on('change', function () {
-  estadosMarcados['proceso'] = this.checked;
-  actualizarVisualizacion();
-});
+$('#remove-filters-btn').on('click', function () {
+  console.log('entra');
+  $('#search-report-filter').val('');
 
-$('#check_completada').on('change', function () {
-  estadosMarcados['finalizada'] = this.checked;
-  actualizarVisualizacion();
-});
+  flatpckr_day.clear();
+  flatpicker_created.clear();
+  flatpckr_week.clear();
 
-$('#check_embarque').on('change', function () {
-  estadosMarcados['embarque'] = this.checked;
-  actualizarVisualizacion();
+  estatusFilters = ['pendiente', 'proceso', 'embarque'];
+
+  $('#check_pendiente').prop('checked', true);
+  $('#check_proceso').prop('checked', true);
+  $('#check_embarque').prop('checked', true);
+  $('#check_cancelada').prop('checked', false);
+  $('#check_completada').prop('checked', false);
+
+  search = '';
+  createdAtFilter = null;
+  deliveryDateFilter = null;
+
+  page = 1;
+  loadMore = true;
+  $('#embarques_container').empty();
+  loadEmbarques();
 });
