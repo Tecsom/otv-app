@@ -14,6 +14,32 @@ export const listEmbarques = async () => {
     return Embarques;
 }
 
+export const getEmbarquesPagination = async (
+    page: number,
+    pageSize: number,
+    search: string | null,
+    estatus: string[],
+    createdAtFilter: any[],
+    deliveryDateFilter: any[]
+  ) => {
+    search = search?.trim() === '' ? null : search;
+  
+    const { data: Embarques, error } = await supabase().rpc('search_embarques', {
+      search: search ?? '',
+      page,
+      limitperpage: pageSize,
+      estatus,
+      created_at_array: createdAtFilter,
+      delivery_date_array: deliveryDateFilter
+    });
+    
+    if (error) {
+      console.error('Error fetching Embarques:', error.message);
+      throw error;
+    }
+    return Embarques;
+  };
+
 export const getEmbarqueById = async (id: number) => {
     const { data, error } = await supabase()
         .from('embarques')

@@ -71,7 +71,7 @@
           <div class="border-1 border-top mt-2 pt-2 collapse" id="collapse-filters">
             <div class="row g-3">
               <div class="col-md-12">
-                <label for="range_filter" class="form-label">Estado de la orden</label>
+                <label for="range_filter" class="form-label">Estado del embarque</label>
                 <div class="form-check mt-2">
                   <input
                     class="form-check-input filter-checkbox"
@@ -114,6 +114,24 @@
                     value="cancelada"
                     id="check_cancelada" />
                   <label class="form-check-label" for="check_cancelada">Cancelada</label>
+                </div>
+                <div class="col-md-12">
+                  <label for="range_filter" class="form-label">Fecha de creación</label>
+                  <input
+                    class="form-control datetimepicker flatpickr-input"
+                    id="range_filter"
+                    type="text"
+                    placeholder="Selecciona un rango de fecha"
+                    readonly="readonly" />
+                </div>
+                <div class="col-md-12">
+                  <label for="range_entrega_filter" class="form-label">Fecha de creación</label>
+                  <input
+                    class="form-control datetimepicker flatpickr-input"
+                    id="range_entrega_filter"
+                    type="text"
+                    placeholder="Selecciona un rango de fecha"
+                    readonly="readonly" />
                 </div>
               </div>
               <div class="col-md-12">

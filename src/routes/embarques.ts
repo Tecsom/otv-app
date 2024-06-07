@@ -31,6 +31,9 @@ import {
 const router = express.Router()
 
 router.get('/embarques', getEmbarques);
+
+router.get('/embarques/paging', getEmbarques);
+
 router.get('/embarque/:id', showEmbarqueById);
 router.put('/embarque/:id', updateEmbarque);
 router.delete('/embarque/:id', deleteEmbarque);

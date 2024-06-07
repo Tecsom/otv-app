@@ -1,5 +1,14 @@
 import { fetchData, isoDateToFormatted, isoDateToFormattedWithTime } from '../helpers.js';
 
+let page = 1;
+const limit = 10;
+let loadMore = true;
+let isLoading = false;
+let estatusFilters = ['pendiente', 'proceso', 'embarque'];
+let search = '';
+let timeout_debounce;
+let createdAtFilter = null;
+let deliveryDateFilter = null;
 var estadosMarcados = {
   proceso: true,
   cancelada: false,
@@ -27,6 +36,54 @@ const badgeType = {
   cancelada: 'danger',
   finalizada: 'success'
 };
+
+const flatpickOptions = {
+  dateFormat: 'd/m/Y',
+  mode: 'range',
+  locale: {
+    firstDayOfWeek: 1,
+    weekdays: {
+      shorthand: ['Do', 'Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sa'],
+      longhand: ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado']
+    },
+    months: {
+      shorthand: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Оct', 'Nov', 'Dic'],
+      longhand: [
+        'Enero',
+        'Febrero',
+        'Мarzo',
+        'Abril',
+        'Mayo',
+        'Junio',
+        'Julio',
+        'Agosto',
+        'Septiembre',
+        'Octubre',
+        'Noviembre',
+        'Diciembre'
+      ]
+    }
+  }
+};
+
+const flatpckr_created = $('#range_filter').flatpickr({
+  onChange: function (selectedDates, dateStr) {
+    if (selectedDates.length < 2) return;
+
+    const startDate = new Date(selectedDates[0]).toISOString();
+    //end date at the end of the day
+
+    const endDate = new Date(new Date(selectedDates[1]).getTime() + 23 * 60 * 60 * 1000).toISOString();
+
+    createdAtFilter = [startDate, endDate];
+    page = 1;
+    loadMore = true;
+    $('#embarques_container').empty();
+    loadEmbarques();
+  },
+  maxDate: 'today',
+  ...flatpickOptions
+});
 
 $(() => {
   init();
@@ -99,7 +156,6 @@ async function init() {
     placeholder: 'Selecciona un cliente',
     dropdownParent: $('#add_destination_modal')
   });
-
   const $fecha_entrega = $('#fecha_entrega');
   $fecha_entrega.flatpickr({
     // EN ESTA PARTE ES DONDE SE REGISTRA EL EVENTO
@@ -175,23 +231,35 @@ async function init() {
 }
 
 async function getEmbarques() {
-  $('#embarques_container').empty();
-  const embarques = await fetchData('/embarques', 'GET');
+  // page, pageSize, search
+  if (!loadMore) return [];
+  const createdAtFilterString = createdAtFilter?.join(',') ?? '';
+  const deliveryDateFilterString = deliveryDateFilter?.join(',') ?? '';
+  const query = `?page=${page}&pageSize=${limit}&estatusFiltersStr=${estatusFilters.join(',')}&search=${search}&createdAtFilterString=${createdAtFilterString}&deliveryDateFilterString=${deliveryDateFilterString}`;
+  isLoading = true;
+  const embarques = await fetchData('/embarques/paging' + query, 'GET'); //api/embarques
+  isLoading = false;
 
-  if (embarques.status == false) {
-    toastr.error('Error al obtener los embarques');
+  if (!embarques.status) {
+    toastr.error('Ocurrió un error al obtener embarques');
+    return;
   }
 
-  return embarques;
+  if (embarques.data.length < limit) {
+    loadMore = false;
+  }
+
+  page = page + 1;
+  return embarques.data;
 }
 
 async function loadEmbarques() {
   const $container = $('#embarques_container');
 
   const embarques = await getEmbarques();
-  embarques.data.sort((a, b) => estadoOrden[a.estado] - estadoOrden[b.estado]);
+  console.log({ embarques });
 
-  for (let embarque of embarques.data) {
+  for (let embarque of embarques) {
     const uniqueFolio = addLeadingZeros(embarque.folio_unico, 6);
 
     const $newdiv1 = $(`
@@ -221,8 +289,23 @@ async function loadEmbarques() {
     $container.append($newdiv1);
   }
 
-  actualizarVisualizacion();
+  //actualizarVisualizacion();
 }
+
+$('#embarques_container').on('scroll', async function () {
+  const hasBottomReached = checkIfHasBottomReached(this);
+
+  if (hasBottomReached && loadMore && !isLoading) await loadEmbarques();
+});
+
+const checkIfHasBottomReached = el => {
+  const offset = 10;
+  if (el === null) return false;
+
+  const dif = el.scrollHeight - el.scrollTop;
+
+  return dif <= el.clientHeight + offset;
+};
 
 $('#create_embarque').on('submit', async function (e) {
   e.preventDefault();
@@ -1290,6 +1373,8 @@ async function loadCodigos(data) {
 
 $('#remove-filters-btn').on('click', function () {
   $('#search-report-filter').val('');
+
+  flatpckr_created.clear();
 
   estadosMarcados['pendiente'] = true;
   estadosMarcados['proceso'] = true;

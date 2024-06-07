@@ -1,6 +1,6 @@
 import { Request, Response } from 'express'
 import { CreateCodigo, Embarque } from '@/types/embarques'
-import { newEmbarque, createEmbarqueProduct, delEmbarque, getEmbarqueProducts, getOrdenesStatic, listEmbarques, getEmbarqueById, updtEmbarque, deleteProductFromEmbarque, createNewEmbarqueContenedor, getContenedoresByEmbarque, changeStateToEmbarque, deleteContainerInEmbarque, updateContainerInEmbarque, getProductsInOrdenCompra, postNewDestino, getDestinosPorEmbarque, deleteDestino, generateContenedorCode, getCodigosContenedores, getEmbarqueData, verifyContainers, getVerificationsContainer, editDestino } from '@/utils/embarques';
+import { newEmbarque, createEmbarqueProduct, delEmbarque, getEmbarqueProducts, getOrdenesStatic, listEmbarques, getEmbarqueById, updtEmbarque, deleteProductFromEmbarque, createNewEmbarqueContenedor, getContenedoresByEmbarque, changeStateToEmbarque, deleteContainerInEmbarque, updateContainerInEmbarque, getProductsInOrdenCompra, postNewDestino, getDestinosPorEmbarque, deleteDestino, generateContenedorCode, getCodigosContenedores, getEmbarqueData, verifyContainers, getVerificationsContainer, editDestino, getEmbarquesPagination } from '@/utils/embarques';
 
 export const getEmbarques = async (req: Request, res: Response) => {
 
@@ -8,6 +8,28 @@ export const getEmbarques = async (req: Request, res: Response) => {
         const ordenes = await listEmbarques();
         res.status(200).json(ordenes)
     } catch (error: any) {
+        res.status(500).json(error)
+    }
+}
+
+export const getEmbarquesPaging = async (req: Request, res: Response) => {
+    try {
+        const { page, pageSize, search, estatusFiltersStr, createdAtFilterString, deliveryDateFilterString } = req.query;
+        const estatusFilters = estatusFiltersStr ? (estatusFiltersStr as string).split(',') : [];
+        const createdAtFilter = createdAtFilterString ? (createdAtFilterString as string).split(',') : null;
+        const deliveryDateFilter = deliveryDateFilterString ? (deliveryDateFilterString as string).split(',') : null;
+
+        const embarques = await getEmbarquesPagination(
+            parseInt(page as string),
+            parseInt(pageSize as string),
+            search as string,
+            estatusFilters as string[],
+            createdAtFilter as any[],
+            deliveryDateFilter as any[]
+          );
+
+          res.status(200).json(embarques)
+    } catch (error) {
         res.status(500).json(error)
     }
 }
