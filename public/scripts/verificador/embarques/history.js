@@ -41,7 +41,7 @@ loadEmbarques = async () => {
     const uniqueFolio = addLeadingZeros(embarque.folio_unico, 6);
 
     const $newdiv1 = $(`
-    <div class="embarque_container_child card-body border  cursor-pointer" embarque_id="${embarque.id}" id="order_${uniqueFolio}" folio="${embarque.id}">
+    <div class="embarque_container_child card-body border-bottom cursor-pointer" embarque_id="${embarque.id}" id="order_${uniqueFolio}" folio="${embarque.id}">
       <div class="row g-2">
         <div class="col-md-12">
           <div class="d-flex align-items-center justify-content-between p-2 pb-0">
