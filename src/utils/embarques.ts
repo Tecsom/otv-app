@@ -143,17 +143,13 @@ export const delEmbarque = async (embarque_id: number): Promise<ApiResult> => {
 export const getOrdenesStatic = async (): Promise<OrdenesInEmbarque[]> => {
     const { data: ordenes, error } = await supabase().from('group_ordenes_static_verified').select('*, order_id(id, productos, order_id(*))');
 
-    console.log(ordenes?ordenes[0] : '')
-
     if (error) {
         console.error("Error fetching ordenes: ", error);
         throw error;
     }
 
-    // Obtén los productos que ya están registrados en la tabla embarque_products
     const { data: embarqueProducts } = await supabase().from('embarque_products').select('*');
 
-    // Filtra los productos en order_id.productos para excluir los que ya están registrados
     ordenes.forEach(orden => {
         orden.order_id.productos = orden.order_id.productos.filter((producto: any) => {
             return !embarqueProducts?.some(embarqueProduct => embarqueProduct.producto_id === producto.id);

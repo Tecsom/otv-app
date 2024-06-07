@@ -118,7 +118,7 @@ async function init() {
     ordering: false,
     select: false,
     destroy: true,
-    paging: false
+    paging: true
   });
 
   $('#verificaciones_table').DataTable({
@@ -799,7 +799,7 @@ const loadProducts = async data => {
   const response = await fetchData(`/embarques/${data.id}/productos`, 'GET', {});
 
   const productos_table_data = response.data.map(producto => {
-    console.log(producto);
+    console.log({ producto });
     return {
       id: producto.id,
       nombre_producto: producto.order_products.piezas.numero_parte || '',
@@ -883,6 +883,11 @@ $('#confirm_delete_container').on('click', async function (e) {
 
   const data = $('#contenedores_table').DataTable().row(selectedRowContainer).data();
   console.log(data);
+
+  if (data.cantidad > 0) {
+    toastr.error('Para eliminar el contenedor primero elimina sus productos');
+    return;
+  }
 
   const result = await fetchData('/embarque/contenedor/' + data.id, 'DELETE', {});
 
