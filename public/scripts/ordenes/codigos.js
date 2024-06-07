@@ -93,40 +93,45 @@ $('#download-csv').on('click', function () {
     'CODIGO DE BARRAS'
   ];
   csvData.push(headers);
-  console.log(data);
+
   const year = new Date().getFullYear();
+
   data.each(row => {
-    // csvData.push([`"${row.numero_parte}"`, `"${row.code}"`]);
     csvData.push([
-      `"${row.consecutivo}"`,
-      `.`,
-      `"${row?.product?.revisiones?.nombre}"`,
-      `"${proveedor_id}"`,
-      `"${year}"`,
-      `"${row.consecutivo.toString().padStart(5, '0')}"`,
-      `"${row.code}"`,
-      `"${row.numero_parte}"`,
-      `"${row.code}"`
+      escapeCSV(row.consecutivo),
+      '.',
+      escapeCSV(row?.product?.revisiones?.nombre),
+      escapeCSV(proveedor_id),
+      escapeCSV(year),
+      escapeCSV(row.consecutivo.toString().padStart(5, '0')),
+      escapeCSV(row.code),
+      escapeCSV(row.numero_parte),
+      escapeCSV(row.code)
     ]);
   });
 
   const csv = csvData.map(row => row.join(',')).join('\n');
-
   const blob = new Blob([csv], { type: 'text/csv' });
-
   const url = URL.createObjectURL(blob);
-
   const a = document.createElement('a');
 
   a.setAttribute('hidden', '');
-
   a.setAttribute('href', url);
-
   a.setAttribute('download', 'codigos.csv');
 
   document.body.appendChild(a);
-
   a.click();
-
   document.body.removeChild(a);
 });
+
+function escapeCSV(value) {
+  if (value == null) {
+    return '""';
+  }
+  value = value.toString();
+  if (value.includes('"') || value.includes(',')) {
+    value = value.replace(/"/g, '""');
+    return `"${value}"`;
+  }
+  return value;
+}
