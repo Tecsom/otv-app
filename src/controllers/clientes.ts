@@ -330,9 +330,10 @@ export const getHistoryOrders = async (req: Request, res: Response) => {
 };
 
 export const getHistoryShips = async (req: Request, res: Response) => {
+  const { page, limit } = req.query as { page: string; limit: string };
   try {
     const cliente_id = req.params.cliente_id;
-    const embarques = await gettHistorialEmbarques(parseInt(cliente_id));
+    const embarques = await gettHistorialEmbarques(parseInt(cliente_id), parseInt(page), parseInt(limit));
 
     res.status(200).json(embarques);
   } catch (error) {

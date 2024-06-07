@@ -1,6 +1,10 @@
 import { fetchData, loadingButton, isoDateToFormattedWithTime, isoDateToFormatted } from '/public/scripts/helpers.js';
 let page_oc = 0;
 let limit_oc = 5;
+
+let page_emb = 0;
+let limit_emb = 5;
+
 const badgeType = {
   pendiente: 'primary',
   proceso: 'secondary',
@@ -242,8 +246,14 @@ $('#load_more_oc').on('click', async function () {
   await loadHistorialOrdenes(clientData.id);
 });
 
+$('#load_more_emb').on('click', async function () {
+  await loadHistorialEmbarques(clientData.id);
+});
+
 const loadHistorialEmbarques = async cliente_id => {
-  const response = await fetchData('/cliente/historial/embarques/' + cliente_id, 'GET', {});
+  const params = `?page=${page_emb}&limit=${limit_emb}`;
+
+  const response = await fetchData('/cliente/historial/embarques/' + cliente_id + params, 'GET', {});
 
   for (let embarque of response.data) {
     const $newListItem = $(`
@@ -264,6 +274,9 @@ const loadHistorialEmbarques = async cliente_id => {
 
     $('#historial_emb').append($newListItem);
   }
+
+  page_emb++;
+  if (response.data.length < limit_emb) $('#load_more_emb').addClass('d-none');
 };
 
 function addLeadingZeros(number, length) {

@@ -97,12 +97,13 @@ export const getHistorialOrdenes = async (cliente_id: number, page: number, leng
   return data;
 };
 
-export const gettHistorialEmbarques = async (cliente_id: number) => {
+export const gettHistorialEmbarques = async (cliente_id: number, page: number, length: number) => {
   const { data, error } = await supabase()
     .from('destinos')
     .select('*, embarque_id(*)')
     .eq('cliente_id', cliente_id)
-    .order('id', { ascending: false });
+    .order('id', { ascending: false })
+    .range(page * length, (page + 1) * length - 1);
 
   if (error) {
     console.log(error);
