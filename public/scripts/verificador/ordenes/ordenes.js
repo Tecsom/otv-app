@@ -609,7 +609,8 @@ const updateGeneralProgress = () => {
   const progress = (piezas_verificadas / piezas) * 100;
 
   $('#progress_general').css('width', `${progress}%`);
-  $('#progress_general').text(`Progreso general (${progress.toFixed(2)}%)`);
+  const num_floor = Math.floor(num * 100) / 100;
+  $('#progress_general').text(`Progreso general (${num_floor.toFixed(2)}%)`);
 
   return progress;
 };
