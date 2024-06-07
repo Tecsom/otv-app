@@ -3,7 +3,10 @@ import supabase from '@/config/supabase';
 import { deleteFolder } from './storage';
 
 export const getClientes = async (): Promise<Cliente[]> => {
-  const { data: clientes, error } = await supabase().from('clientes').select(`
+  const { data: clientes, error } = await supabase()
+    .from('clientes')
+    .select(
+      `
   id,
   created_at,
   nombre,
@@ -15,7 +18,9 @@ export const getClientes = async (): Promise<Cliente[]> => {
   correo,
   telefono,
   celular
-  `);
+  `
+    )
+    .eq('deleted', false);
   if (error) {
     console.error('Error fetching clientes:', error.message);
     throw error;
@@ -38,7 +43,7 @@ export const getClientById = async (id_string: string): Promise<Cliente> => {
     throw new Error('El id es requerido');
   }
   const id = parseInt(id_string);
-  const { data, error } = await supabase().from('clientes').select('*').eq('id', id).single();
+  const { data, error } = await supabase().from('clientes').select('*').eq('id', id).eq('deleted', false).single();
   if (error) {
     console.error('Error fetching cliente:', error.message);
     throw error;
@@ -52,16 +57,32 @@ export const deleteCliente = async (id_string: string): Promise<Cliente> => {
     throw new Error('El id es requerido');
   }
 
-  const id = parseInt(id_string);
-  const { data, error } = await supabase().from('clientes').delete().eq('id', id).single();
-  if (error) {
-    console.error('Error deleting cliente:', error.message);
-    throw error;
+  let deleted = false;
+  let data_cliente = {} as Cliente;
+  try {
+    const id = parseInt(id_string);
+    const { data, error } = await supabase().from('clientes').delete().eq('id', id).single();
+    if (error) {
+      console.error('Error deleting cliente:', error.message);
+      throw error;
+    }
+    deleted = true;
+    data_cliente = data as Cliente;
+    await deleteFolder('clientes', id_string);
+  } catch (e) {
+    console.log(e);
+  }
+  if (!deleted) {
+    const { data, error } = await supabase().from('clientes').update({ deleted: true }).eq('id', id_string).single();
+    if (error) {
+      console.error('Error deleting cliente:', error.message);
+      throw error;
+    }
+    data_cliente = data as Cliente;
+    deleted = true;
   }
 
-  await deleteFolder('clientes', id_string);
-
-  return data as Cliente;
+  return data_cliente as Cliente;
 };
 
 export const updateCliente = async (cliente: Cliente, id_string: string): Promise<Cliente> => {

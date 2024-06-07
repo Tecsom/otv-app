@@ -13,4 +13,5 @@ export type Cliente = {
   code_string: string;
   code_type: string;
   proveedor_id: string;
+  deleted?: boolean;
 };
