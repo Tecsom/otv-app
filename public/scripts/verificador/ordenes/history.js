@@ -3,9 +3,7 @@ import { fetchData, isoDateToFormatted } from '/public/scripts/helpers.js';
 const badgeType = {
   pendiente: 'primary',
   proceso: 'secondary',
-  embarque: 'info',
-  cancelada: 'danger',
-  finalizada: 'success'
+  embarque: 'info'
 };
 
 loadOrdenes = async () => {

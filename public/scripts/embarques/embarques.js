@@ -1,29 +1,14 @@
 import { fetchData, isoDateToFormatted, isoDateToFormattedWithTime } from '../helpers.js';
 
 let page = 1;
-const limit = 10;
+const limit = 8;
 let loadMore = true;
 let isLoading = false;
-let estatusFilters = ['pendiente', 'proceso', 'embarque'];
+let estatusFilters = ['pendiente', 'proceso'];
 let search = '';
 let timeout_debounce;
 let createdAtFilter = null;
 let deliveryDateFilter = null;
-var estadosMarcados = {
-  proceso: true,
-  cancelada: false,
-  pendiente: true,
-  embarque: true,
-  finalizada: false
-};
-
-var estadoOrden = {
-  proceso: 2,
-  pendiente: 1,
-  embarque: 3,
-  cancelada: 4,
-  finalizada: 5
-};
 
 let selectedRowDestination;
 let selectedRowContainer;
@@ -82,6 +67,25 @@ const flatpckr_created = $('#range_filter').flatpickr({
     loadEmbarques();
   },
   maxDate: 'today',
+  ...flatpickOptions
+});
+
+const flatpckr_delivery = $('#range_entrega_filter').flatpickr({
+  onChange: function (selectedDates, dateStr) {
+    if (selectedDates.length < 2) return;
+
+    const startDate = new Date(selectedDates[0]).toISOString();
+
+    //end date at the end of the day
+    const endDate = new Date(new Date(selectedDates[1]).getTime() + 23 * 60 * 60 * 1000).toISOString();
+
+    deliveryDateFilter = [startDate, endDate];
+
+    page = 1;
+    loadMore = true;
+    $('#embarques_container').empty();
+    loadEmbarques();
+  },
   ...flatpickOptions
 });
 
@@ -230,11 +234,29 @@ async function init() {
   await loadEmbarques();
 }
 
+$('.filter-checkbox').on('change', function () {
+  const checked = $(this).prop('checked');
+  const value = $(this).val();
+
+  if (checked) {
+    estatusFilters.push(value);
+  } else {
+    estatusFilters = estatusFilters.filter(elm => elm !== value);
+  }
+
+  page = 1;
+  loadMore = true;
+  $('#embarques_container').empty();
+  loadEmbarques();
+});
+
 async function getEmbarques() {
   // page, pageSize, search
   if (!loadMore) return [];
   const createdAtFilterString = createdAtFilter?.join(',') ?? '';
   const deliveryDateFilterString = deliveryDateFilter?.join(',') ?? '';
+
+  console.log(estatusFilters);
   const query = `?page=${page}&pageSize=${limit}&estatusFiltersStr=${estatusFilters.join(',')}&search=${search}&createdAtFilterString=${createdAtFilterString}&deliveryDateFilterString=${deliveryDateFilterString}`;
   isLoading = true;
   const embarques = await fetchData('/embarques/paging' + query, 'GET'); //api/embarques
@@ -257,7 +279,6 @@ async function loadEmbarques() {
   const $container = $('#embarques_container');
 
   const embarques = await getEmbarques();
-  console.log({ embarques });
 
   for (let embarque of embarques) {
     const uniqueFolio = addLeadingZeros(embarque.folio_unico, 6);
@@ -279,6 +300,7 @@ async function loadEmbarques() {
             <p class="mb-0 small"><strong>Descripción: </strong>${embarque.descripcion ?? '<span style="color:Red">Sin cliente relacionado</span>'}</p>
             <p class="mb-0 small"><strong>Fecha de embarque: ${isoDateToFormatted(embarque.fecha_embarque)}</strong></p>   
             <p class="mb-0 small"><strong>Fecha de entrega: ${isoDateToFormatted(embarque.fecha_entrega)}</strong></p>
+            <p class="mb-0 small"><strong>Fecha de creación: ${isoDateToFormatted(embarque.created_at)}</strong></p>
           </div>      
         </div>
       </div>
@@ -288,8 +310,6 @@ async function loadEmbarques() {
     $newdiv1.data({ data: embarque });
     $container.append($newdiv1);
   }
-
-  //actualizarVisualizacion();
 }
 
 $('#embarques_container').on('scroll', async function () {
@@ -396,106 +416,50 @@ $('#embarques_container').on('click', '.embarque_container_child', async functio
   $('#data-embarque-data').text(data.fecha_embarque ? isoDateToFormatted(data.fecha_embarque) : '-');
   $('#data-fecha-entrega').text(data.fecha_entrega ? isoDateToFormatted(data.fecha_entrega) : '-');
 
-  $('#edit_oc').removeClass('d-none');
-  $('#delete_oc').removeClass('d-none');
   $('#data-last-update').text(data.last_update ? isoDateToFormatted(data.last_update) : '-');
   $('#input_container_type').val(data.tipo_contenedor);
   $('#container-reporte').data(data);
 
-  if (data.estado == 'proceso') {
-    $('#delete_oc').addClass('d-none');
-    $('#edit_oc').addClass('d-none');
-    $('#restaurar_oc').addClass('d-none');
-    $('#cancelar_oc').removeClass('d-none');
-    $('#finalizar_oc').removeClass('d-none');
+  $('#generate_order').addClass('d-none');
+  $('#generate_embarque').addClass('d-none');
+  $('#edit_oc').addClass('d-none');
+  $('#delete_oc').addClass('d-none');
+  $('#cancelar_oc').addClass('d-none');
+  $('#restaurar_oc').addClass('d-none');
+  $('#finalizar_oc').addClass('d-none');
+  $('#add_product_container_modal').addClass('d-none');
+  $('#create_container_modal').addClass('d-none');
+  $('#addDestinationButton').addClass('d-none');
 
-    $('#generate_embarque').addClass('d-none');
-    $('#addDestinationButton').addClass('d-none');
-    $('#create_container_modal').addClass('d-none');
-    $('#add_product_container_modal').addClass('d-none');
+  $('#productos_table_tab').DataTable().column(4).visible(false);
+  $('#contenedores_table').DataTable().column(3).visible(false);
+  $('#destinos_table').DataTable().column(4).visible(false);
 
-    $('#productos_table_tab').DataTable().column(4).visible(false);
-    $('#contenedores_table').DataTable().column(3).visible(false);
-    $('#destinos_table').DataTable().column(4).visible(false);
-  } else if (data.estado == 'embarque') {
-    $('#delete_oc').addClass('d-none');
-    $('#edit_oc').addClass('d-none');
-    $('#restaurar_oc').addClass('d-none');
-    $('#cancelar_oc').removeClass('d-none');
-    $('#finalizar_oc').removeClass('d-none');
-
-    $('#generate_embarque').addClass('d-none');
-    $('#addDestinationButton').addClass('d-none');
-    $('#create_container_modal').addClass('d-none');
-    $('#add_product_container_modal').addClass('d-none');
-
-    $('#productos_table_tab').DataTable().column(4).visible(false);
-    $('#contenedores_table').DataTable().column(3).visible(false);
-    $('#destinos_table').DataTable().column(4).visible(false);
-  } else if (data.estado == 'finalizada') {
-    $('#delete_oc').addClass('d-none');
-    $('#edit_oc').addClass('d-none');
-    $('#cancelar_oc').addClass('d-none');
-    $('#restaurar_oc').addClass('d-none');
-    $('#finalizar_oc').addClass('d-none');
-    $('#addDestinationButton').addClass('d-none');
-
-    $('#generate_embarque').addClass('d-none');
-    $('#addDestinationButton').addClass('d-none');
-    $('#create_container_modal').addClass('d-none');
-    $('#add_product_container_modal').addClass('d-none');
-
-    $('.eliminar-producto').addClass('d-none');
-    $('#productos_table_tab').DataTable().column(4).visible(false);
-    $('#contenedores_table').DataTable().column(3).visible(false);
-    $('#destinos_table').DataTable().column(4).visible(false);
-  } else if (data.estado == 'cancelada') {
-    $('#delete_oc').addClass('d-none');
-    $('#edit_oc').addClass('d-none');
-    $('#cancelar_oc').addClass('d-none');
-    $('#finalizar_oc').addClass('d-none');
-    $('#restaurar_oc').removeClass('d-none');
-    $('#addDestinationButton').addClass('d-none');
-
-    $('#generate_embarque').addClass('d-none');
-    $('#addDestinationButton').addClass('d-none');
-    $('#create_container_modal').addClass('d-none');
-    $('#add_product_container_modal').addClass('d-none');
-
-    $('.eliminar-producto').addClass('d-none');
-    $('#productos_table_tab').DataTable().column(4).visible(false);
-    $('#contenedores_table').DataTable().column(3).visible(false);
-    $('#destinos_table').DataTable().column(4).visible(false);
-  } else {
-    $('#add_product_container_modal').prop('disabled', false);
-    $('#create_container_modal').prop('disabled', false);
-
-    $('#delete_oc').removeClass('d-none');
+  if (data.estado === 'pendiente') {
+    $('#generate_order').removeClass('d-none');
     $('#edit_oc').removeClass('d-none');
-    $('#cancelar_oc').addClass('d-none');
-    $('#finalizar_oc').addClass('d-none');
-    $('#restaurar_oc').addClass('d-none');
-
-    $('#generate_embarque').removeClass('d-none');
-    $('#addDestinationButton').removeClass('d-none');
-    $('#create_container_modal').removeClass('d-none');
+    $('#delete_oc').removeClass('d-none');
     $('#add_product_container_modal').removeClass('d-none');
+    $('#addDestinationButton').removeClass('d-none');
+    $('#generate_embarque').removeClass('d-none');
+
     $('#productos_table_tab').DataTable().column(4).visible(true);
     $('#contenedores_table').DataTable().column(3).visible(true);
     $('#destinos_table').DataTable().column(4).visible(true);
+
+    $('#create_container_modal').removeClass('d-none');
+  } else if (data.estado === 'cancelada') {
+    $('#restaurar_oc').removeClass('d-none');
+  } else if (data.estado === 'finalizada') {
+  } else {
+    $('#cancelar_oc').removeClass('d-none');
+    $('#finalizar_oc').removeClass('d-none');
   }
 
-  //const profile_pic_res = await fetchData(`/clientes/${cliente_id}/profile-photo`);
-  //if (profile_pic_res.status === true) {
-  //  $('#profile-pic').attr('src', profile_pic_res.data);
-  //  $('#client_avatar').addClass('d-none');
-  //  $('#profile-pic').removeClass('d-none');
-  //}
-
-  await loadContenedores(data);
   await loadProducts(data);
   await loadDestinos();
   await loadVerificaciones(data.id);
+  await loadContenedores(data);
 });
 //PARTE PARA ELIMINAR LOS EMBARQUES
 $('#delete_oc').on('click', function () {
@@ -813,8 +777,9 @@ $('#confirm_add_products').on('click', async function () {
 
 // METODO PARA CARGAR LA TABLA DE CONTENEDORES EN EL APARTADO DE CONTENEDORES
 const loadContenedores = async data => {
-  console.log(data);
   const response = await fetchData('/embarques/contenedores/' + data.id, 'GET', {});
+
+  console.log(response.data);
 
   const contenedors_data_table = response.data.map(contenedor => {
     return {
@@ -826,13 +791,12 @@ const loadContenedores = async data => {
     };
   });
 
-  contenedores_table.clear().rows.add(contenedors_data_table).draw();
+  contenedores_table.clear();
+  contenedores_table.rows.add(contenedors_data_table).draw();
 };
 // METODO PARA CARGAR LA TABLA DE PRODUCTOS EN EL APARTADO DE CONTENEDORES
 const loadProducts = async data => {
   const response = await fetchData(`/embarques/${data.id}/productos`, 'GET', {});
-
-  console.log('LOAD CONTENEDOR', response);
 
   const productos_table_data = response.data.map(producto => {
     console.log(producto);
@@ -1029,9 +993,10 @@ $('#confirm_generate_embarque').on('click', async function () {
   $('#create_container_modal').addClass('d-none');
   $('#add_product_container_modal').addClass('d-none');
 
-  await loadEmbarques();
-  await loadCodigos(embarque_data);
   await cambiarStatus('proceso');
+
+  await loadCodigos(embarque_data);
+  await loadEmbarques();
 
   toastr.success('Embarque generado con éxito');
 
@@ -1059,10 +1024,11 @@ $('#confirm_add_container').on('click', async function () {
     return;
   }
 
+  await loadContenedores(data);
+
   $nombre_contenedor.val('');
   toastr.success('Contenedor generado con éxito');
 
-  loadContenedores(data);
   $('#addContainerEmbarque').modal('hide');
 });
 
@@ -1082,7 +1048,10 @@ async function cambiarStatus(estado) {
     }
   }
 
-  loadEmbarques();
+  $('#embarques_container').empty();
+  await loadEmbarques();
+
+  resetPaging();
 }
 
 $('#confirm_cancel_order').on('click', async function () {
@@ -1091,68 +1060,33 @@ $('#confirm_cancel_order').on('click', async function () {
   $('#productos_table_tab').DataTable().column(4).visible(false);
   $('#cancel_order_modal').modal('hide');
 
-  $('#data-status-data').text('cancelada');
-  $('#data-status-data').removeClass().addClass(`text-capitalize badge bg-danger`);
-  $('#create_container_modal').prop('disabled', true);
-  $('#add_product_container_modal').prop('disabled', true);
-  $('#generate_embarque').addClass('d-none');
-  $('#delete_oc').addClass('d-none');
-  $('#edit_oc').addClass('d-none');
   $('#cancelar_oc').addClass('d-none');
   $('#finalizar_oc').addClass('d-none');
   $('#restaurar_oc').removeClass('d-none');
-  $('#productos_table_tab').DataTable().column(4).visible(false);
-  $('#contenedores_table').DataTable().column(3).visible(false);
-  $('#destinos_table').DataTable().column(4).visible(false);
+
+  $('#data-status-data').text('cancelada');
+  $('#data-status-data').removeClass().addClass('text-capitalize badge bg-danger');
 
   toastr.success('Embarque cancelado con éxito');
 });
 
-$('#search-report-filter').on('keyup', function () {
-  var value = $(this).val().toLowerCase();
-  $('#embarques_container .embarque_container_child').filter(function () {
-    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
-  });
-});
-
-// Función para actualizar la visualización de los elementos basada en los estados marcados
-function actualizarVisualizacion() {
-  $('#embarques_container .embarque_container_child').each(function () {
-    var estado = $(this).data().data.estado.toLowerCase();
-    $(this).toggle(estadosMarcados[estado]);
-  });
-}
-
-$('#check_cancelada').on('change', function () {
-  estadosMarcados['cancelada'] = this.checked;
-  actualizarVisualizacion();
-});
-
-$('#check_pendiente').on('change', function () {
-  estadosMarcados['pendiente'] = this.checked;
-  actualizarVisualizacion();
-});
-$('#check_proceso').on('change', function () {
-  estadosMarcados['proceso'] = this.checked;
-  actualizarVisualizacion();
-});
-
-$('#check_completada').on('change', function () {
-  estadosMarcados['finalizada'] = this.checked;
-  actualizarVisualizacion();
-});
-
-$('#check_embarque').on('change', function () {
-  estadosMarcados['embarque'] = this.checked;
-  actualizarVisualizacion();
+$('#search-report-filter').on('input', function () {
+  //debounce 1 sec
+  if (timeout_debounce) clearTimeout(timeout_debounce);
+  timeout_debounce = setTimeout(() => {
+    search = $(this).val();
+    page = 1;
+    loadMore = true;
+    $('#embarques_container').empty();
+    loadEmbarques();
+    clearTimeout(timeout_debounce);
+    timeout_debounce = null;
+  }, 1000);
 });
 
 $('#confirm_restore_order').on('click', async function () {
   await cambiarStatus('proceso');
 
-  $('#productos_table_tab').DataTable().column(4).visible(true);
-  $('#contenedores_table').DataTable().column(3).visible(true);
-  $('#destinos_table').DataTable().column(4).visible(true);
   $('#restaurar_oc').addClass('d-none');
   $('#cancelar_oc').removeClass('d-none');
   $('#finalizar_oc').removeClass('d-none');
@@ -1163,7 +1097,7 @@ $('#confirm_restore_order').on('click', async function () {
   $('#add_product_container_modal').addClass('d-none');
 
   $('#data-status-data').text('proceso');
-  $('#data-status-data').removeClass().addClass(`text-capitalize badge bg-secondary`);
+  $('#data-status-data').removeClass().addClass('text-capitalize badge bg-secondary');
 
   toastr.success('Embarque restaurado con éxito');
   $('#restore_orden_modal').modal('hide');
@@ -1185,7 +1119,7 @@ $('#confirm_finish_embarque').on('click', async function () {
   $('#restaurar_oc').addClass('d-none');
 
   $('#data-status-data').text('finalizada');
-  $('#data-status-data').removeClass().addClass(`text-capitalize badge bg-success`);
+  $('#data-status-data').removeClass().addClass('text-capitalize badge bg-success');
 
   $('#create_container_modal').prop('disabled', true);
   $('#add_product_container_modal').prop('disabled', true);
@@ -1197,8 +1131,6 @@ $('#confirm_finish_embarque').on('click', async function () {
   toastr.success('Embarque finalizado con éxito');
 
   $('#finalizarEmbarque').modal('hide');
-
-  await loadEmbarques();
 });
 
 $('#addDestinationButton').on('click', async function () {
@@ -1226,7 +1158,7 @@ $('#addDestinationButton').on('click', async function () {
   $('#clientes_select').append('<option value=""></option>');
 
   filteredData.forEach(function (item) {
-    const option = $(`<option value="${item.id}">${item.nombre}</option>`);
+    const option = $(`<option value='${item.id}'>${item.nombre}</option>`);
     option.data('cliente', item);
     $('#clientes_select').append(option);
   });
@@ -1375,19 +1307,29 @@ $('#remove-filters-btn').on('click', function () {
   $('#search-report-filter').val('');
 
   flatpckr_created.clear();
+  flatpckr_delivery.clear();
 
-  estadosMarcados['pendiente'] = true;
-  estadosMarcados['proceso'] = true;
-  estadosMarcados['embarque'] = true;
-  estadosMarcados['finalizada'] = false;
-  estadosMarcados['cancelada'] = false;
+  estatusFilters = ['pendiente', 'proceso', 'embarque'];
 
   $('#check_pendiente').prop('checked', true);
   $('#check_proceso').prop('checked', true);
   $('#check_embarque').prop('checked', true);
   $('#check_cancelada').prop('checked', false);
   $('#check_completada').prop('checked', false);
-  actualizarVisualizacion();
+
+  search = '';
+  createdAtFilter = null;
+  deliveryDateFilter = null;
+
+  page = 1;
+  loadMore = true;
+  $('#embarques_container').empty();
+
+  const lengthCodigos = codigos_table.rows.data().toArray().length;
+  console.log(lengthCodigos);
+
+  $('#code_total').text(lengthCodigos);
+  loadEmbarques();
 });
 
 const loadVerificaciones = async id => {
@@ -1417,4 +1359,9 @@ const loadVerificaciones = async id => {
   $('#progress-bar-verificaciones').text(progress.toFixed(2) + '%');
 
   $('#verificaciones_table').DataTable().clear().rows.add(contenedoresConFecha).draw();
+};
+
+resetPaging = () => {
+  page = 1;
+  loadMore = true;
 };

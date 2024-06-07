@@ -131,7 +131,7 @@ export const createEmbarqueContenedores = async (req:Request, res: Response) => 
     try {
         const contenedor_data = req.body
         const embarque_id = req.params.embarque_id
-        const newEmbarque = createNewEmbarqueContenedor(contenedor_data, parseInt(embarque_id));
+        const newEmbarque = await createNewEmbarqueContenedor(contenedor_data, parseInt(embarque_id));
 
         res.status(200).json(newEmbarque)
     } catch (error) {

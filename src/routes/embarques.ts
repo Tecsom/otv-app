@@ -24,6 +24,7 @@ import {
     verifyContainersEmbarque,
     getContainersVerified,
     putDestino,
+    getEmbarquesPaging,
     
 } from '../controllers/embarques'
 
@@ -32,7 +33,7 @@ const router = express.Router()
 
 router.get('/embarques', getEmbarques);
 
-router.get('/embarques/paging', getEmbarques);
+router.get('/embarques/paging', getEmbarquesPaging);
 
 router.get('/embarque/:id', showEmbarqueById);
 router.put('/embarque/:id', updateEmbarque);

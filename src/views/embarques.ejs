@@ -94,15 +94,6 @@
                   <input
                     class="form-check-input filter-checkbox"
                     type="checkbox"
-                    value="embarque"
-                    id="check_embarque"
-                    checked />
-                  <label class="form-check-label" for="check_embarque">Embarque</label>
-                </div>
-                <div class="form-check mt-2">
-                  <input
-                    class="form-check-input filter-checkbox"
-                    type="checkbox"
                     value="finalizada"
                     id="check_completada" />
                   <label class="form-check-label" for="check_completada">Completada</label>
@@ -125,7 +116,7 @@
                     readonly="readonly" />
                 </div>
                 <div class="col-md-12">
-                  <label for="range_entrega_filter" class="form-label">Fecha de creación</label>
+                  <label for="range_entrega_filter" class="form-label">Fecha de entrega</label>
                   <input
                     class="form-control datetimepicker flatpickr-input"
                     id="range_entrega_filter"
@@ -409,7 +400,7 @@
                   <div class="tab-pane fade" id="navs_codigos" role="tabpanel">
                     <div>
                       <p class="mb-0">
-                        <strong>Tipo de código: </strong><span id="code_type">-</span>
+                        <strong>Tipo de código: </strong><span id="code_type">QR</span>
                       </p>
                       <p class="mb-0">
                         <strong>Total de códigos: </strong><span id="code_total">-</span>
@@ -808,6 +799,7 @@
           var verificaciones_table;
           var codigos_table
           var loadEmbarques = () => {};
+          var resetPaging;
         </script>
 
         <script src="/public/scripts/embarques/embarques.js" type="module"></script>
