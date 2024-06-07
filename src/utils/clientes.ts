@@ -43,7 +43,7 @@ export const getClientById = async (id_string: string): Promise<Cliente> => {
     throw new Error('El id es requerido');
   }
   const id = parseInt(id_string);
-  const { data, error } = await supabase().from('clientes').select('*').eq('id', id).eq('deleted', false).single();
+  const { data, error } = await supabase().from('clientes').select('*').eq('id', id).single();
   if (error) {
     console.error('Error fetching cliente:', error.message);
     throw error;
