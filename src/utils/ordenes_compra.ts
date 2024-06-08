@@ -109,7 +109,8 @@ export const generarOrdenDeCompraEstatica = async (order_data: any) => {
         order_id: orden.id,
         type: product.piezas.type
       },
-      product.quantity
+      product.quantity,
+      orden
     );
     product_db.codigos = codigos;
     products_codes.push(product_db);
@@ -359,7 +360,7 @@ const deleteCodesFromProduct = async (product_id: number): Promise<boolean> => {
   return true;
 };
 
-const generateProductCodeDb = async (product: ProductCode, quantity: number): Promise<any> => {
+const generateProductCodeDb = async (product: ProductCode, quantity: number, orderData: OrdenCompra): Promise<any> => {
   await deleteCodesFromProduct(product.id);
   let codes = [];
 
@@ -367,7 +368,7 @@ const generateProductCodeDb = async (product: ProductCode, quantity: number): Pr
     quantity = 1;
   }
   for (let i = 0; i < quantity; i++) {
-    const { code_str: code, consecutivo } = await generateCodesForProduct({ ...product }, i);
+    const { code_str: code, consecutivo } = await generateCodesForProduct({ ...product }, i, orderData);
     if (!code) {
       console.log('No se generó código para el producto');
       continue;
@@ -403,10 +404,11 @@ const generate_consecutivo_folio = async (producto_id: number) => {
   return (consecutivo?.[0]?.consecutivo ?? 0) + 1;
 };
 
-const generateCodesForProduct = async (product: ProductCode, index: number): Promise<any> => {
+const generateCodesForProduct = async (product: ProductCode, index: number, orderData: OrdenCompra): Promise<any> => {
   const pieza = await getPiezaWithCliente(product.pieza_id);
   const revision = await getRevisionById(product.revision);
   let consecutivo = null;
+  console.log({ orderData });
 
   product.numero_parte = pieza?.numero_parte ?? '';
   product.revision_name = revision?.nombre ?? '';
@@ -437,21 +439,21 @@ const generateCodesForProduct = async (product: ProductCode, index: number): Pro
       code_str += cons?.toString()?.padStart(5, '0');
       continue;
     } else if (key === 'ano_YYYY') {
-      const delivery_date = new Date(product.created_at);
+      const delivery_date = new Date(orderData?.fecha_entrega ?? '');
       const year = delivery_date.getFullYear();
 
       code_str += year;
 
       continue;
     } else if (key === 'ano_YY') {
-      const delivery_date = new Date(product.created_at);
+      const delivery_date = new Date(orderData?.fecha_entrega ?? '');
       const year = delivery_date.getFullYear().toString().slice(-2);
 
       code_str += year;
 
       continue;
     } else if (key === 'semana_ano') {
-      const delivery_date = new Date(product.created_at);
+      const delivery_date = new Date(orderData?.fecha_entrega ?? '');
       const week = getWeekNumber(delivery_date);
 
       code_str += `${week.toString().padStart(2, '0')}`;

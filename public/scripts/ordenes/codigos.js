@@ -87,6 +87,7 @@ $('#download-csv').on('click', function () {
     'PLANO',
     'MARCA',
     'AÑO',
+    'SEMANA',
     'NUMERO',
     'SUMA',
     'NUMERO DE PARTE',
@@ -95,7 +96,7 @@ $('#download-csv').on('click', function () {
   csvData.push(headers);
 
   const year = new Date().getFullYear();
-
+  console.log({ order_data });
   data.each(row => {
     csvData.push([
       escapeCSV(row.consecutivo),
@@ -103,6 +104,7 @@ $('#download-csv').on('click', function () {
       escapeCSV(row?.product?.revisiones?.nombre),
       escapeCSV(proveedor_id),
       escapeCSV(year),
+      escapeCSV(getWeekNumber(new Date(order_data.delivery_date))),
       escapeCSV(row.consecutivo.toString().padStart(5, '0')),
       escapeCSV(row.code),
       escapeCSV(row.numero_parte),
@@ -134,4 +136,18 @@ function escapeCSV(value) {
     return `"${value}"`;
   }
   return value;
+}
+
+function getWeekNumber(d) {
+  // Copy date so don't modify original
+  d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+  // Set to nearest Thursday: current date + 4 - current day number
+  // Make Sunday's day number 7
+  d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7));
+  // Get first day of year
+  const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+  // Calculate full weeks to nearest Thursday
+  const weekNo = Math.ceil(((d - yearStart) / 86400000 + 1) / 7);
+  // Return array of year and week number
+  return weekNo;
 }

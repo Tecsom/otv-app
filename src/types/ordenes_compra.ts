@@ -12,6 +12,7 @@ export interface OrdenCompra {
   delivery_date?: string;
   unique_folio?: number;
   id: number;
+  fecha_entrega?: string;
   last_update?: string;
   estado?: 'pendiente' | 'proceso' | 'embarque' | 'finalizada' | 'cancelada';
 }
