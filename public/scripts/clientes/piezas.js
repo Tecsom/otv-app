@@ -181,18 +181,14 @@ $('#crear-pieza-form').on('submit', async function (e) {
   const formData = new FormData(this);
   let data = Object.fromEntries(formData);
 
-  if (
-    data.numero_parte == '' ||
-    data.descripcion == '' ||
-    data.revision_nombre == '' ||
-    data.costo_produccion == '' ||
-    data.costo_venta == '' ||
-    !data.type
-  ) {
+  if (data.numero_parte == '' || data.descripcion == '' || data.revision_nombre == '' || !data.type) {
     button.stop();
     toastr.warning('Rellene los campos obligatorios para crear la pieza');
     return;
   }
+
+  data.costo_venta = data.costo_venta || 0;
+  data.costo_produccion = data.costo_produccion || 0;
 
   const accepted_images = dropzoneImages.getAcceptedFiles();
   const accepted_files = dropzoneFiles.getAcceptedFiles();
@@ -329,6 +325,14 @@ $('#editar-pieza-form').on('submit', async function (e) {
   let data = Object.fromEntries(formData);
   data.id = pieza_id;
   data.estado = $('#switch-input-estado').prop('checked');
+
+  if (data.numero_parte == '' || data.descripcion == '' || data.revision_nombre == '' || !data.type) {
+    button.stop();
+    toastr.warning('Rellene los campos obligatorios para editar la pieza');
+    return;
+  }
+  data.costo_venta = data.costo_venta || 0;
+  data.costo_produccion = data.costo_produccion || 0;
 
   const res = await fetchData(`/clientes/${cliente_id}/piezas`, 'PUT', data);
   button.stop();

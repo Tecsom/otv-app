@@ -434,7 +434,7 @@ const generateCodesForProduct = async (product: ProductCode, index: number): Pro
 
       cons = consecutivo - offset * 100000;
 
-      code_str += cons?.toString()?.padStart(4, '0');
+      code_str += cons?.toString()?.padStart(5, '0');
       continue;
     } else if (key === 'ano_YYYY') {
       const delivery_date = new Date(product.created_at);

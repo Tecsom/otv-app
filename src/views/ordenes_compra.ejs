@@ -26,7 +26,7 @@
 <div class="container-xxl flex-grow-1 container-p-y">
   <div class="app-chat card overflow-hidden mt-2">
     <div class="row g-0">
-      <div class="col app-chat-contacts bg-body app-sidebar flex-grow-0 border-end" id="app-chat-contacts">
+      <div class="col-md-3 app-chat-contacts bg-body app-sidebar flex-grow-0 border-end" id="app-chat-contacts">
         <div class="sidebar-header">
           <div class="d-flex justify-content-between align-items-center">
             <h5 class="mb-0">Órdenes de compra</h5>
@@ -144,7 +144,7 @@
         </div>
         <div id="ordenes_compra_container" class="sidebar-body" style="overflow-y: scroll"></div>
       </div>
-      <div class="col app-chat-history" id="container-reporte">
+      <div class="col-md-9 app-chat-history" id="container-reporte">
         <div class="chat-history-wrapper d-flex flex-column h-100">
           <div class="chat-history-header border-bottom">
             <div class="d-flex justify-content-between align-items-center">
@@ -239,7 +239,7 @@
                         <strong>Cliente: </strong><span id="data-client-data">[Nombre de cliente]</span>
                       </p>
                       <p class="mb-0">
-                        <strong>Folio de cliente: </strong><span id="client_id">[Identificador del cliente]</span>
+                        <strong>Número de orden: </strong><span id="client_id">[Identificador del cliente]</span>
                       </p>
                       <p class="mb-0"><strong>Moneda: </strong><span id="client_currency">[Moneda]</span></p>
                     </div>
@@ -515,7 +515,7 @@
           <div class="modal-body">
             <form id="create_order" class="row g-3">
               <div class="col-md-6">
-                <label for="folio_id" class="form-label required">Folio del cliente</label>
+                <label for="folio_id" class="form-label required">Número de orden</label>
                 <input type="text" id="folio_id" name="nombre" class="form-control" />
               </div>
               <div class="col-md-6 col-12">
@@ -545,7 +545,7 @@
           <div class="modal-body">
             <form id="edit_order_form" class="row g-3">
               <div class="col-md-6">
-                <label for="folio_id_edit" class="form-label required">Folio del cliente</label>
+                <label for="folio_id_edit" class="form-label required">Número de orden</label>
                 <input type="text" id="folio_id_edit" name="nombre" class="form-control" />
               </div>
               <div class="col-md-6 col-12">

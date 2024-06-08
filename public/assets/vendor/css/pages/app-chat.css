@@ -29,8 +29,6 @@
   position: absolute;
   left: calc(-21rem - 1rem);
   height: calc(100vh - 11.5rem);
-  width: 21rem;
-  flex-basis: 21rem;
   transition: all 0.25s ease;
 }
 .layout-navbar-hidden .app-chat .app-chat-contacts {

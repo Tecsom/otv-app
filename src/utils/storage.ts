@@ -2,6 +2,20 @@ import supabase from '@/config/supabase';
 import { decode } from 'base64-arraybuffer';
 
 export const uploadFile = async (path: string, bucket: string, file: string, object: object): Promise<boolean> => {
+  //replace path string with the path without . and / to avoid errors expect the extension dot
+
+  const filename = path.split('/').pop();
+  const extension = filename?.split('.').pop();
+  const filename_sanitized =
+    filename
+      ?.replace(extension ?? '', '')
+      .replace(/\./g, '')
+      .replace(/\//g, '') +
+    '.' +
+    extension;
+
+  path = path.replace(filename!, filename_sanitized);
+
   const { data, error } = await supabase().storage.from(bucket).upload(path, decode(file), object);
   if (error) {
     console.error('Error uploading file:', error.message);
