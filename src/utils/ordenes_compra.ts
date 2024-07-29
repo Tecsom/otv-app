@@ -48,15 +48,17 @@ export const getStaticOrden = async (id: number) => {
     console.error('Error fetching Ordenes:', error.message);
     throw error;
   }
+  console.log({ codigos_len: orden?.codigos.length });
   if (orden?.codigos.length > 0) {
     let index = 0;
+    const { data: codes_verifications, error } = await supabase()
+      .from('ordenes_static_verified')
+      .select('*')
+      .eq('order_id', id);
+    if (error) throw error;
     for (const prod of orden.codigos) {
-      const is_verified = await supabase()
-        .from('ordenes_static_verified')
-        .select('*')
-        .eq('order_id', id)
-        .eq('codigo', prod.code);
-
+      console.log({ index });
+      const is_verified = codes_verifications.filter((c: any) => c.codigo === prod.code) as any;
       orden.codigos[index].verified = (is_verified?.data?.length ?? 0) > 0;
       orden.codigos[index].data = is_verified?.data;
       // orden.codigos[index].type = is_verified

@@ -147,8 +147,7 @@ $('#ordenes_compra_container').on('click', '.order_container_child', async funct
   if (!res.status) return toastr.error('Ocurrió un error al obtener la orden');
   console.log(res.data);
   ordenData = res.data;
-
-  console.log(ordenData);
+  console.log({ ordenData });
 
   $('#ordenes_compra_container').data('selected', static_order_id);
 

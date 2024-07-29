@@ -206,9 +206,9 @@ export const editOrderProduct = async (req: Request, res: Response) => {
 
 export const getStaticOrderC = async (req: Request, res: Response) => {
   const { order_id } = req.params;
-
+  console.log('entra');
   let ordenData = await getStaticOrden(parseInt(order_id));
-
+  console.log('pasa');
   const code_string = ordenData?.cliente?.code_string;
 
   ordenData.cliente.code_string = JSON.parse(code_string);
