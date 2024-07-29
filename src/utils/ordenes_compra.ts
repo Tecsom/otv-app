@@ -58,9 +58,9 @@ export const getStaticOrden = async (id: number) => {
     if (error) throw error;
     for (const prod of orden.codigos) {
       console.log({ index });
-      const is_verified = codes_verifications.filter((c: any) => c.codigo === prod.code) as any;
-      orden.codigos[index].verified = (is_verified?.data?.length ?? 0) > 0;
-      orden.codigos[index].data = is_verified?.data;
+      const is_verified = codes_verifications.filter((c: any) => c.codigo === prod.code) ?? [];
+      orden.codigos[index].verified = (is_verified?.length ?? 0) > 0;
+      orden.codigos[index].data = is_verified;
       // orden.codigos[index].type = is_verified
       index++;
     }
