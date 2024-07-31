@@ -149,5 +149,5 @@ function getWeekNumber(d) {
   // Calculate full weeks to nearest Thursday
   const weekNo = Math.ceil(((d - yearStart) / 86400000 + 1) / 7);
   // Return array of year and week number
-  return weekNo;
+  return weekNo - 1;
 }

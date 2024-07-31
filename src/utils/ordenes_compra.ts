@@ -502,7 +502,7 @@ function getWeekNumber(d: any): number {
   // Calculate full weeks to nearest Thursday
   const weekNo: number = Math.ceil(((d - yearStart) / 86400000 + 1) / 7);
   // Return array of year and week number
-  return weekNo;
+  return weekNo - 1;
 }
 
 export const verifyProds = async (order_id: number, products: any[], created_at: any) => {
