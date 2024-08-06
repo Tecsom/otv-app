@@ -12,6 +12,7 @@ import {
   restRemaining,
   upsertMovements
 } from './inventory';
+import { Pieza, Revision } from '@/types/piezas';
 
 /**
  * 
@@ -102,7 +103,12 @@ export const generarOrdenDeCompraEstatica = async (order_data: any) => {
   const full_codigos = [];
   for (const product of products) {
     let product_db = productos.find((p: any) => p.id === product.id);
-
+    console.log({ product });
+    const pieza = await getPiezaWithCliente(product.piezas.id);
+    const revision = await getRevisionById(product.revisiones.id);
+    const consecutivo = await generate_consecutivo_folio(product.id);
+    if (!pieza) continue;
+    if (!revision) continue;
     const codigos = await generateProductCodeDb(
       {
         ...product,
@@ -112,7 +118,10 @@ export const generarOrdenDeCompraEstatica = async (order_data: any) => {
         type: product.piezas.type
       },
       product.quantity,
-      orden
+      orden,
+      pieza,
+      revision,
+      consecutivo
     );
     product_db.codigos = codigos;
     products_codes.push(product_db);
@@ -362,29 +371,45 @@ const deleteCodesFromProduct = async (product_id: number): Promise<boolean> => {
   return true;
 };
 
-const generateProductCodeDb = async (product: ProductCode, quantity: number, orderData: OrdenCompra): Promise<any> => {
+const generateProductCodeDb = async (
+  product: ProductCode,
+  quantity: number,
+  orderData: OrdenCompra,
+  pieza: Pieza,
+  reivision: Revision,
+  consecutivo: number
+): Promise<any> => {
   await deleteCodesFromProduct(product.id);
   let codes = [];
 
   if (product.type == 'bulk') {
     quantity = 1;
   }
+  const codes_insert = [];
   for (let i = 0; i < quantity; i++) {
-    const { code_str: code, consecutivo } = await generateCodesForProduct({ ...product }, i, orderData);
+    const { code_str: code, consecutivo: cons_res } = generateCodesForProduct(
+      { ...product },
+      i,
+      orderData,
+      pieza,
+      reivision,
+      consecutivo
+    );
+    consecutivo = cons_res + 1;
     if (!code) {
       console.log('No se generó código para el producto');
       continue;
     }
-    const { error } = await supabase()
-      .from('order_products_codes')
-      .insert({ code, product_id: product.id, consecutivo });
+    codes_insert.push({ code, consecutivo: cons_res, product_id: product.id });
 
     codes.push(code);
+  }
 
-    if (error) {
-      console.log(error);
-      throw new Error('Error generando códigos de productos');
-    }
+  const { error } = await supabase().from('order_products_codes').insert(codes_insert);
+
+  if (error) {
+    console.log(error);
+    throw new Error('Error generando códigos de productos');
   }
 
   return codes;
@@ -403,13 +428,20 @@ const generate_consecutivo_folio = async (producto_id: number) => {
     throw new Error('Error generando consecutivo de producto');
   }
 
-  return (consecutivo?.[0]?.consecutivo ?? 0) + 1;
+  return consecutivo?.[0]?.consecutivo ?? 0;
 };
 
-const generateCodesForProduct = async (product: ProductCode, index: number, orderData: OrdenCompra): Promise<any> => {
-  const pieza = await getPiezaWithCliente(product.pieza_id);
-  const revision = await getRevisionById(product.revision);
-  let consecutivo = null;
+const generateCodesForProduct = (
+  product: ProductCode,
+  index: number,
+  orderData: OrdenCompra,
+  pieza: Pieza,
+  revision: Revision,
+  consecutivo: number
+): any => {
+  // const pieza = await getPiezaWithCliente(product.pieza_id);
+  // const revision = await getRevisionById(product.revision);
+  // let consecutivo = null;
   console.log({ orderData });
 
   product.numero_parte = pieza?.numero_parte ?? '';
@@ -428,9 +460,9 @@ const generateCodesForProduct = async (product: ProductCode, index: number, orde
   for (const { id: key, value } of code) {
     const key_obj = code_map.find(c => c.value === value)?.key;
     if (key === 'consecutivo') {
-      consecutivo = await generate_consecutivo_folio(product.id);
+      // consecutivo = await generate_consecutivo_folio(product.id);
 
-      let cons = consecutivo;
+      let cons = consecutivo + 1;
 
       let offset = 0;
 
