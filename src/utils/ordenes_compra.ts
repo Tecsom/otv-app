@@ -101,15 +101,15 @@ export const generarOrdenDeCompraEstatica = async (order_data: any) => {
   const products = await getProducts(order_id);
   let products_codes = [];
   const full_codigos = [];
+  let consecutivo = await generate_consecutivo_folio();
   for (const product of products) {
     let product_db = productos.find((p: any) => p.id === product.id);
     console.log({ product });
     const pieza = await getPiezaWithCliente(product.piezas.id);
     const revision = await getRevisionById(product.revisiones.id);
-    const consecutivo = await generate_consecutivo_folio(product.id);
     if (!pieza) continue;
     if (!revision) continue;
-    const codigos = await generateProductCodeDb(
+    const { codes: codigos, consecutivo: consres } = await generateProductCodeDb(
       {
         ...product,
         pieza_id: product.piezas.id,
@@ -123,6 +123,7 @@ export const generarOrdenDeCompraEstatica = async (order_data: any) => {
       revision,
       consecutivo
     );
+    consecutivo = consres;
     product_db.codigos = codigos;
     products_codes.push(product_db);
     full_codigos.push(
@@ -412,10 +413,10 @@ const generateProductCodeDb = async (
     throw new Error('Error generando códigos de productos');
   }
 
-  return codes;
+  return { codes, consecutivo };
 };
 
-const generate_consecutivo_folio = async (producto_id: number) => {
+const generate_consecutivo_folio = async () => {
   //get biggest consecutivo
   const { data: consecutivo, error } = await supabase()
     .from('order_products_codes')
