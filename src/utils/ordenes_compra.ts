@@ -388,6 +388,7 @@ const generateProductCodeDb = async (
   }
   const codes_insert = [];
   for (let i = 0; i < quantity; i++) {
+    consecutivo = consecutivo + 1;
     const { code_str: code, consecutivo: cons_res } = generateCodesForProduct(
       { ...product },
       i,
@@ -396,7 +397,6 @@ const generateProductCodeDb = async (
       reivision,
       consecutivo
     );
-    consecutivo = cons_res + 1;
     if (!code) {
       console.log('No se generó código para el producto');
       continue;
