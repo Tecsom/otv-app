@@ -26,7 +26,7 @@ codigos_table = $('#codigos_table').DataTable({
           }
         }
 
-        console.log({ last_verification });
+        // console.log({ last_verification });
 
         return last_verification?.created_at
           ? isoDateToFormattedWithTime(last_verification?.created_at)
@@ -39,7 +39,7 @@ codigos_table = $('#codigos_table').DataTable({
   language: {
     url: 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/es-ES.json'
   },
-  order: [[0, 'asc']],
+  order: [[2, 'asc']],
   autoWidth: false,
   rowGroup: {
     dataSrc: 'numero_parte'
