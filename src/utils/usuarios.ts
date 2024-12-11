@@ -34,3 +34,9 @@ export const deleteUsuario = async (id: string): Promise<void> => {
   const { data, error } = await supabase().auth.admin.deleteUser(id);
   if (error) throw error;
 };
+
+export const changeUserPassword = async (id: string, password: string): Promise<void> => {
+  const { error } = await supabase().auth.admin.updateUserById(id, { password });
+  if (error) throw error;
+  console.log('Password changed');
+};

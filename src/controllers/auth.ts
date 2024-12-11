@@ -28,6 +28,7 @@ export const LoginC = async (req: Request, res: Response) => {
       user: { ...user_data, ...data.user }
     });
   } catch (error: any) {
+    console.log(error);
     res.status(500).json(error);
   }
 };
