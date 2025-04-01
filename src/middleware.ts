@@ -1,4 +1,4 @@
-import supabase from '@/config/supabase';
+import supabase, { JWT_SECRET } from '@/config/supabase';
 import type { NextFunction, Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 
@@ -17,10 +17,7 @@ export default async function (req: Request, res: Response, next: NextFunction) 
     return next();
   }
   try {
-    const decoded = jwt.verify(
-      authToken,
-      'vc502qBBuj7Mp3O03gsb/DI6WI/pvosD8QtS8TkhMxwoa0PyhQ2DRTTnoAbfkUnXWdW+PoU4pEynkkxhZOC2YA=='
-    );
+    const decoded = jwt.verify(authToken, JWT_SECRET);
 
     if (decoded && decoded.sub) {
       const { error: error_rol, data: rol } = await supabase()
@@ -31,6 +28,7 @@ export default async function (req: Request, res: Response, next: NextFunction) 
 
       if (error_rol) {
         console.log({ error_rol });
+        res.clearCookie('accessToken');
         return res.redirect('/login?redirect=/' + req.url.slice(1));
       }
       const rol_data = rol as { [key: string]: any };
