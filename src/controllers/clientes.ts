@@ -93,10 +93,20 @@ export const updateClienteC = async (req: Request, res: Response) => {
   const id = req.params.id;
   const clienteData = req.body as Cliente;
   try {
+    if (!clienteData.code_string?.some((code: any) => code.id === 'consecutivo'))
+      throw new Error('El formato del código debe contemplar un consecutivo');
+
     const cliente = await updateCliente(clienteData, id);
     res.status(200).json(cliente);
   } catch (error: any) {
-    res.status(500).json(error);
+    const err = error as Error;
+    const errorMessage =
+      err?.message == 'El formato del código debe contemplar un consecutivo'
+        ? err.message
+        : 'Error al actualizar el cliente';
+    res.status(500).json({
+      message: errorMessage
+    });
   }
 };
 

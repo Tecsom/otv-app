@@ -100,7 +100,10 @@ table_verificadas = $('#table_verificadas').DataTable({
   language: {
     url: 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/es-ES.json'
   },
-  columns: [{ data: 'codigo', title: 'Código' }],
+  columns: [
+    { data: 'codigo', title: 'Código' },
+    { data: 'cantidad', title: 'Cantidad' }
+  ],
   searching: false,
   paging: false,
   info: false,
@@ -202,7 +205,27 @@ $('#startVerificacion').on('click', function () {
     toastr.error('La orden ya ha sido verificada');
     return;
   }
+
+  if (userData.rol !== 'admin') {
+    $('#verifyCodeModal').modal('show');
+    return;
+  }
   $('#start_verificacion').modal('show');
+});
+
+$('#verifyCodeForm').on('submit', async function (e) {
+  e.preventDefault();
+
+  const verificadorPass = $('#verifyCodeInput').val();
+
+  if (userData.verificador_pass !== verificadorPass) {
+    toastr.error('Código de verificación incorrecto');
+    return;
+  }
+
+  $('#verifyCodeModal').modal('hide');
+  $('#verifyCodeInput').val('');
+  startVerification();
 });
 
 $('#table_piezas_oc').on('click', '.btn-opciones-pieza', async function () {
@@ -254,15 +277,16 @@ $('#pieza_images_list').on('click', 'a', function () {
 });
 
 $('#start_verificacion_btn').on('click', function () {
+  if (userData.rol === 'admin') startVerification();
+});
+
+const startVerification = () => {
   resetVerifications();
   verification_mode = true;
   $('#start_verificacion').modal('hide');
   $('#save_verification_btn').removeClass('d-none');
   $('#cancel_verificacion_btn').removeClass('d-none');
   $('#startVerificacion').addClass('d-none');
-
-  //$('#progress_verificacion').css('width', '0%');
-  //$('#progress_verificacion').text('Progreso de verificación (0%)');
 
   $('#container_general').addClass('d-none');
   $('#container_verificacion').removeClass('d-none');
@@ -327,7 +351,7 @@ $('#start_verificacion_btn').on('click', function () {
   );
 
   table_not_verificadas.rows.add(ordenesSinVerificar).draw();
-});
+};
 
 $('#cancel_verificacion_btn').on('click', function () {
   $('#cancel_verification_modal').modal('show');
@@ -376,26 +400,35 @@ socket.on('scanner', data => {
   }
 });
 
-const verificarPieza = async codigo => {
+verificarPieza = async codigo => {
   //const exists = ordenData.codigos.find(pieza => pieza.code === codigo);
   const isVerified = verificadas_array.includes(codigo);
-
-  productoByCode = ordenData.productos.find(product => product.codigos.find(code => code === codigo));
+  console.log({ ordenData });
 
   const data_no_verified = table_not_verificadas.rows().data().toArray();
-
-  const existsInNotVerified = data_no_verified.find(pieza => pieza.code === codigo);
+  console.log({ data_no_verified });
+  const posibleCombinationsNotVerified = await getPossibleCombinations(data_no_verified.map(pieza => pieza.code));
+  console.log({ posibleCombinationsNotVerified });
+  const existsInNotVerified = posibleCombinationsNotVerified.find(comb => comb.scannedCode === codigo);
 
   const data_verified = table_verificadas.rows().data().toArray();
+  console.log({ data_verified });
 
-  const existsInVerified = data_verified.find(pieza => pieza.codigo === codigo);
+  const posibleCombinationsVerified = await getPossibleCombinations(data_verified.map(pieza => pieza.codigo));
+  const existsInVerified = posibleCombinationsVerified.find(comb => comb.scannedCode === codigo);
+  console.log({ posibleCombinationsVerified });
 
   if (existsInVerified) {
     toastr.warning('Pieza ya verificada');
+    productoByCode = ordenData.productos.find(product =>
+      product.codigos.find(code => code === existsInVerified.originalCode)
+    );
     return;
   }
 
-  codigoVerificador = codigo;
+  codigoVerificador = existsInNotVerified?.originalCode;
+  console.log({ codigoVerificador });
+  productoByCode = ordenData.productos.find(product => product.codigos.find(code => code === codigoVerificador));
 
   if (!existsInNotVerified) {
     toastr.error('Pieza no encontrada');
@@ -417,7 +450,57 @@ const verificarPieza = async codigo => {
 
   console.log(productoByCode);
 
-  verify(codigo);
+  verify(codigoVerificador);
+};
+
+const getPossibleCombinations = async codes => {
+  const client = ordenData?.cliente;
+  const id = client?.id;
+
+  if (!id) return codes;
+
+  const response = await fetchData(`/clientes/${id}`);
+
+  if (!response.status) return codes;
+
+  const data = response?.data;
+  const { scanner_string } = data || {};
+
+  if (!scanner_string) return codes;
+
+  const scanSetting = JSON.parse(scanner_string || '[]');
+
+  const partNumbers = ordenData.productos.map(producto => producto.numero_parte?.trim());
+
+  let posibleCodesParts = [];
+
+  for (const setting of scanSetting) {
+    const { id, value } = setting;
+
+    if (id === 'numero_parte') {
+      posibleCodesParts.push(partNumbers);
+    } else if (id === 'code') {
+      posibleCodesParts.push(codes);
+    } else {
+      posibleCodesParts.push([value]);
+    }
+  }
+  console.log({ posibleCodesParts });
+  // Generar todas las combinaciones posibles
+  const generateCombinations = (arrays, prefix = []) => {
+    if (!arrays.length) return [prefix];
+    const [firstArray, ...restArrays] = arrays;
+    return firstArray.flatMap(item => generateCombinations(restArrays, [...prefix, item]));
+  };
+  const codeIndex = scanSetting.findIndex(setting => setting.id === 'code');
+  const allCombinations = generateCombinations(posibleCodesParts).map(combination => {
+    return {
+      scannedCode: combination.join(''),
+      originalCode: combination[codeIndex]
+    };
+  });
+  console.log({ allCombinations });
+  return allCombinations;
 };
 
 $('#boton_mandar_cantidad').on('click', function () {
@@ -527,7 +610,8 @@ $('#save_verification_modal_btn').on('click', async function () {
   const data = {
     order_id,
     piezas_verificadas,
-    created_at
+    created_at,
+    user_id: userData.id
   };
 
   console.log(data);
@@ -587,7 +671,6 @@ const updateGeneralProgress = () => {
   for (const producto of order_data.codigos) {
     const main_prod = order_data?.productos?.find(prod => prod.codigos.includes(producto.code));
     if (main_prod.type === 'bulk') {
-      const ordenVerificada = order_data.ordenes_verified?.find(orden => orden.codigo === producto.code);
       const quantity = producto.data.reduce((acc, item) => acc + item.quantity, 0);
       const main_quantity = main_prod.quantity;
 

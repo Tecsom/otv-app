@@ -22,7 +22,7 @@ export default async function (req: Request, res: Response, next: NextFunction) 
     if (decoded && decoded.sub) {
       const { error: error_rol, data: rol } = await supabase()
         .from('usuarios')
-        .select('rol')
+        .select('*')
         .eq('id', decoded.sub)
         .single();
 
@@ -32,6 +32,8 @@ export default async function (req: Request, res: Response, next: NextFunction) 
         return res.redirect('/login?redirect=/' + req.url.slice(1));
       }
       const rol_data = rol as { [key: string]: any };
+
+      res.locals.user = rol_data;
 
       res.cookie('rol', rol_data?.rol, { httpOnly: false, secure: true });
     }

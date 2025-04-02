@@ -13,7 +13,8 @@ import {
   getProductsCodes,
   generarOrdenDeCompraEstatica,
   verifyProds,
-  getStaticOrden
+  getStaticOrden,
+  regenerateOrderCodes
 } from './../utils/ordenes_compra';
 import type { CreateOrderDataModel, ProductAdd } from '@/types/ordenes_compra';
 import { Pieza } from '@/types/piezas';
@@ -50,8 +51,8 @@ export const generateOrder = async (req: Request, res: Response) => {
 
 export const verifyProductsOrder = async (req: Request, res: Response) => {
   try {
-    const { order_id, piezas_verificadas, created_at } = req.body;
-    const Result = await verifyProds(parseInt(order_id), piezas_verificadas, created_at);
+    const { order_id, piezas_verificadas, created_at, user_id: userId } = req.body;
+    const Result = await verifyProds(parseInt(order_id), piezas_verificadas, created_at, userId);
     return res.status(200).json({ message: 'Productos verificados' });
   } catch (error: any) {
     console.log('entra error');
@@ -63,10 +64,30 @@ export const verifyProductsOrder = async (req: Request, res: Response) => {
 export const putOrder = async (req: Request, res: Response) => {
   const payload = req.body;
   try {
+    if (payload?.estado === 'finalizada') {
+      const isCompleted = await isOrderCompleted(payload.id);
+      if (!isCompleted) throw new Error('La orden no ha sido completada');
+    }
+
     const updateResult = await updateOrder(payload);
     res.status(200).json(updateResult);
   } catch (e) {
-    res.status(500).json(e);
+    const err = e as Error;
+    res.status(500).json({
+      message: err?.message || 'Internal server error'
+    });
+  }
+};
+
+export const updateOrderCodesController = async (req: Request, res: Response) => {
+  const { orderId } = req.body;
+  try {
+    await regenerateOrderCodes(orderId);
+    res.status(200).json({
+      message: 'Códigos actualizados'
+    });
+  } catch (error: any) {
+    res.status(500).json(error);
   }
 };
 
@@ -74,10 +95,12 @@ export const getOrdenesPagingC = async (req: Request, res: Response) => {
   try {
     const { page, pageSize, search, estatusFiltersStr, createdAtFilterString, deliveryDateFilterString } = req.query;
 
+    console.log({ page, pageSize, search, estatusFiltersStr, createdAtFilterString, deliveryDateFilterString });
+
     const estatusFilters = estatusFiltersStr ? (estatusFiltersStr as string).split(',') : [];
     const createdAtFilter = createdAtFilterString ? (createdAtFilterString as string).split(',') : null;
     const deliveryDateFilter = deliveryDateFilterString ? (deliveryDateFilterString as string).split(',') : null;
-    console.log({ createdAtFilter });
+
     const ordenes = await getOrdenesCompraPaging(
       parseInt(page as string),
       parseInt(pageSize as string),
@@ -214,4 +237,34 @@ export const getStaticOrderC = async (req: Request, res: Response) => {
   ordenData.cliente.code_string = JSON.parse(code_string);
 
   res.status(200).json(ordenData);
+};
+
+export const isOrderCompleted = async (orderId: number) => {
+  const staticOrder = await getStaticOrden(orderId);
+
+  let piezas = 0;
+  let piezas_verificadas = 0;
+
+  for (const producto of staticOrder.codigos) {
+    const main_prod = staticOrder?.productos?.find((prod: any) => prod.codigos.includes(producto.code));
+    if (main_prod.type === 'bulk') {
+      const quantity = producto.data.reduce((acc: any, item: any) => acc + item.quantity, 0);
+      const main_quantity = main_prod.quantity;
+
+      if (quantity > 0) {
+        const percentaje = quantity / main_quantity;
+        piezas_verificadas += percentaje;
+      }
+      piezas++;
+    } else {
+      if (producto.verified) {
+        piezas_verificadas++;
+      }
+      piezas++;
+    }
+  }
+
+  const progress = (piezas_verificadas / piezas) * 100;
+
+  return progress >= 100;
 };

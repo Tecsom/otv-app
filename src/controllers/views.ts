@@ -32,6 +32,7 @@ export const renderClientPage = async (req: Request, res: Response) => {
   try {
     const clientData = await getClientById(id);
     const piezasData = await getPiezas(cliente_id);
+    console.log({ clientData });
 
     res.render('cliente.ejs', { clientData, piezasData, profile_picture });
   } catch (error) {
@@ -85,3 +86,4 @@ export const renderProductoInventarios = async (req: Request, res: Response) => 
   }
 };
 export const renderEmbarques = async (_: Request, res: Response) => res.render('embarques.ejs');
+export const renderUsersView = async (_: Request, res: Response) => res.render('users.ejs');

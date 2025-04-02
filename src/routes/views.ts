@@ -12,7 +12,8 @@ import {
   renderConfiguracion,
   renderInventarios,
   renderEmbarques,
-  renderProductoInventarios
+  renderProductoInventarios,
+  renderUsersView
 } from '../controllers/views';
 
 const router = express.Router();
@@ -30,5 +31,6 @@ router.get('/configuracion', renderConfiguracion);
 router.get('/inventario', renderInventarios);
 router.get('/inventario/:product_id', renderProductoInventarios);
 router.get('/embarques', renderEmbarques);
+router.get('/users', renderUsersView);
 
 export default router;

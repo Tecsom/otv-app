@@ -1,3 +1,9 @@
+<script src="
+https://cdn.jsdelivr.net/npm/@yaireo/dragsort@1.3.2/dist/dragsort.min.js
+"></script>
+<link href="
+https://cdn.jsdelivr.net/npm/@yaireo/dragsort@1.3.2/dist/dragsort.min.css
+" rel="stylesheet">
 <style>
   #piezas_table .btn {
     box-shadow: none !important;
@@ -367,6 +373,16 @@
                     value="<%= clientData.code_string %>"
                      />
                 </div>
+                <div class="col-md-12">
+                  <label for="tagifyScannerFormat" class="form-label">Formato de scanner</label>
+                  <input
+                    id="tagifyScannerFormat"
+                    name="scanner_string"
+                    class="form-control"
+                    placeholder="Selecciona una opción o escribe un valor"
+                    value="<%= clientData.scanner_string %>"
+                     />
+                </div>
                 <div class="col-md-4">
                   <label for="select2Basic" class="form-label">Tipo de código</label>
                   <select name="code_type" id="select2Basic" class="select2 form-select" data-allow-clear="true">
@@ -551,7 +567,7 @@
           </div>
           <div class="col-md-6">
             <label for="costo_venta" class="form-label">Costo de venta</label>
-            <input type="number" min="0" id="costo_venta" name="costo_venta" class="form-control" />
+            <input type="number" min="0" id="costo_venta" name="costo_venta" class="form-control" step="0.01" />
           </div>
           <div class="col-md-6 ">
             <label class="form-label d-block required">Tipo de pieza</label>
@@ -609,7 +625,7 @@
           </div>
           <div class="col-md-6">
             <label for="costo_venta_editar" class="form-label required">Costo de venta</label>
-            <input type="number" min="0" id="costo_venta_editar" name="costo_venta" class="form-control" />
+            <input type="number" min="0" id="costo_venta_editar" name="costo_venta" class="form-control" step="0.01" />
           </div>
           <div class="col-md-12 ">
             <label class="form-label d-block required">Tipo de pieza</label>
@@ -802,6 +818,7 @@
 <script>
   '<% const parsed = clientData %>'
   '<% delete clientData.code_string %>'
+  '<% delete clientData.scanner_string %>'
   var clientData = JSON.parse('<%- JSON.stringify(clientData) %>') ?? {};
 
   var piezasData = JSON.parse('<%- JSON.stringify(piezasData) %>') ?? [];

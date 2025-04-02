@@ -70,6 +70,16 @@ export const getStaticOrden = async (id: number) => {
   return orden;
 };
 
+export const getStaticOrderByOrderId = async (id: number) => {
+  let { data: orden, error } = await supabase().from('ordenes_static').select('*').eq('order_id', id).single();
+
+  if (error) {
+    console.error('Error fetching Ordenes:', error.message);
+    throw error;
+  }
+  return orden;
+};
+
 export const getOrdenByCodeProd = async (code: string) => {
   const { data: orden, error } = await supabase().rpc('buscar_orden_por_codigo', { codigo_busqueda: code });
   if (error) {
@@ -170,6 +180,112 @@ export const generarOrdenDeCompraEstatica = async (order_data: any) => {
     status: true
   };
   return result;
+};
+
+const getOrderById = async (id: number): Promise<OrdenCompra> => {
+  const { data: orden, error } = await supabase().from('ordenes').select('*').eq('id', id).single();
+
+  if (error) {
+    console.error('Error fetching Ordenes:', error.message);
+    throw error;
+  }
+  return orden;
+};
+
+export const regenerateOrderCodes = async (order_id: number) => {
+  const order = await getOrderById(order_id);
+  const orderProducts = await getProducts(String(order.id));
+  const productsCodes = await getProductsCodesForUpdate(orderProducts.map((p: any) => p.id));
+  const orderStatic = await getStaticOrderByOrderId(order_id);
+  const orderStaticVerified = await getOrdersStaticVerified(orderStatic.id);
+  const newProductsCodes = [];
+  const replaceCodes: any = [];
+
+  for (const productCode of productsCodes) {
+    const orderProduct = productCode?.order_product;
+    const pieza = orderProduct.pieza;
+    const revision = orderProduct.revision;
+    const consecutivo = productCode.consecutivo;
+
+    const { code_str } = generateCodesForProduct(orderProduct, 0, order, pieza, revision, consecutivo);
+
+    replaceCodes.push({
+      oldCode: productCode.code,
+      newCode: code_str
+    });
+
+    newProductsCodes.push({
+      id: productCode.id,
+      created_at: productCode.created_at,
+      product_id: productCode.product_id,
+      code: code_str,
+      consecutivo: consecutivo
+    });
+  }
+
+  orderStatic.codigos.forEach((code: any) => {
+    const replace = replaceCodes.find((c: any) => c.oldCode === code.code);
+
+    if (replace) {
+      code.code = replace.newCode;
+    }
+  });
+
+  orderStatic.productos.forEach((product: any) => {
+    product.codigos = product.codigos.map((code: any) => {
+      const replace = replaceCodes.find((c: any) => c.oldCode === code);
+
+      if (replace) {
+        code = replace.newCode;
+      }
+      return code;
+    });
+  });
+
+  orderStaticVerified.forEach((product: any) => {
+    product.codigo = replaceCodes.find((c: any) => c.oldCode === product.codigo)?.newCode ?? product.codigo;
+  });
+
+  await upsertOrderStatic(orderStatic);
+  await upsertOrderStaticVerified(orderStaticVerified);
+  await upsertOrderProductsCodes(newProductsCodes);
+};
+
+const upsertOrderStatic = async (orderStatic: any) => {
+  const { error } = await supabase().from('ordenes_static').upsert([orderStatic]);
+
+  if (error) {
+    console.error('Error upserting Ordenes:', error.message);
+    throw error;
+  }
+};
+
+const upsertOrderStaticVerified = async (orderStaticVerified: any) => {
+  const { error } = await supabase().from('ordenes_static_verified').upsert(orderStaticVerified);
+
+  if (error) {
+    console.error('Error upserting Ordenes:', error.message);
+    throw error;
+  }
+};
+
+const upsertOrderProductsCodes = async (productsCodes: any) => {
+  const { error } = await supabase().from('order_products_codes').upsert(productsCodes);
+
+  if (error) {
+    console.error('Error upserting Ordenes:', error.message);
+    throw error;
+  }
+};
+
+const getOrdersStaticVerified = async (orderStaticId: number) => {
+  const { data, error } = await supabase().from('ordenes_static_verified').select('*').eq('order_id', orderStaticId);
+
+  if (error) {
+    console.error('Error fetching Ordenes:', error.message);
+    throw error;
+  }
+  return data;
 };
 
 export const getOrdenesCompraPaging = async (
@@ -316,6 +432,19 @@ export const getProductsCodes = async (id: number) => {
   return productos;
 };
 
+export const getProductsCodesForUpdate = async (id: number[]) => {
+  const { data: productos, error } = await supabase()
+    .from('order_products_codes')
+    .select('*,order_product:product_id(*,pieza:pieza_id(*, clientes:clientes(code_string)),revision(*))')
+    .in('product_id', id);
+
+  if (error) {
+    console.log(error);
+    throw new Error(error.details);
+  }
+  return productos;
+};
+
 export const addOrderProduct = async (product: ProductAdd): Promise<boolean> => {
   const { error: uploadError, data } = await supabase().from('order_products').insert(product).select('*').single();
 
@@ -443,7 +572,6 @@ const generateCodesForProduct = (
   // const pieza = await getPiezaWithCliente(product.pieza_id);
   // const revision = await getRevisionById(product.revision);
   // let consecutivo = null;
-  console.log({ orderData });
 
   product.numero_parte = pieza?.numero_parte ?? '';
   product.revision_name = revision?.nombre ?? '';
@@ -474,21 +602,21 @@ const generateCodesForProduct = (
       code_str += cons?.toString()?.padStart(5, '0');
       continue;
     } else if (key === 'ano_YYYY') {
-      const delivery_date = new Date(orderData?.fecha_entrega ?? '');
+      const delivery_date = new Date(orderData?.fecha_entrega || orderData?.delivery_date || '');
       const year = delivery_date.getFullYear();
 
       code_str += year;
 
       continue;
     } else if (key === 'ano_YY') {
-      const delivery_date = new Date(orderData?.fecha_entrega ?? '');
+      const delivery_date = new Date(orderData?.fecha_entrega || orderData?.delivery_date || '');
       const year = delivery_date.getFullYear().toString().slice(-2);
 
       code_str += year;
 
       continue;
     } else if (key === 'semana_ano') {
-      const delivery_date = new Date(orderData?.fecha_entrega ?? '');
+      const delivery_date = new Date(orderData?.fecha_entrega || orderData?.delivery_date || '');
       const week = getWeekNumber(delivery_date);
 
       code_str += `${week.toString().padStart(2, '0')}`;
@@ -538,13 +666,14 @@ function getWeekNumber(d: any): number {
   return weekNo - 1;
 }
 
-export const verifyProds = async (order_id: number, products: any[], created_at: any) => {
+export const verifyProds = async (order_id: number, products: any[], created_at: any, userId: number) => {
   for (const prod of products) {
     const { data, error } = await supabase().from('ordenes_static_verified').insert({
       order_id,
       codigo: prod.codigo,
       created_at,
-      quantity: prod.cantidad
+      quantity: prod.cantidad,
+      created_by: userId
     });
     if (error) {
       console.log(error);

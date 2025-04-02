@@ -4,7 +4,8 @@ verificaciones_table = $('#verificaciones_table').DataTable({
   },
   columns: [
     { data: 'fecha', title: 'Fecha' },
-    { data: 'total_verificaciones', title: 'total', defaultContent: '' }
+    { data: 'total_verificaciones', title: 'total', defaultContent: '' },
+    { data: 'userName', title: 'Usuario', defaultContent: '' }
   ],
   dom: 'rtp',
   language: {
@@ -19,6 +20,13 @@ const verificacion_table = $('#verificacion_table').DataTable({
     url: 'https://cdn.datatables.net/plug-ins/1.10.19/i18n/Spanish.json'
   },
   columns: [
+    {
+      data: null,
+      title: '<input type="checkbox" id="select-all" class="form-check-input">', // Checkbox en el encabezado
+      orderable: false,
+      className: 'dt-center',
+      defaultContent: '<input type="checkbox" class="row-checkbox form-check-input">'
+    },
     { data: 'codigo', title: 'Código' },
     { data: 'numero_parte', title: 'Número de parte' }
   ],
@@ -32,6 +40,11 @@ const verificacion_table = $('#verificacion_table').DataTable({
     dataSrc: 'numero_parte'
   },
   pageLength: 10
+});
+
+$('#verificacion_table thead').on('click', '#select-all', function () {
+  let isChecked = this.checked;
+  $('.row-checkbox').prop('checked', isChecked);
 });
 
 verificaciones_table.on('click', 'tr', async function () {

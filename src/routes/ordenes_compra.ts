@@ -13,7 +13,8 @@ import {
   editOrderProduct,
   generateOrder,
   verifyProductsOrder,
-  getStaticOrderC
+  getStaticOrderC,
+  updateOrderCodesController
 } from '../controllers/ordenes_compra';
 
 const router = express.Router();
@@ -22,6 +23,7 @@ router.get('/ordenes', getOrdenes);
 router.get('/ordenes/paging', getOrdenesPagingC);
 router.post('/ordenes/create', newOrder);
 router.put('/ordenes/update', putOrder);
+router.put('/ordenes/update-codes', updateOrderCodesController);
 router.delete('/ordenes/:id/delete', deleteOrden);
 router.post('/ordernes/addproduct', addProductToOrder);
 router.put('/ordenes/producto/edit/', editOrderProduct);

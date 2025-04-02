@@ -40,3 +40,46 @@ export const changeUserPassword = async (id: string, password: string): Promise<
   if (error) throw error;
   console.log('Password changed');
 };
+
+export const getUsersTable = async (
+  start: number,
+  length: number,
+  order: { id: string; dir: string },
+  filters: { search?: string }
+): Promise<{
+  users: Usuario[];
+  recordsFiltered: number;
+}> => {
+  const query = supabase()
+    .from('usuarios')
+    .select('*')
+    .range(start, start + length - 1)
+    .order(order.id || 'id', { ascending: order.dir === 'asc' });
+
+  if (filters.search) {
+    query.or(`name.ilike.%${filters.search}%,email.ilike.%${filters.search}%`);
+  }
+
+  const { data, error } = await query;
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  const queryTotals = supabase().from('usuarios').select('id', { count: 'exact' });
+
+  if (filters.search) {
+    queryTotals.or(`name.ilike.%${filters.search}%,email.ilike.%${filters.search}%`);
+  }
+
+  const { count, error: countError } = await queryTotals;
+
+  if (countError) {
+    throw new Error(countError.message);
+  }
+
+  return {
+    users: data,
+    recordsFiltered: count || 0
+  };
+};

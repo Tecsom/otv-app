@@ -109,7 +109,10 @@ $('#codigos_table').on('click', 'tbody tr button', async function (e) {
 });
 
 const showBarcode = async data => {
-  const code_type = 'QR';
+  console.log({ data });
+  const client = data.clientes;
+  const code_type = client.code_type;
+  console.log({ code_type });
   //get templateCustomizer-vertical-menu-template-starter--Style from localstorage
   const colorPref = localStorage.getItem('templateCustomizer-vertical-menu-template-starter--Style');
   $('#viewCodeModal').modal('show');

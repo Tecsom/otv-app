@@ -523,6 +523,7 @@ $('#ordenes_compra_container').on('click', '.order_container_child', async funct
   $('#cancelar_oc').addClass('d-none');
   $('#restaurar_oc').addClass('d-none');
   $('#finalizar_oc').addClass('d-none');
+  $('#regenerateOrderCodes').addClass('d-none');
   $('#modify_inventory_button').addClass('d-none');
   if (data.estado === 'pendiente') {
     $('#generate_order').removeClass('d-none');
@@ -537,6 +538,7 @@ $('#ordenes_compra_container').on('click', '.order_container_child', async funct
   } else {
     $('#cancelar_oc').removeClass('d-none');
     $('#finalizar_oc').removeClass('d-none');
+    $('#regenerateOrderCodes').removeClass('d-none');
   }
   if (cliente_id) {
     $('#client_currency').text(data.clientes.currency);
@@ -563,32 +565,13 @@ $('#ordenes_compra_container').on('click', '.order_container_child', async funct
   if (!data.clientes) {
     toastr.warning('Selecciona un nuevo cliente para la orden');
   }
-
+  await loadVerifications(data);
   const $folio = $('#data-folio');
   const $fechaCreacion = $('#data-fecha-creación');
   const $fechaEntrega = $('#data-fecha-entrega');
   const $clientData = $('#data-client-data');
   const uniqueFolio = data.unique_folio ? addLeadingZeros(data.unique_folio, 6) : 'Sin Folio';
 
-  const verifications = data.verifications.reduce((acc, verification) => {
-    const key = verification.created_at;
-
-    if (!acc[key]) {
-      acc[key] = [];
-    }
-    acc[key].push(verification);
-    return acc;
-  }, {});
-
-  const dates = Object.keys(verifications).map(date => ({
-    fecha: isoDateToFormattedWithTime(date),
-    total: verifications[date].length,
-    verifications: verifications[date]
-  }));
-
-  verificaciones_table.clear().draw();
-
-  verificaciones_table.rows.add(dates).draw();
   $folio.text(uniqueFolio);
   $fechaEntrega.text(isoDateToFormatted(data.delivery_date));
   $clientData.text(data.clientes?.nombre ?? 'Sin cliente relacionado');
@@ -600,6 +583,7 @@ $('#ordenes_compra_container').on('click', '.order_container_child', async funct
   console.log(data.id);
 
   await loadProductos(data.id);
+
   await loadFiles(data.id);
   await loadProductosEmbarque(data.id);
   $('#container-no-data').addClass('d-none');
@@ -608,6 +592,39 @@ $('#ordenes_compra_container').on('click', '.order_container_child', async funct
   $('.order_container_child').css('cursor', 'pointer');
   isLoading_child = false;
 });
+
+const loadVerifications = async data => {
+  const verifications = data.verifications.reduce((acc, verification) => {
+    const key = verification.created_at;
+
+    if (!acc[key]) {
+      acc[key] = [];
+    }
+    acc[key].push(verification);
+    return acc;
+  }, {});
+  console.log({ data });
+  const dates = Object.keys(verifications).map(date => {
+    const dateVerifications = verifications[date];
+
+    let total = 0;
+    let totalScanned = 0;
+    const userName = dateVerifications?.[0]?.user ?? '-';
+
+    return {
+      fecha: isoDateToFormattedWithTime(date),
+      total: 1,
+      verifications: verifications[date],
+      userName
+    };
+  });
+
+  verificaciones_table.clear().draw();
+
+  console.log({ dates });
+
+  verificaciones_table.rows.add(dates).draw();
+};
 
 const renderListItem = (name, url) => {
   return `<a ${url && 'signed-url=' + url} href="javascript:void(0);" class="list-group-item list-group-item-action">${name}</a>`;
@@ -832,27 +849,61 @@ loadProductos = async id => {
   $('#code_total').text(codeProdsTable.length);
   codigos_table.rows.add(codeProdsTable).draw();
 
+  //calculate progress of verifications
+  const order_data = $('#ordenes_table').data();
+
+  console.log({ order_data });
+  const staticOrderId = order_data.static_order_id;
+  if (!staticOrderId) return;
+
+  const res = await fetchData('/ordenes/estaticas/' + staticOrderId);
+  if (!res.status) return;
+
+  const ordenData = res.data;
+
+  let piezas = 0;
+  let piezas_verificadas = 0;
+
+  let totalCodes = 0;
+  let totalVerifiedCodes = 0;
+  for (const producto of ordenData.codigos) {
+    const main_prod = ordenData?.productos?.find(prod => prod.codigos.includes(producto.code));
+    if (main_prod.type === 'bulk') {
+      const quantity = producto.data.reduce((acc, item) => acc + item.quantity, 0);
+      const main_quantity = main_prod.quantity;
+      totalCodes += main_quantity;
+      totalVerifiedCodes += quantity;
+      console.log({ quantity });
+      if (quantity > 0) {
+        const percentaje = quantity / main_quantity;
+        piezas_verificadas += percentaje;
+      }
+      piezas++;
+    } else {
+      totalCodes += 1;
+      if (producto.verified) {
+        totalVerifiedCodes += 1;
+        piezas_verificadas++;
+      }
+      piezas++;
+    }
+  }
+  console.log({ piezas, piezas_verificadas });
+
+  const progress = (piezas_verificadas / piezas) * 100;
+
   //append total products length to verifications table
   const oldData = verificaciones_table.rows().data().toArray();
   const newData = oldData.map(data => {
-    const total = data.total;
-    const total_verificaciones = total + ' de ' + total_codes;
+    console.log('verfication table:', data);
+    const totalVerif = data.verifications.reduce((acc, item) => acc + item.quantity, 0);
+    console.log({ totalVerif });
+    const total_verificaciones = totalVerif + ' de ' + totalCodes;
     return { ...data, total_verificaciones };
   });
 
   verificaciones_table.clear().draw();
   verificaciones_table.rows.add(newData).draw();
-
-  //calculate progress of verifications
-  const order_data = $('#ordenes_table').data();
-  let scanned = [];
-  for (const verification of order_data.verifications) {
-    if (scanned.includes(verification.codigo)) continue;
-    scanned.push(verification.codigo);
-  }
-
-  const operation = (scanned.length / total_codes) * 100;
-  const progress = !operation ? 0 : operation;
 
   $('#progress-bar-verificaciones').css('width', progress + '%');
   $('#progress-bar-verificaciones').text(progress.toFixed(2) + '%');
@@ -1151,6 +1202,7 @@ $('#confirm_cancel_order').on('click', async function () {
   $('#delete_oc').addClass('d-none');
   $('#cancelar_oc').addClass('d-none');
   $('#restaurar_oc').removeClass('d-none');
+  $('#regenerateOrderCodes').removeClass('d-none');
   $('#finalizar_oc').addClass('d-none');
 
   $('#order_status').text('cancelada');
@@ -1191,6 +1243,7 @@ $('#confirm_restore_order').on('click', async function () {
   $('#finalizar_oc').removeClass('d-none');
   $('#cancelar_oc').removeClass('d-none');
   $('#generate_order').addClass('d-none');
+  $('#regenerateOrderCodes').removeClass('d-none');
   $('#edit_oc').addClass('d-none');
   $('#delete_oc').addClass('d-none');
   $('#restaurar_oc').addClass('d-none');
@@ -1199,6 +1252,40 @@ $('#confirm_restore_order').on('click', async function () {
   $('#order_status')
     .removeClass()
     .addClass('text-capitalize badge bg-' + badgeType['proceso']);
+});
+
+$('#confirmRestoreOrderCodes').on('click', async function () {
+  const order_data = $('#container-reporte').data();
+  const order_id = order_data.id;
+  const button = new loadingButton($(this));
+
+  if (!order_id) {
+    console.error('No orden de compra seleccionada');
+    return;
+  }
+  button.start();
+  const result = await fetchData(`/ordenes/update-codes`, 'PUT', {
+    orderId: order_id
+  });
+  button.stop();
+
+  if (!result.status) {
+    toastr.error('Ocurrió un error al regenerar los códigos de la orden de compra');
+    return;
+  }
+
+  toastr.success('Códigos regenerados con éxito');
+
+  //trigger click on order to reload data
+
+  resetPaging();
+  $('#ordenes_compra_container').empty();
+  await loadOrdenes();
+
+  const element_selected = $(`[order_id=${order_data.id}]`);
+  element_selected.trigger('click');
+
+  $('#regerateOrderCodesModal').modal('hide');
 });
 
 $('#confirm_finalizar_order').on('click', async function () {
@@ -1211,6 +1298,7 @@ $('#confirm_finalizar_order').on('click', async function () {
     return;
   }
   button.start();
+
   const result = await fetchData(`/ordenes/update`, 'PUT', {
     id: order_id,
     estado: 'finalizada'
@@ -1218,7 +1306,7 @@ $('#confirm_finalizar_order').on('click', async function () {
   button.stop();
 
   if (!result.status) {
-    toastr.error('Ocurrió un error al finalizar la orden de compra');
+    toastr.error(result.message);
     return;
   }
 
@@ -1229,6 +1317,7 @@ $('#confirm_finalizar_order').on('click', async function () {
   await loadOrdenes();
 
   $('#finalizar_oc').addClass('d-none');
+  $('#regenerateOrderCodes').addClass('d-none');
   $('#cancelar_oc').addClass('d-none');
   $('#generate_order').addClass('d-none');
   $('#edit_oc').addClass('d-none');

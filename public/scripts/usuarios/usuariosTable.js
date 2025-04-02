@@ -1,11 +1,3 @@
-/*const options = `
-  <button class="btn btn-sm btn-primary edit-user" >
-    <i class="ti ti-edit"></i>
-    </button>
-    <button class="btn btn-sm btn-danger delete-user" >
-    <i class="ti ti-trash"></i>
-    </button>`;*/
-
 const options = `<div class="d-inline-block text-nowrap">
                   <button class="btn btn-sm btn-icon edit-user" title="Editar"><i class="ti ti-edit"></i></button>
                   <button class="btn btn-sm btn-icon delete-user" title="Eliminar"><i class="ti ti-trash-x"></i></button>

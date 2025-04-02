@@ -45,6 +45,10 @@
 <script src="/public/assets/vendor/libs/flatpickr/flatpickr.js"></script>
 
 <div class="flex-grow-1 container-p-y-1">
+  <a href="/verificador" class="btn mb-2">
+    <span class="ti ti-arrow-left"></span>
+    Volver
+  </a>
   <div class="app-chat card overflow-hidden" id="contenedor">
     <div class="row g-0">
       <div class="col-md-2 app-chat-contacts bg-body app-sidebar flex-grow-0 border-end" id="app-chat-contacts">
@@ -83,12 +87,16 @@
                     class="form-check-input filter-checkbox"
                     type="checkbox"
                     value="pendiente"
-                    id="check_pendiente"
-                    checked />
+                    id="check_pendiente" />
                   <label class="form-check-label" for="check_pendiente">Pendiente </label>
                 </div>
                 <div class="form-check mt-2">
-                  <input class="form-check-input filter-checkbox" type="checkbox" value="proceso" id="check_proceso" />
+                  <input
+                    class="form-check-input filter-checkbox"
+                    type="checkbox"
+                    value="proceso"
+                    id="check_proceso"
+                    checked />
                   <label class="form-check-label" for="check_proceso">Proceso</label>
                 </div>
                 <div class="form-check mt-2">
@@ -255,6 +263,9 @@
     let loadOrdenes;
     let loadOrderData;
     let loadVerificaciones;
+    let verificarPieza;
+
+    const userData = <%- JSON.stringify(user) %>;
   </script>
 
   <script src="/public/scripts/verificador/ordenes/flatpicker.js"></script>
@@ -412,14 +423,8 @@
       </div>
     </div>
   </div>
-  <!-- MODAL PREGUNTAR CANTIDAD -->
-  <div
-    class="modal fade"
-    id="ask_quantity"
-    tabindex="-1"
-    aria-hidden="true"
-    data-bs-backdrop="static"
-    data-bs-keyboard="false">
+  <!--! MODAL PREGUNTAR CANTIDAD -->
+  <div class="modal fade" id="ask_quantity" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-sm" role="document">
       <div class="modal-content">
         <div class="modal-header">
@@ -437,6 +442,37 @@
           <div class="d-flex justify-content-end">
             <button id="boton_mandar_cantidad" type="button" class="btn btn-primary">Aceptar</button>
           </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--! MODAL CÓDIGO DE VERIFICACIÓN -->
+<div class="modal fade" id="verifyCodeModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-sm" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="modal-title">Verificar código</div>
+      </div>
+      <div class="modal-body">
+        <form id="verifyCodeForm">
+          <div class="row">
+            <div class="col-12">
+              <label for="verifyCodeInput">Ingresa tu código de verificador</label>
+              <input
+                type="number"
+                class="form-control"
+                name="verificador_pass"
+                id="verifyCodeInput"
+                autocomplete="off" />
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <div class="d-flex justify-content-end">
+          <button id="verifyCodeBtn" type="submit" form="verifyCodeForm" class="btn btn-primary">Verificar</button>
         </div>
       </div>
     </div>

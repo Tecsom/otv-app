@@ -203,6 +203,16 @@
                     </li>
                     <li>
                       <a
+                        id="regenerateOrderCodes"
+                        class="dropdown-item d-flex align-items-center gap-2 d-none"
+                        href="javascript:void(0);"
+                        data-bs-target="#regerateOrderCodesModal"
+                        data-bs-toggle="modal"
+                        ><i class="ti ti-arrow-back-up ti-xs me-1"></i>Regenerar Códigos</a
+                      >
+                    </li>
+                    <li>
+                      <a
                         id="restaurar_oc"
                         class="dropdown-item d-flex align-items-center gap-2 d-none"
                         href="javascript:void(0);"
@@ -662,6 +672,23 @@
         </div>
       </div>
     </div>
+    <!--! Modal restaurar códigos orden de compra -->
+    <div class="modal fade modal_cliente" id="regerateOrderCodesModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-sm" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel1">Regenerar códigos de la orden de compra</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <p>¿Estás seguro de restaurar los códigos la orden? Esta acción modificará todos los códigos generados</p>
+          </div>
+          <div class="modal-footer">
+            <button id="confirmRestoreOrderCodes" type="button" class="btn btn-success">Restaurar</button>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <!--MODAL DE AGREGAR  UN PRODUCTO A LA ORDEN-->
     <div class="modal fade modal_cliente" id="addProductModal" tabindex="-1" aria-hidden="true">
@@ -745,7 +772,7 @@
     </div>
     <!--MODAL LISTA DE VERIFICACIONES-->
     <div class="modal fade" id="view_verifications_modal" tabindex="-1" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
+      <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title" id="exampleModalLabel1">Verificaciones</h5>

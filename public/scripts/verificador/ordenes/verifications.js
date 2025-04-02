@@ -13,10 +13,14 @@ $('#select_verificaciones').on('change', async function () {
   $('#container_verificaciones_table').addClass('d-none');
   if (!verification) return;
 
-  const codes_verfications = ordenData.ordenes_static_verified.filter(ver => ver.created_at === verification);
+  const codes_verfications = ordenData.ordenes_static_verified
+    .filter(ver => ver.created_at === verification)
+    .map(code => ({ ...code, cantidad: code.quantity }));
+  console.log({ codes_verfications });
   const codes_not_verfications = ordenData.codigos.filter(
     codigo => !codes_verfications.find(ver => ver.codigo === codigo.code)
   );
+
   console.log({ codes_verfications, codes_not_verfications });
 
   table_verificadas.clear().draw();

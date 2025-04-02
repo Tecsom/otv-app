@@ -87,14 +87,28 @@ $('#remove-filters-btn').on('click', function () {
   loadOrdenes();
 });
 
+let debounceTimer;
+
+$('#search-report-filter').on('keyup', function () {
+  if (debounceTimer) clearTimeout(debounceTimer);
+  search = $(this).val();
+  debounceTimer = setTimeout(() => {
+    page = 1;
+    loadMore = true;
+    $('#ordenes_compra_container').empty();
+    loadOrdenes();
+  }, 500);
+});
+
 async function getOrdenes() {
   // page, pageSize, search
   if (!loadMore) return [];
 
   const createdAtFilterString = createdAtFilter?.join(',') ?? '';
-  console.log({ createdAtFilterString });
+
   const deliveryDateFilterString = deliveryDateFilter?.join(',') ?? '';
   const query = `?page=${page}&pageSize=${limit}&estatusFiltersStr=${estatusFilters.join(',')}&search=${search}&createdAtFilterString=${createdAtFilterString}&deliveryDateFilterString=${deliveryDateFilterString}`;
+  console.log({ query });
   isLoading = true;
   const ordenes = await fetchData('/ordenes/paging' + query, 'GET'); //api/ordenes
   isLoading = false;

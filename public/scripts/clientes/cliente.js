@@ -157,7 +157,7 @@ $(document).ready(async function () {
   ];
 
   // Inline
-  let TagifyCustomInlineSuggestion = new Tagify(TagifyCustomInlineSuggestionEl, {
+  let tagify = new Tagify(TagifyCustomInlineSuggestionEl, {
     whitelist: whitelist,
     maxTags: 10, // allows to select max items
     dropdown: {
@@ -178,6 +178,55 @@ $(document).ready(async function () {
       }
     }
   });
+
+  const tagifyScannerElm = document.querySelector('#tagifyScannerFormat');
+  let tagifyScanner = new Tagify(tagifyScannerElm, {
+    whitelist: [
+      { value: 'Número de parte', id: 'numero_parte' },
+      {
+        id: 'code',
+        value: 'Código'
+      }
+    ],
+    maxTags: 10, // allows to select max items
+    dropdown: {
+      maxItems: 20, // display max items
+      classname: 'tags-inline', // Custom inline class
+      enabled: 0,
+      closeOnSelect: false
+    },
+    templates: {
+      dropdownFooter(suggestions) {
+        var hasMore = suggestions.length - this.settings.dropdown.maxItems;
+
+        return hasMore > 0
+          ? `<footer data-selector='tagify-suggestions-footer' class="${this.settings.classNames.dropdownFooter}">
+              ${hasMore} elementos restantes, escribe la búsqueda.
+            </footer>`
+          : '';
+      }
+    }
+  });
+
+  new DragSort(tagify.DOM.scope, {
+    selector: '.' + tagify.settings.classNames.tag,
+    callbacks: {
+      dragEnd: onDragEnd
+    }
+  });
+  new DragSort(tagifyScanner.DOM.scope, {
+    selector: '.' + tagifyScanner.settings.classNames.tag,
+    callbacks: {
+      dragEnd: onDragEndScanner
+    }
+  });
+
+  function onDragEnd(elm) {
+    tagify.updateValueByDOMTags();
+  }
+  function onDragEndScanner(elm) {
+    tagifyScanner.updateValueByDOMTags();
+  }
 
   await loadHistorialOrdenes(clientData.id);
   await loadHistorialEmbarques(clientData.id);
@@ -204,6 +253,7 @@ $('#form_qr_config').on('submit', async function (e) {
   const formData = new FormData(this);
   let data = Object.fromEntries(formData);
   data.code_string = JSON.parse(data.code_string);
+  data.scanner_string = JSON.parse(data.scanner_string);
 
   const res = await fetchData(`/clientes/${clientData.id}`, 'PUT', data);
   button.stop();

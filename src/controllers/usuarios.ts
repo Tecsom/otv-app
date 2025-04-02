@@ -1,4 +1,4 @@
-import { createUsuario, deleteUsuario, editUsuario, getUsuarios } from '@/utils/usuarios';
+import { createUsuario, deleteUsuario, editUsuario, getUsersTable, getUsuarios } from '@/utils/usuarios';
 import { Request, Response } from 'express';
 
 export const getUsuariosC = async (req: Request, res: Response) => {
@@ -13,10 +13,6 @@ export const getUsuariosC = async (req: Request, res: Response) => {
 export const createUsuarioC = async (req: Request, res: Response) => {
   try {
     const { password, confirmed_password, ...usuario } = req.body;
-
-    if (password !== confirmed_password) {
-      return res.status(400).json({ error: 'Las contraseñas no coinciden' });
-    }
 
     const newUsuario = await createUsuario(usuario, password);
     return res.status(200).json(newUsuario);
@@ -47,5 +43,31 @@ export const deleteUsuarioC = async (req: Request, res: Response) => {
   } catch (error: any) {
     console.log(error);
     return res.status(500).json({ error: error.message });
+  }
+};
+
+export const getUsersTableController = async (req: Request, res: Response) => {
+  try {
+    const { start, length, order: order_raw, search, columns } = req.query as any;
+    const { column, dir } = !!order_raw?.length ? order_raw[0] : { column: '', dir: '' };
+
+    const column_name = columns[column]?.data;
+    const { users, recordsFiltered } = await getUsersTable(
+      start,
+      length,
+      { id: column_name, dir },
+      {
+        search: search.value
+      }
+    );
+
+    res.status(200).json({
+      data: users,
+      recordsTotal: users.length,
+      recordsFiltered: recordsFiltered
+    });
+  } catch (error) {
+    console.error('Error at getSendersTableController', error);
+    res.status(500).json({ error: 'Internal server error' });
   }
 };

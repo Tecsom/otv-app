@@ -3,4 +3,5 @@ export type Usuario = {
   name: string;
   email: string;
   rol: string;
+  verificador_pass?: string;
 };
