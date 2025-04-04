@@ -14,7 +14,7 @@ const supabase = () => {
 //   );
 // }; //! SANDBOX
 
-// export const JWT_SECRET = 'cC+tfXV9UpX6CSfQaGu0KSzrWrM/XOqP0R4EhGAPMwkMdspOLeYKDfFnJvFX068r/dmp5Mm34VEZ5t1HYjBjpA=='; //! SANDBOX
 export const JWT_SECRET = 'vc502qBBuj7Mp3O03gsb/DI6WI/pvosD8QtS8TkhMxwoa0PyhQ2DRTTnoAbfkUnXWdW+PoU4pEynkkxhZOC2YA=='; //! PRODUCTION
+// export const JWT_SECRET = 'cC+tfXV9UpX6CSfQaGu0KSzrWrM/XOqP0R4EhGAPMwkMdspOLeYKDfFnJvFX068r/dmp5Mm34VEZ5t1HYjBjpA=='; //! SANDBOX
 
 export default supabase;
