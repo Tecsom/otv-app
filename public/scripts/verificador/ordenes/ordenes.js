@@ -197,6 +197,7 @@ loadOrderData = async () => {
   table_piezas.rows.add(productos).draw();
   updateGeneralProgress();
 };
+let userVerificator = null;
 
 $('#startVerificacion').on('click', function () {
   const progress = updateGeneralProgress();
@@ -205,12 +206,12 @@ $('#startVerificacion').on('click', function () {
     toastr.error('La orden ya ha sido verificada');
     return;
   }
-
-  if (userData.rol !== 'admin') {
-    $('#verifyCodeModal').modal('show');
-    return;
-  }
-  $('#start_verificacion').modal('show');
+  userVerificator = null;
+  $('#verifyCodeModal').modal('show');
+  // if (userData.rol !== 'admin') {
+  //   return;
+  // }
+  // $('#start_verificacion').modal('show');
 });
 
 $('#verifyCodeForm').on('submit', async function (e) {
@@ -218,10 +219,22 @@ $('#verifyCodeForm').on('submit', async function (e) {
 
   const verificadorPass = $('#verifyCodeInput').val();
 
-  if (userData.verificador_pass !== verificadorPass) {
+  const response = await fetchData('/usuarios/varificador-code', 'POST', {
+    code: verificadorPass
+  });
+
+  if (!response.status) {
     toastr.error('Código de verificación incorrecto');
     return;
   }
+  console.log({ response });
+
+  // if (userData.verificador_pass !== verificadorPass) {
+  //   toastr.error('Código de verificación incorrecto');
+  //   return;
+  // }
+
+  userVerificator = response.data;
 
   $('#verifyCodeModal').modal('hide');
   $('#verifyCodeInput').val('');
@@ -401,6 +414,7 @@ socket.on('scanner', data => {
 });
 
 verificarPieza = async codigo => {
+  codigo = codigo?.trim();
   //const exists = ordenData.codigos.find(pieza => pieza.code === codigo);
   const isVerified = verificadas_array.includes(codigo);
   console.log({ ordenData });
@@ -419,7 +433,13 @@ verificarPieza = async codigo => {
   console.log({ posibleCombinationsVerified });
 
   if (existsInVerified) {
-    toastr.warning('Pieza ya verificada');
+    Swal.fire({
+      title: 'Pieza ya verificada',
+      text: '',
+      icon: 'warning',
+      timer: 2000,
+      showConfirmButton: false
+    });
     productoByCode = ordenData.productos.find(product =>
       product.codigos.find(code => code === existsInVerified.originalCode)
     );
@@ -431,12 +451,24 @@ verificarPieza = async codigo => {
   productoByCode = ordenData.productos.find(product => product.codigos.find(code => code === codigoVerificador));
 
   if (!existsInNotVerified) {
-    toastr.error('Pieza no encontrada');
+    Swal.fire({
+      title: 'Pieza no encontrada',
+      text: '',
+      icon: 'error',
+      timer: 2000,
+      showConfirmButton: false
+    });
     return;
   }
 
   if (isVerified) {
-    toastr.warning('Pieza ya verificada');
+    Swal.fire({
+      title: 'Pieza ya verificada',
+      text: '',
+      icon: 'warning',
+      timer: 2000,
+      showConfirmButton: false
+    });
     return;
   }
 
@@ -587,7 +619,13 @@ const verify = codigo => {
     }
 
     totalProgress += progress;
-
+    Swal.fire({
+      title: 'Pieza verificada',
+      text: '',
+      icon: 'success',
+      timer: 2000,
+      showConfirmButton: false
+    });
     $('#progress_verificacion').css('width', `${totalProgress}%`);
     $('#progress_verificacion').text(`Progreso de verificación (${totalProgress.toFixed(2)}%)`);
   }
@@ -611,7 +649,7 @@ $('#save_verification_modal_btn').on('click', async function () {
     order_id,
     piezas_verificadas,
     created_at,
-    user_id: userData.id
+    user_id: userVerificator
   };
 
   console.log(data);

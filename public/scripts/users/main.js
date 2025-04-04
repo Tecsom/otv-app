@@ -42,20 +42,6 @@ const editUserRoleSelect = $('#editUserRole').select2({
   minimumResultsForSearch: -1
 });
 
-createUserRoleSelect.on('change', function () {
-  const role = $(this).val();
-
-  if (role === 'admin') $('#containerVerificadorPass').addClass('d-none');
-  else $('#containerVerificadorPass').removeClass('d-none');
-});
-
-editUserRoleSelect.on('change', function () {
-  const role = $(this).val();
-
-  if (role === 'admin') $('#containerVerificadorPassEdit').addClass('d-none');
-  else $('#containerVerificadorPassEdit').removeClass('d-none');
-});
-
 $('#createUserModal').on('hidden.bs.modal', function () {
   $('#createUserForm').trigger('reset');
   createUserRoleSelect.val('admin').trigger('change');

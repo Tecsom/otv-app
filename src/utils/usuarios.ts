@@ -83,3 +83,16 @@ export const getUsersTable = async (
     recordsFiltered: count || 0
   };
 };
+
+export const verifyVerificadorCode = async (code: string): Promise<string> => {
+  const { data, error } = await supabase()
+    .from('usuarios')
+    .select('id, verificador_pass')
+    .eq('verificador_pass', code)
+    .single();
+  if (error || !data) {
+    throw new Error(error.message);
+  }
+
+  return data.id;
+};

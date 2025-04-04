@@ -1,4 +1,11 @@
-import { createUsuario, deleteUsuario, editUsuario, getUsersTable, getUsuarios } from '@/utils/usuarios';
+import {
+  createUsuario,
+  deleteUsuario,
+  editUsuario,
+  getUsersTable,
+  getUsuarios,
+  verifyVerificadorCode
+} from '@/utils/usuarios';
 import { Request, Response } from 'express';
 
 export const getUsuariosC = async (req: Request, res: Response) => {
@@ -69,5 +76,18 @@ export const getUsersTableController = async (req: Request, res: Response) => {
   } catch (error) {
     console.error('Error at getSendersTableController', error);
     res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+export const verifyVerificadorCodeController = async (req: Request, res: Response) => {
+  try {
+    const { code } = req.body;
+
+    const userId = await verifyVerificadorCode(code);
+
+    return res.status(200).json(userId);
+  } catch (error: any) {
+    console.log(error);
+    return res.status(500).json({ error: error.message });
   }
 };
