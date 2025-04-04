@@ -416,6 +416,7 @@ socket.on('scanner', data => {
 verificarPieza = async codigo => {
   console.log(`Código escaneado: "${codigo}"`);
   codigo = codigo?.trim();
+  console.log(`Código escaneado aft trim: "${codigo}"`);
   //const exists = ordenData.codigos.find(pieza => pieza.code === codigo);
   const isVerified = verificadas_array.includes(codigo);
   console.log({ ordenData });
