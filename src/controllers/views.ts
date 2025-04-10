@@ -87,3 +87,11 @@ export const renderProductoInventarios = async (req: Request, res: Response) => 
 };
 export const renderEmbarques = async (_: Request, res: Response) => res.render('embarques.ejs');
 export const renderUsersView = async (_: Request, res: Response) => res.render('users.ejs');
+
+export const renderPrinLabelController = async (req: Request, res: Response) => {
+  const { printer_name } = req.query;
+
+  res.render('printer-label.ejs', {
+    printer_name
+  });
+};

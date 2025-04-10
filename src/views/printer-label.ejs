@@ -1,0 +1,41 @@
+<script src="/public/libs/zebra/dist_libs/BrowserPrint-3.1.250.min.js"></script>
+<script type="module" src="/public/scripts/zebra-print/index.js"></script>
+
+<div class="container-xxl flex-grow-1 container-p-y">
+    <div class="d-flex justify-content-between align-items-center pb-2 border-bottom">
+        <div class="d-flex align-items-center gap-2">
+            <h4 class="mb-0">Configuración</h4>
+        </div>
+    </div>
+    <div class="row pt-3">
+        <div class="col-md-6">
+            <div class="row">
+                <div class="col-md-8">
+                    <select class="form-select" id="selected_device"></select>
+                </div>
+                <div class="col-md-4">
+                    <button class="btn btn-primary" id="btn-test-connection">Verificar conexión</button>
+                </div>
+            </div>
+
+            <form id="labelForm">
+                <div class="mb-3">
+                    <label for="datamatrix" class="form-label">Datamatrix:</label>
+                    <input type="text" class="form-control" id="datamatrix" name="datamatrix" required />
+                    <div class="invalid-feedback">Please provide a datamatrix.</div>
+                </div>
+                <div class="mb-3">
+                    <label for="label1" class="form-label">Label 1:</label>
+                    <input type="text" class="form-control" id="label1" name="label1" required />
+                    <div class="invalid-feedback">Please provide Label 1.</div>
+                </div>
+                <div class="mb-3">
+                    <label for="label2" class="form-label">Label 2:</label>
+                    <input type="text" class="form-control" id="label2" name="label2" required />
+                    <div class="invalid-feedback">Please provide Label 2.</div>
+                </div>
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+        </div>
+    </div>
+</div>

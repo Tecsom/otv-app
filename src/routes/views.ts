@@ -13,7 +13,8 @@ import {
   renderInventarios,
   renderEmbarques,
   renderProductoInventarios,
-  renderUsersView
+  renderUsersView,
+  renderPrinLabelController
 } from '../controllers/views';
 
 const router = express.Router();
@@ -32,5 +33,6 @@ router.get('/inventario', renderInventarios);
 router.get('/inventario/:product_id', renderProductoInventarios);
 router.get('/embarques', renderEmbarques);
 router.get('/users', renderUsersView);
+router.get('/printer-label', renderPrinLabelController);
 
 export default router;
