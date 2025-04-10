@@ -45,42 +45,39 @@
  * // Ej: 5 mm ≈ 40 dots
  */
 
-export const generateLabelCode = (
-  elements,
-  labelSizeMM = { width: 80, height: 25.4 }
-) => {
-  const DPI = 203;
-  const mmToDots = (mm) => Math.round((mm * DPI) / 25.4);
+export const generateLabelCode = (elements, labelSizeMM = { width: 80, height: 25.4 }) => {
+    const DPI = 203;
+    const mmToDots = mm => Math.round((mm * DPI) / 25.4);
 
-  const widthDots = mmToDots(labelSizeMM.width);
-  const heightDots = mmToDots(labelSizeMM.height);
+    const widthDots = mmToDots(labelSizeMM.width);
+    const heightDots = mmToDots(labelSizeMM.height);
 
-  let zpl = `^XA\n^PW${widthDots}\n^LL${heightDots}\n`;
+    let zpl = `^XA\n^PW${widthDots}\n^LL${heightDots}\n`;
 
-  for (const element of elements) {
-    const {
-      type,
-      text,
-      position_x,
-      position_y,
-      module_size = 6,
-      font_height = 20,
-      font_width = 20,
-      unit = "milimeters",
-    } = element;
+    for (const element of elements) {
+        const {
+            type,
+            text,
+            position_x,
+            position_y,
+            module_size = 6,
+            font_height = 20,
+            font_width = 20,
+            unit = 'milimeters'
+        } = element;
 
-    const posX = unit === "milimeters" ? mmToDots(position_x) : position_x;
-    const posY = unit === "milimeters" ? mmToDots(position_y) : position_y;
+        const posX = unit === 'milimeters' ? mmToDots(position_x) : position_x;
+        const posY = unit === 'milimeters' ? mmToDots(position_y) : position_y;
 
-    if (type === "datamatrix") {
-      zpl += `^FO${posX},${posY}\n^BXN,${module_size},200\n^FD${text}^FS\n`;
+        if (type === 'datamatrix') {
+            zpl += `^FO${posX},${posY}\n^BXN,${module_size},200\n^FD${text}^FS\n`;
+        }
+
+        if (type === 'text') {
+            zpl += `^FO${posX},${posY}\n^A0N,${font_height},${font_width}\n^FD${text}^FS\n`;
+        }
     }
 
-    if (type === "text") {
-      zpl += `^FO${posX},${posY}\n^A0N,${font_height},${font_width}\n^FD${text}^FS\n`;
-    }
-  }
-
-  zpl += "^XZ";
-  return zpl;
+    zpl += '^XZ';
+    return zpl;
 };

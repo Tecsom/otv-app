@@ -131,3 +131,6 @@ release
 .yarn/install-state.gz
 .pnp.*
 package-lock.json
+
+#ignore ds_store files
+.DS_Store

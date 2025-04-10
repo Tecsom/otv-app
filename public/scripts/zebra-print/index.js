@@ -1,4 +1,10 @@
-import { getDevices, getDefaultDevice, testConnection, printLabel } from '/public/libs/zebra/zebra-setup.js';
+import {
+    getDevices,
+    getDefaultDevice,
+    testConnection,
+    printLabel,
+    printLabelImage
+} from '/public/libs/zebra/zebra-setup.js';
 import { formToJson } from '/public/scripts/helpers.js';
 
 const $devicesSelect = document.querySelector('#selected_device');
@@ -137,4 +143,83 @@ function LabelText(labelText, positionX, positionY, fontSize) {
         font_height: fontSize,
         font_width: fontSize
     };
+}
+
+function capturar(selectedDevice, capture_wrapper_dom) {
+    const elemento = capture_wrapper_dom;
+
+    html2canvas(elemento, {
+        scale: 203 / 96
+    }).then(async canvas => {
+        const imgData = canvas.toDataURL('image/png');
+
+        const zpl = canvasToZPL_GFA(canvas, 'R:LOGO.GRF');
+
+        selectedDevice.send(
+            zpl,
+            function (device) {
+                console.log('Image sent to printer');
+                toastr.success('Image sent to printer');
+            },
+            function (error) {
+                console.error('Error sending image to printer:', error);
+                toastr.error('Error sending image to printer');
+            }
+        );
+    });
+}
+
+$('#printQR').on('click', async () => {
+    const capture_wrapper_dom = document.getElementById('capture-qr');
+    capturar(selectedDevice, capture_wrapper_dom);
+});
+
+$('#printDatamatrix').on('click', async () => {
+    const capture_wrapper_dom = document.getElementById('capture-datamatrix');
+    capturar(selectedDevice, capture_wrapper_dom);
+});
+
+function canvasToZPL_GFA(canvas) {
+    const ctx = canvas.getContext('2d');
+    const width = canvas.width;
+    const height = canvas.height;
+    const imageData = ctx.getImageData(0, 0, width, height).data;
+
+    const threshold = 127;
+    const binaryData = [];
+
+    for (let y = 0; y < height; y++) {
+        let row = '';
+        for (let x = 0; x < width; x++) {
+            const i = (y * width + x) * 4;
+            const grayscale = 0.299 * imageData[i] + 0.587 * imageData[i + 1] + 0.114 * imageData[i + 2];
+            row += grayscale < threshold ? '1' : '0';
+        }
+
+        while (row.length % 8 !== 0) row += '0';
+
+        for (let i = 0; i < row.length; i += 8) {
+            const byte = row.substr(i, 8);
+            const hex = parseInt(byte, 2).toString(16).padStart(2, '0').toUpperCase();
+            binaryData.push(hex);
+        }
+    }
+
+    const bytesPerRow = Math.ceil(width / 8);
+    const totalBytes = binaryData.length;
+
+    // ^GFA,a,b,c,data
+    // a = total bytes
+    // b = total bytes
+    // c = bytes per row
+    let zpl = `^XA\n^FO0,0\n^GFA,${totalBytes},${totalBytes},${bytesPerRow},`;
+
+    for (let i = 0; i < binaryData.length; i++) {
+        zpl += binaryData[i];
+        if ((i + 1) % bytesPerRow === 0) zpl += '\n';
+    }
+
+    zpl += '^XZ';
+
+    return zpl;
 }
