@@ -2,8 +2,8 @@ import {
     getDevices,
     getDefaultDevice,
     testConnection,
-    printLabel,
-    printLabelImage
+    printLabel
+    // printLabelImage
 } from '/public/libs/zebra/zebra-setup.js';
 import { formToJson } from '/public/scripts/helpers.js';
 

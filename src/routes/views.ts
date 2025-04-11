@@ -1,20 +1,21 @@
 import express from 'express';
 import {
-  renderClientsPage,
-  renderHomePage,
-  renderLoginPage,
-  renderClientPage,
-  renderUnidadesMedida,
-  renderOrdenesCompra,
-  renderVerificador,
-  renderVerificadorEmbarques,
-  renderVerificadorOrdenes,
-  renderConfiguracion,
-  renderInventarios,
-  renderEmbarques,
-  renderProductoInventarios,
-  renderUsersView,
-  renderPrinLabelController
+    renderClientsPage,
+    renderHomePage,
+    renderLoginPage,
+    renderClientPage,
+    renderUnidadesMedida,
+    renderOrdenesCompra,
+    renderVerificador,
+    renderVerificadorEmbarques,
+    renderVerificadorOrdenes,
+    renderConfiguracion,
+    renderInventarios,
+    renderEmbarques,
+    renderProductoInventarios,
+    renderUsersView,
+    renderPrinLabelController,
+    renderPrintLabelDesigner
 } from '../controllers/views';
 
 const router = express.Router();
@@ -34,5 +35,6 @@ router.get('/inventario/:product_id', renderProductoInventarios);
 router.get('/embarques', renderEmbarques);
 router.get('/users', renderUsersView);
 router.get('/printer-label', renderPrinLabelController);
+router.get('/printer-design', renderPrintLabelDesigner);
 
 export default router;
