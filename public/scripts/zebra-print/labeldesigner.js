@@ -82,6 +82,12 @@ function getLabelJson() {
     canvas.discardActiveObject(); // 🔧 esto descarta la selección múltiple temporal
     canvas.requestRenderAll(); // 🔁 asegura que los objetos vuelvan a su escala real
 
+    const labelName = document.querySelector('#label-name').value;
+    if (!labelName) {
+        toastr.error('Por favor, ingrese un nombre para la etiqueta.');
+        return;
+    }
+
     const wmm = parseFloat(document.getElementById('label-width').value);
     const hmm = parseFloat(document.getElementById('label-height').value);
 
@@ -137,6 +143,7 @@ function getLabelJson() {
     });
 
     const result = {
+        name: labelName,
         width: String(wmm),
         height: String(hmm),
         unit: 'milimeters',
