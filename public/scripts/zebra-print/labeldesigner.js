@@ -51,14 +51,14 @@ function addText() {
     canvas.add(text).setActiveObject(text);
 }
 
-function addQR() {
-    const qrText = 'qr-demo-' + Date.now();
-    if (!qrText) return;
-    const qr = new QRious({ value: qrText, size: 120 });
+function addCode() {
+    const codeText = 'qr-demo-' + Date.now();
+    if (!codeText) return;
+    const qr = new QRious({ value: codeText, size: 120 });
     fabric.Image.fromURL(qr.toDataURL(), function (img) {
         img.set({ left: 100, top: 50, scaleX: 1, scaleY: 1 });
         img.customId = 'qr_' + crypto.randomUUID();
-        img.qrText = qrText;
+        img.codeText = codeText;
         canvas.add(img).setActiveObject(img);
     });
 }
@@ -78,15 +78,9 @@ function addTitle() {
 }
 
 // ---- EXPORT JSON ----
-function getLabelJson() {
+export const getLabelJson = () => {
     canvas.discardActiveObject(); // 🔧 esto descarta la selección múltiple temporal
     canvas.requestRenderAll(); // 🔁 asegura que los objetos vuelvan a su escala real
-
-    const labelName = document.querySelector('#label-name').value;
-    if (!labelName) {
-        toastr.error('Por favor, ingrese un nombre para la etiqueta.');
-        return;
-    }
 
     const wmm = parseFloat(document.getElementById('label-width').value);
     const hmm = parseFloat(document.getElementById('label-height').value);
@@ -115,10 +109,10 @@ function getLabelJson() {
             sizeMM = pxToMm(obj.fontSize);
             widthMM = pxToMm(obj.width * obj.scaleX);
             heightMM = sizeMM;
-        } else if (obj.type === 'image' && obj.qrText) {
-            type = 'qr';
+        } else if (obj.type === 'image' && obj.codeText) {
+            type = 'code';
             id = obj.customId || '';
-            value = obj.qrText;
+            value = obj.codeText;
             widthMM = pxToMm(obj.getScaledWidth());
             heightMM = pxToMm(obj.getScaledHeight());
             sizeMM = (widthMM + heightMM) / 2;
@@ -143,15 +137,14 @@ function getLabelJson() {
     });
 
     const result = {
-        name: labelName,
         width: String(wmm),
         height: String(hmm),
         unit: 'milimeters',
         items
     };
 
-    document.getElementById('output').textContent = JSON.stringify(result, null, 2);
-}
+    return result;
+};
 
 function alignVertically() {
     const selectedObject = canvas.getActiveObject();
@@ -187,7 +180,7 @@ function updatePropertiesPanel(obj) {
         document.getElementById('prop-text').value = obj.text;
     } else if (obj.type === 'image') {
         document.getElementById('prop-size').value = parseFloat(pxToMm(obj.getScaledWidth()).toFixed(2));
-        document.getElementById('prop-text').value = obj.qrText || '';
+        document.getElementById('prop-text').value = obj.codeText || '';
     }
 }
 
@@ -207,14 +200,14 @@ function applyChanges() {
         obj.customId = document.getElementById('prop-id').value;
         obj.text = value;
         obj.fontSize = mmToPx(sizeMM);
-    } else if (obj.type === 'image' && obj.qrText) {
+    } else if (obj.type === 'image' && obj.codeText) {
         obj.customId = document.getElementById('prop-id').value;
-        obj.qrText = value;
+        obj.codeText = value;
         const sizePx = mmToPx(sizeMM);
         const scale = sizePx / obj.width;
         obj.scaleX = obj.scaleY = scale;
 
-        const qr = new QRious({ value: obj.qrText, size: 120 });
+        const qr = new QRious({ value: obj.codeText, size: 120 });
         obj._element.src = qr.toDataURL();
     }
 
@@ -297,7 +290,7 @@ canvas.on('selection:cleared', () => {
 
 canvas.on('selection:created', e => {
     const obj = e.selected[0];
-    if (obj && obj.type === 'image' && obj.qrText) {
+    if (obj && obj.type === 'image' && obj.codeText) {
         document.getElementById('prop-size').parentElement.style.display = 'none';
     } else {
         document.getElementById('prop-size').parentElement.style.display = '';
@@ -307,7 +300,7 @@ canvas.on('selection:created', e => {
 
 canvas.on('selection:updated', e => {
     const obj = e.selected[0];
-    if (obj && obj.type === 'image' && obj.qrText) {
+    if (obj && obj.type === 'image' && obj.codeText) {
         document.getElementById('prop-size').parentElement.style.display = 'none';
     } else {
         document.getElementById('prop-size').parentElement.style.display = '';
@@ -378,7 +371,7 @@ canvas.on('selection:cleared', () => {
 // ---- GLOBAL ----
 window.setLabelSize = setLabelSize;
 window.addText = addText;
-window.addQR = addQR;
+window.addCode = addCode;
 window.addTitle = addTitle;
 window.getLabelJson = getLabelJson;
 window.removeSelectedItems = removeSelectedItems;

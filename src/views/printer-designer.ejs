@@ -118,7 +118,7 @@
                             <button class="btn btn-primary btn-sm" onclick="addText()">
                                 <i class="ti ti-sm ti-letter-case"></i>
                             </button>
-                            <button class="btn btn-primary btn-sm" onclick="addQR()">
+                            <button class="btn btn-primary btn-sm" onclick="addCode()">
                                 <i class="ti ti-sm ti-qrcode"></i>
                             </button>
                             <button class="btn btn-primary btn-sm" onclick="alignVertically()">
@@ -136,7 +136,7 @@
                             <button class="btn btn-primary btn-sm" onclick="getLabelJson()">
                                 <i class="ti ti-sm ti-json"></i>
                             </button>
-                            <button class="btn btn-success btn-sm" onclick="saveLabel()">
+                            <button class="btn btn-success btn-sm" id="btn-save-label">
                                 <i class="ti ti-sm ti-device-floppy"></i>
                             </button>
                         </div>
@@ -149,3 +149,33 @@
         </div>
     </div>
 </div>
+
+<script type="module">
+    import { getLabelJson } from '/public/scripts/zebra-print/labeldesigner.js';
+    import { fetchData } from '/public/scripts/helpers.js';
+
+    $('#btn-save-label').on('click', async () => {
+        const labelName = document.querySelector('#label-name').value;
+        if (!labelName) {
+            toastr.error('Por favor, ingrese un nombre para la etiqueta.');
+            return;
+        }
+
+        const labelJSON = getLabelJson();
+        console.log(labelJSON);
+
+        const payload = {
+            name: labelName,
+            ...labelJSON
+        };
+
+        const response = await fetchData('/printer/label', 'POST', payload);
+        if (response.error) {
+            toastr.error(response.error);
+            return;
+        }
+        const data = response.data;
+
+        console.log('success', data);
+    });
+</script>
