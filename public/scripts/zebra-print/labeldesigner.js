@@ -2,6 +2,10 @@ const DPI = 203;
 const mmToPx = mm => (mm * DPI) / 25.4;
 const pxToMm = px => (px * 25.4) / DPI;
 
+let titleCounter = 0;
+let textCounter = 0;
+let codeCounter = 0;
+
 const canvas = new fabric.Canvas('label-canvas');
 
 // ---- SET CANVAS SIZE ----
@@ -19,37 +23,65 @@ function addText() {
         left: 50,
         top: 50,
         fontSize: mmToPx(4),
-        objectCaching: false
+        objectCaching: false,
+        editable: true,
+        fontFamily: 'Arial',
+        width: mmToPx(40) // puedes ajustar este valor si quieres
     });
-    text.customId = 'text_' + Date.now();
+
+    // Evitar que se escale (solo se cambiará el ancho real)
+    text.set({
+        lockScalingX: false,
+        lockScalingY: true
+    });
+
+    // Mostrar solo los controladores izquierdo y derecho
+    text.setControlsVisibility({
+        mt: false,
+        mb: false,
+        ml: true,
+        mr: true,
+        tl: false,
+        tr: false,
+        bl: false,
+        br: false,
+        mtr: false
+    });
+    text.customId = 'text_' + crypto.randomUUID();
     canvas.add(text).setActiveObject(text);
 }
 
 function addQR() {
-    const qrText = prompt('Texto para el QR:', 'https://example.com');
+    const qrText = 'qr-demo-' + Date.now();
     if (!qrText) return;
     const qr = new QRious({ value: qrText, size: 120 });
     fabric.Image.fromURL(qr.toDataURL(), function (img) {
         img.set({ left: 100, top: 50, scaleX: 1, scaleY: 1 });
-        img.customId = 'qr_' + Date.now();
+        img.customId = 'qr_' + crypto.randomUUID();
         img.qrText = qrText;
         canvas.add(img).setActiveObject(img);
     });
 }
 
-function addStaticLabel() {
-    const label = new fabric.Textbox('Label estático', {
+function addTitle() {
+    const title = new fabric.Textbox('Título', {
         left: 50,
         top: 100,
         fontSize: mmToPx(4),
-        objectCaching: false
+        objectCaching: false,
+        fontWeight: 'bold',
+        fontFamily: 'Arial'
     });
-    label.isStaticLabel = true;
-    canvas.add(label).setActiveObject(label);
+    title.isTitle = true;
+    title.customId = 'title_' + crypto.randomUUID();
+    canvas.add(title).setActiveObject(title);
 }
 
 // ---- EXPORT JSON ----
 function getLabelJson() {
+    canvas.discardActiveObject(); // 🔧 esto descarta la selección múltiple temporal
+    canvas.requestRenderAll(); // 🔁 asegura que los objetos vuelvan a su escala real
+
     const wmm = parseFloat(document.getElementById('label-width').value);
     const hmm = parseFloat(document.getElementById('label-height').value);
 
@@ -63,8 +95,9 @@ function getLabelJson() {
         let widthMM = 0;
         let heightMM = 0;
 
-        if (obj.isStaticLabel) {
-            type = 'label';
+        if (obj.isTitle) {
+            id = obj.customId || '';
+            type = 'title';
             value = obj.text;
             sizeMM = pxToMm(obj.fontSize);
             widthMM = pxToMm(obj.width * obj.scaleX);
@@ -85,27 +118,54 @@ function getLabelJson() {
             sizeMM = (widthMM + heightMM) / 2;
         }
 
-        return {
+        const result = {
             type,
-            ...(id && { id }),
+            id,
             value,
-            left: parseFloat(leftMM.toFixed(2)),
-            top: parseFloat(topMM.toFixed(2)),
-            size: parseFloat(sizeMM.toFixed(2)),
             minX: parseFloat(leftMM.toFixed(2)),
             maxX: parseFloat((leftMM + widthMM).toFixed(2)),
             minY: parseFloat(topMM.toFixed(2)),
-            maxY: parseFloat((topMM + heightMM).toFixed(2))
+            maxY: parseFloat((topMM + heightMM).toFixed(2)),
+            units: 'milimeters'
         };
+
+        if (type === 'text' || type === 'title') {
+            result.fontsize = parseFloat(sizeMM.toFixed(2));
+        }
+
+        return result;
     });
 
     const result = {
         width: String(wmm),
         height: String(hmm),
+        unit: 'milimeters',
         items
     };
 
     document.getElementById('output').textContent = JSON.stringify(result, null, 2);
+}
+
+function alignVertically() {
+    const selectedObject = canvas.getActiveObject();
+    if (!selectedObject) return;
+
+    // Align the object vertically in the canvas container
+    const canvasHeight = canvas.getHeight();
+    selectedObject.top = (canvasHeight - selectedObject.getScaledHeight()) / 2;
+
+    selectedObject.setCoords();
+    canvas.requestRenderAll();
+}
+
+function alignHorizontally() {
+    const selectedObject = canvas.getActiveObject();
+    if (!selectedObject) return;
+    // Align the object horizontally in the canvas container
+    const canvasWidth = canvas.getWidth();
+    selectedObject.left = (canvasWidth - selectedObject.getScaledWidth()) / 2;
+    selectedObject.setCoords();
+    canvas.requestRenderAll();
 }
 
 // ---- SIDEBAR PROPERTIES ----
@@ -115,7 +175,7 @@ function updatePropertiesPanel(obj) {
     document.getElementById('prop-left').value = parseFloat(pxToMm(obj.left).toFixed(2));
     document.getElementById('prop-top').value = parseFloat(pxToMm(obj.top).toFixed(2));
 
-    if (obj.type === 'textbox' || obj.isStaticLabel) {
+    if (obj.type === 'textbox' || obj.isTitle) {
         document.getElementById('prop-size').value = parseFloat(pxToMm(obj.fontSize).toFixed(2));
         document.getElementById('prop-text').value = obj.text;
     } else if (obj.type === 'image') {
@@ -137,9 +197,7 @@ function applyChanges() {
     obj.top = top;
 
     if (obj.type === 'textbox') {
-        if (!obj.isStaticLabel) {
-            obj.customId = document.getElementById('prop-id').value;
-        }
+        obj.customId = document.getElementById('prop-id').value;
         obj.text = value;
         obj.fontSize = mmToPx(sizeMM);
     } else if (obj.type === 'image' && obj.qrText) {
@@ -157,18 +215,168 @@ function applyChanges() {
     canvas.requestRenderAll();
 }
 
+function clearPropertiesPanel() {
+    updatePropertiesPanel(null);
+    //clear input values
+    document.getElementById('prop-id').value = '';
+    document.getElementById('prop-left').value = '';
+    document.getElementById('prop-top').value = '';
+    document.getElementById('prop-size').value = '';
+    document.getElementById('prop-text').value = '';
+
+    //clear output
+    document.getElementById('output').textContent = '';
+}
+
+function removeSelectedItems() {
+    const selectedObjects = canvas.getActiveObjects();
+    selectedObjects.forEach(obj => {
+        canvas.remove(obj);
+    });
+    canvas.discardActiveObject();
+    canvas.renderAll();
+    clearPropertiesPanel();
+}
+
 // ---- EVENTS ----
 canvas.on('selection:created', e => updatePropertiesPanel(e.selected[0]));
 canvas.on('selection:updated', e => updatePropertiesPanel(e.selected[0]));
 canvas.on('selection:cleared', () => updatePropertiesPanel(null));
 
+canvas.on('object:moving', e => {
+    const selectedObjects = canvas.getActiveObjects();
+    if (selectedObjects.length > 1) {
+        disablePropertiesPanel();
+        return;
+    }
+
+    const obj = e.target;
+    if (obj) {
+        document.getElementById('prop-left').value = parseFloat(pxToMm(obj.left).toFixed(2));
+        document.getElementById('prop-top').value = parseFloat(pxToMm(obj.top).toFixed(2));
+    }
+});
+
+canvas.on('object:scaling', e => {
+    const obj = e.target;
+    if (obj) {
+        if (obj.type === 'textbox' || obj.isTitle) {
+            document.getElementById('prop-size').value = parseFloat(pxToMm(obj.fontSize * obj.scaleY).toFixed(2));
+        } else if (obj.type === 'image') {
+            document.getElementById('prop-size').value = parseFloat(pxToMm(obj.getScaledWidth()).toFixed(2));
+        }
+    }
+});
+
+canvas.on('selection:created', e => {
+    if (e.selected.length > 1) {
+        disablePropertiesPanel();
+    } else {
+        updatePropertiesPanel(e.selected[0]);
+    }
+});
+
+canvas.on('selection:updated', e => {
+    if (e.selected.length > 1) {
+        disablePropertiesPanel();
+    } else {
+        updatePropertiesPanel(e.selected[0]);
+    }
+});
+
+canvas.on('selection:cleared', () => {
+    clearPropertiesPanel();
+});
+
+canvas.on('selection:created', e => {
+    const obj = e.selected[0];
+    if (obj && obj.type === 'image' && obj.qrText) {
+        document.getElementById('prop-size').parentElement.style.display = 'none';
+    } else {
+        document.getElementById('prop-size').parentElement.style.display = '';
+    }
+    updatePropertiesPanel(obj);
+});
+
+canvas.on('selection:updated', e => {
+    const obj = e.selected[0];
+    if (obj && obj.type === 'image' && obj.qrText) {
+        document.getElementById('prop-size').parentElement.style.display = 'none';
+    } else {
+        document.getElementById('prop-size').parentElement.style.display = '';
+    }
+    updatePropertiesPanel(obj);
+});
+
+canvas.on('selection:cleared', () => {
+    document.getElementById('prop-size').parentElement.style.display = '';
+    clearPropertiesPanel();
+});
+
+// ---- INPUT VALIDATION ----
+document.getElementById('label-width').addEventListener('input', e => {
+    const value = e.target.value;
+    if (!/^\d*\.?\d*$/.test(value)) {
+        e.target.value = value.slice(0, -1); // Remove the last invalid character
+    } else {
+        setLabelSize(); // Update canvas size if the input is valid
+    }
+});
+
+document.getElementById('label-height').addEventListener('input', e => {
+    const value = e.target.value;
+    if (!/^\d*\.?\d*$/.test(value)) {
+        e.target.value = value.slice(0, -1); // Remove the last invalid character
+    } else {
+        setLabelSize(); // Update canvas size if the input is valid
+    }
+});
+
+document.getElementsByClassName('prop-input').forEach(input => {
+    //get attribute x-label
+
+    const prop_input = input.getAttribute('x-label'); //id of input property
+
+    input.addEventListener('input', e => {
+        applyChanges();
+    });
+});
+
+function disablePropertiesPanel() {
+    document.getElementById('prop-id').value = '';
+    document.getElementById('prop-left').value = '';
+    document.getElementById('prop-top').value = '';
+    document.getElementById('prop-size').value = '';
+    document.getElementById('prop-text').value = '';
+    document.getElementById('prop-id').disabled = true;
+    document.getElementById('prop-left').disabled = true;
+    document.getElementById('prop-top').disabled = true;
+    document.getElementById('prop-size').disabled = true;
+    document.getElementById('prop-text').disabled = true;
+}
+
+function enablePropertiesPanel() {
+    document.getElementById('prop-id').disabled = false;
+    document.getElementById('prop-left').disabled = false;
+    document.getElementById('prop-top').disabled = false;
+    document.getElementById('prop-size').disabled = false;
+    document.getElementById('prop-text').disabled = false;
+}
+
+canvas.on('selection:cleared', () => {
+    updatePropertiesPanel(null);
+    enablePropertiesPanel();
+});
+
 // ---- GLOBAL ----
 window.setLabelSize = setLabelSize;
 window.addText = addText;
 window.addQR = addQR;
-window.addStaticLabel = addStaticLabel;
+window.addTitle = addTitle;
 window.getLabelJson = getLabelJson;
-window.applyChanges = applyChanges;
+window.removeSelectedItems = removeSelectedItems;
+window.alignVertically = alignVertically;
+window.alignHorizontally = alignHorizontally;
 
 // ---- INIT ----
 setLabelSize();

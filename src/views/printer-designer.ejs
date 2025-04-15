@@ -3,12 +3,6 @@
 <script type="module" src="/public/scripts/zebra-print/labeldesigner.js"></script>
 
 <style>
-    body {
-        display: flex;
-        gap: 20px;
-        font-family: sans-serif;
-        padding: 20px;
-    }
     canvas {
         border: 1px dashed #aaa;
     }
@@ -34,40 +28,121 @@
         border: 1px solid #ccc;
     }
 </style>
-
-<div>
-    <div id="controls">
-        <label>Ancho (mm): <input id="label-width" value="80" type="number" step="0.1" /></label>
-        <label>Alto (mm): <input id="label-height" value="25.4" type="number" step="0.1" /></label>
-        <button onclick="setLabelSize()">Aplicar tamaño</button>
-        <hr />
-        <button onclick="addText()">Agregar texto</button>
-        <button onclick="addQR()">Agregar QR</button>
-        <button onclick="getLabelJson()">Obtener JSON</button>
-        <button onclick="addStaticLabel()">Agregar label estático</button>
-        <button onclick="addDataMatrix()">Agregar DataMatrix</button>
+<div class="container-xxl flex-grow-1 container-p-y">
+    <div class="d-flex justify-content-between align-items-center pb-2 border-bottom">
+        <div class="d-flex align-items-center gap-2">
+            <h4 class="mb-0">Alta de etiqueta personalizada</h4>
+            <input type="text" id="label-name" class="form-control" placeholder="Nombre de etiqueta" />
+        </div>
     </div>
-    <br />
-    <canvas id="label-canvas" width="640" height="203"></canvas>
-    <pre id="output"></pre>
-</div>
+    <div class="row pt-3">
+        <div class="col-md-2">
+            <div id="sidebar">
+                <div class="row">
+                    <div class="col-md-12">
+                        <h3 class="mb-0">Etiqueta</h3>
+                    </div>
+                    <div class="col-md-12">
+                        <label>Nombre de etiqueta</label>
+                    </div>
+                </div>
 
-<div id="sidebar">
-    <h3>Propiedades</h3>
-    <label>ID</label>
-    <input type="text" id="prop-id" />
-
-    <label>Texto/QR</label>
-    <input type="text" id="prop-text" />
-
-    <label>X (mm)</label>
-    <input type="number" id="prop-left" step="0.1" />
-
-    <label>Y (mm)</label>
-    <input type="number" id="prop-top" step="0.1" />
-
-    <label>Tamaño (mm)</label>
-    <input type="number" id="prop-size" step="0.1" />
-
-    <button onclick="applyChanges()">Aplicar cambios</button>
+                <div class="row">
+                    <div class="col-md-6">
+                        <label
+                            >Ancho (mm):
+                            <input id="label-width" class="form-control" value="80" type="number" step="0.1"
+                        /></label>
+                    </div>
+                    <div class="col-md-6">
+                        <label
+                            >Alto (mm):
+                            <input id="label-height" class="form-control" value="25.4" type="number" step="0.1"
+                        /></label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <h3>Propiedades</h3>
+                    </div>
+                    <div class="col-12">
+                        <label>ID</label>
+                        <div class="d-flex">
+                            <input type="text" id="prop-id" class="form-control prop-input" x-label="prop-id" />
+                            <!--add edit btn-->
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <label>Texto/QR de ejemplo</label>
+                        <input type="text" id="prop-text" class="form-control prop-input" x-label="prop-text" />
+                    </div>
+                    <div class="col-12">
+                        <label>X (mm)</label>
+                        <input
+                            type="number"
+                            id="prop-left"
+                            step="0.1"
+                            class="form-control prop-input"
+                            x-label="prop-left" />
+                    </div>
+                    <div class="col-12">
+                        <label>Y (mm)</label>
+                        <input
+                            type="number"
+                            id="prop-top"
+                            step="0.1"
+                            class="form-control prop-input"
+                            x-label="prop-top" />
+                    </div>
+                    <div class="col-12">
+                        <label>Tamaño de fuente</label>
+                        <input
+                            type="number"
+                            id="prop-size"
+                            step="0.1"
+                            class="form-control prop-input"
+                            x-label="prop-size" />
+                    </div>
+                    <div class="col-12"></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-10">
+            <div id="controls">
+                <div class="col-md-12">
+                    <div class="label-tools d-flex">
+                        <div>
+                            <button class="btn btn-primary btn-sm" onclick="addTitle()">
+                                Título<i class="ti ti-sm ti-tag"></i>
+                            </button>
+                            <button class="btn btn-primary btn-sm" onclick="addText()">
+                                <i class="ti ti-sm ti-letter-case"></i>
+                            </button>
+                            <button class="btn btn-primary btn-sm" onclick="addQR()">
+                                <i class="ti ti-sm ti-qrcode"></i>
+                            </button>
+                            <button class="btn btn-primary btn-sm" onclick="alignVertically()">
+                                <i class="ti ti-sm ti-arrows-vertical"></i>
+                            </button>
+                            <button class="btn btn-primary btn-sm" onclick="alignHorizontally()">
+                                <i class="ti ti-sm ti-arrows-horizontal"></i>
+                            </button>
+                            <button class="btn btn-danger btn-sm" onclick="removeSelectedItems()">
+                                <i class="ti ti-sm ti-trash"></i>
+                            </button>
+                        </div>
+                        <span class="ms-2 mt-2 mb-2 me-2">|</span>
+                        <div>
+                            <button class="btn btn-primary btn-sm" onclick="getLabelJson()">
+                                <i class="ti ti-sm ti-json"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <br />
+            <canvas id="label-canvas" width="640" height="203"></canvas>
+            <pre id="output"></pre>
+        </div>
+    </div>
 </div>
