@@ -3,17 +3,38 @@ import { fetchData } from '/public/scripts/helpers.js';
 const DPI = 203;
 const mmToPx = mm => (mm * DPI) / 25.4;
 
-let currentCodeType = 'QR';
+const clientData = window.clientData;
+
+let currentCodeType = clientData.code_type;
 let canvas = null;
 let selectedObject = null;
 const asignVariableBtn = document.getElementById('assign-variable-btn');
 
 const relationsContainer = $('#label-values-map');
 
-export const renderLabelFromJson = label => {
+export const setCodeType = type => {
+    currentCodeType = type;
+    const label = JSON.parse(document.getElementById('label-preview').dataset.label);
+    renderLabelFromJson(label, false);
+};
+
+$('#select2Basic').on('change', function () {
+    const selectedValue = $(this).val();
+    if (selectedValue === 'QR') {
+        setCodeType('QR');
+    } else if (selectedValue === 'DM') {
+        setCodeType('DM');
+    }
+});
+
+export const renderLabelFromJson = (label, reloadRelations = true) => {
     const canvasEl = document.getElementById('label-preview');
 
-    relationsContainer.empty();
+    console.log({ reloadRelations });
+    if (reloadRelations) {
+        console.log('Limpiando relaciones');
+        relationsContainer.empty();
+    }
 
     canvasEl.dataset.label = JSON.stringify(label);
 
@@ -32,11 +53,6 @@ export const renderLabelFromJson = label => {
             $(asignVariableBtn).prop('disabled', true);
             if (selectedObject) {
                 $(asignVariableBtn).prop('disabled', false);
-
-                console.log({
-                    type: selectedObject.type,
-                    data: selectedObject.data
-                });
             }
         });
     }
@@ -229,14 +245,15 @@ $labelSelect.select2({
 });
 
 fetchLabels().then(labels => {
-    console.log({ labels });
     allLabels = labels;
     labels.forEach(label => {
         $labelSelect.append(new Option(label.name, label.id));
     });
 
-    if (labels.length > 0) {
-        $labelSelect.val(labels[0].id).trigger('change');
+    const labelSaved = clientData.label_id;
+    if (labelSaved) {
+        $labelSelect.val(labelSaved).trigger('change');
+        loadLabelMaps();
     }
 });
 
@@ -248,7 +265,6 @@ $labelSelect.on('change', async function () {
 
     const labelSelected = allLabels.find(label => `${label.id}` === labelId);
 
-    console.log({ labelSelected });
     renderLabelFromJson(labelSelected);
 });
 
@@ -271,9 +287,6 @@ $(asignVariableBtn).on('click', function () {
     }
 
     const itemSelectedData = itemSelected.data;
-
-    console.log({ labelSelected });
-    console.log({ selectedData: itemSelectedData });
 
     const typeMap = {
         code: 'Código',
@@ -298,7 +311,7 @@ $(asignVariableBtn).on('click', function () {
         <div>
             <select class="form-select">
                 <option value="">Selecciona una opción</option>
-                <option value="computed_code">Código de scanner</option>
+                <option value="scanner_code">Código de scanner</option>
                 <option value="numero_parte">Número de parte</option>
                 <option value="revision_parte">Revisión de parte</option>
                 <option value="cliente_id">ID de cliente</option>
@@ -328,7 +341,7 @@ $offcanvas.on('click', '#save-variable-btn', async function () {
     const selectedValue = $select.val();
 
     const variableMap = {
-        computed_code: 'Código de scanner',
+        scanner_code: 'Código de scanner',
         numero_parte: 'Número de parte',
         revision_parte: 'Revisión de parte',
         cliente_id: 'ID de cliente',
@@ -361,36 +374,62 @@ $offcanvas.on('click', '#save-variable-btn', async function () {
 
     const $labelMap = $(html);
     $labelMap.data('labelmap', {
-        type: itemSelectedData.type,
+        item_type: itemSelectedData.type,
         item_id: itemSelectedData.id,
         replace_with: selectedValue
     });
     relationsContainer.append($labelMap);
 
-    const a = getLabelVariableAssignments();
-    console.log({ a });
-
     $offcanvas.offcanvas('hide');
 });
+
+function loadLabelMaps() {
+    const label_replacements = clientData.label_replacements;
+
+    if (!label_replacements) {
+        return;
+    }
+
+    label_replacements.forEach(replacement => {
+        const itemId = replacement.item_id;
+        const itemType = replacement.item_type;
+        const replaceWith = replacement.replace_with;
+
+        console.log({ itemId, itemType, replaceWith });
+
+        const labelMapHtml = `
+            <div class="labelmap d-flex mb-2 gap-3" data-item-id="${itemId}">
+                <span class="badge bg-primary">${itemType.charAt(0).toUpperCase() + itemType.slice(1)}: (${itemId})</span>
+                <span><i class="ti ti-arrow-right"></i></span>
+                <span class="badge bg-primary">${replaceWith}</span>
+            </div>
+        `;
+
+        const $labelMap = $(labelMapHtml);
+        console.log($labelMap);
+        $labelMap.data('labelmap', {
+            item_type: itemType,
+            item_id: itemId,
+            replace_with: replaceWith
+        });
+
+        relationsContainer.append($labelMap);
+    });
+}
 
 export const getLabelVariableAssignments = () => {
     const relationsContainer = $('#label-values-map');
     const labelSelected = allLabels.find(label => `${label.id}` === $labelSelect.val());
 
-    console.log({ labelSelected });
-
-    const variables = [];
+    const replacements = [];
 
     const label_selected_id = labelSelected.id;
 
     relationsContainer.find('.labelmap').each(function () {
         const labelData = $(this).data('labelmap');
 
-        variables.push({
-            ...labelData,
-            label_id: label_selected_id
-        });
+        replacements.push(labelData);
     });
 
-    return variables;
+    return { label_id: label_selected_id, replacements };
 };
