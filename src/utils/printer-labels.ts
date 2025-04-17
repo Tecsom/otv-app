@@ -1,5 +1,5 @@
 import supabase from '@/config/supabase';
-import { PrinterLabel } from '@/types/printer_labels.types';
+import { PrinterLabel, PrinterLabelTable } from '@/types/printer_labels.types';
 import { ApiResult } from '@/types/types';
 
 export const createNewPrinterLabel = async (label: PrinterLabel): Promise<ApiResult> => {
@@ -28,6 +28,24 @@ export const createNewPrinterLabel = async (label: PrinterLabel): Promise<ApiRes
     return {
         data: data,
         message: 'Printer label created successfully',
+        status: true
+    };
+};
+
+export const getPrinterLabels = async (): Promise<ApiResult> => {
+    const { data, error } = await supabase().from('printer_labels').select('*');
+
+    if (error) {
+        return {
+            data: null,
+            message: error.message,
+            status: false
+        };
+    }
+
+    return {
+        data: data as PrinterLabelTable[],
+        message: 'Printer labels fetched successfully',
         status: true
     };
 };
